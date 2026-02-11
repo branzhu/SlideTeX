@@ -1,0 +1,37 @@
+{
+  "webui": {
+    "label": {
+      "latex": "LaTeX",
+      "font_size": "Font Size",
+      "dpi": "DPI",
+      "color": "Color",
+      "mode": "Mode",
+      "transparent": "Transparent"
+    },
+    "option": {
+      "auto": "Auto",
+      "inline": "Inline",
+      "display": "Display"
+    },
+    "title": {
+      "preview": "Preview"
+    },
+    "button": {
+      "insert": "Insert",
+      "update": "Update",
+      "renumber": "Renumber"
+    },
+    "status": {
+      "waiting": "Waiting to render",
+      "render_failed": "Render failed",
+      "render_success": "Rendered{warningSuffix} {width}x{height}px @ {dpi} DPI (mode={mode})",
+      "warning_suffix": " (warnings: {count})"
+    },
+    "error": {
+      "empty_latex": "Please enter a LaTeX formula.",
+      "katex_missing": "KaTeX assets are missing. Please sync vendor/katex first.",
+      "katex_render_failed": "KaTeX render failed. Please check formula syntax.",
+      "katex_render_failed_with_detail": "KaTeX render failed: {detail}"
+    }
+  }
+}

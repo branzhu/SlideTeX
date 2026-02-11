@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="en-US">
+  <String Id="ProductName" Value="SlideTeX" />
+  <String Id="Manufacturer" Value="SlideTeX Team" />
+  <String Id="ProductLanguage" Value="1033" />
+  <String Id="DowngradeErrorMessage" Value="A newer version of SlideTeX is already installed. Setup will now exit." />
+  <String Id="InstallFolderName" Value="SlideTeX" />
+  <String Id="AddinFolderName" Value="Addin" />
+  <String Id="WebUiFolderName" Value="WebUI" />
+  <String Id="MainFeatureTitle" Value="SlideTeX" />
+</WixLocalization>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="SlideTeXRegistrationComponents">
+      <Component Id="SlideTeXRegPpt64" Directory="ADDINFOLDER" Guid="{E2763E4A-65EE-4A39-B20D-DC7767B97D8A}">
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="FriendlyName" Type="string" Value="$(var.AddinFriendlyName)" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="Description" Type="string" Value="$(var.AddinDescription)" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="LoadBehavior" Type="integer" Value="3" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="Manifest" Type="string" Value="[ADDINFOLDER]$(var.AddinManifestFileName)|vstolocal" KeyPath="yes" />
+        <RemoveRegistryKey Root="HKLM" Key="Software\Microsoft\Office\PowerPoint\Addins\$(var.LegacyAddinProgId)" Action="removeOnInstall" />
+      </Component>
+
+      <Component Id="SlideTeXRegPptWow6432" Directory="ADDINFOLDER" Guid="{D2D2BAA6-E216-466C-9D8A-2727FD947D0D}">
+        <RegistryValue Root="HKLM" Key="Software\WOW6432Node\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="FriendlyName" Type="string" Value="$(var.AddinFriendlyName)" />
+        <RegistryValue Root="HKLM" Key="Software\WOW6432Node\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="Description" Type="string" Value="$(var.AddinDescription)" />
+        <RegistryValue Root="HKLM" Key="Software\WOW6432Node\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="LoadBehavior" Type="integer" Value="3" />
+        <RegistryValue Root="HKLM" Key="Software\WOW6432Node\Microsoft\Office\PowerPoint\Addins\$(var.AddinProgId)" Name="Manifest" Type="string" Value="[ADDINFOLDER]$(var.AddinManifestFileName)|vstolocal" KeyPath="yes" />
+        <RemoveRegistryKey Root="HKLM" Key="Software\WOW6432Node\Microsoft\Office\PowerPoint\Addins\$(var.LegacyAddinProgId)" Action="removeOnInstall" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

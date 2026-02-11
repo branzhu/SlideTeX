@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="app.caption" xml:space="preserve">
+    <value>SlideTeX</value>
+  </data>
+  <data name="app.taskpane_title" xml:space="preserve">
+    <value>SlideTeX</value>
+  </data>
+  <data name="ribbon.group_main_label" xml:space="preserve">
+    <value>SlideTeX</value>
+  </data>
+  <data name="ribbon.open_pane_label" xml:space="preserve">
+    <value>LaTeX 公式</value>
+  </data>
+  <data name="controller.webui_unavailable" xml:space="preserve">
+    <value>未找到 WebUI 资源，SlideTeX 任务窗格不可用。</value>
+  </data>
+  <data name="warning.no_active_slide" xml:space="preserve">
+    <value>未检测到当前幻灯片，无法插入公式。</value>
+  </data>
+  <data name="warning.insert_failed" xml:space="preserve">
+    <value>插入公式失败：{0}</value>
+  </data>
+  <data name="warning.select_slidetex_shape" xml:space="preserve">
+    <value>请先选中一个由 SlideTeX 插入的公式图片。</value>
+  </data>
+  <data name="warning.no_metadata_edit" xml:space="preserve">
+    <value>当前选中对象不包含 SlideTeX 元数据，无法编辑。</value>
+  </data>
+  <data name="warning.no_metadata_update" xml:space="preserve">
+    <value>当前选中对象不包含 SlideTeX 元数据，无法更新。</value>
+  </data>
+  <data name="warning.update_failed" xml:space="preserve">
+    <value>更新公式失败：{0}</value>
+  </data>
+  <data name="warning.render_first" xml:space="preserve">
+    <value>请先在任务窗格中完成一次渲染，再执行插入或更新。</value>
+  </data>
+  <data name="warning.render_no_latex" xml:space="preserve">
+    <value>当前渲染结果缺少 LaTeX 源信息，请在任务窗格重新渲染后再试。</value>
+  </data>
+  <data name="warning.webui_not_found_init" xml:space="preserve">
+    <value>未找到 WebUI 资源，无法初始化任务窗格。</value>
+  </data>
+  <data name="warning.taskpane_init_failed" xml:space="preserve">
+    <value>任务窗格初始化失败：{0}</value>
+  </data>
+  <data name="warning.taskpane_init_exception" xml:space="preserve">
+    <value>任务窗格初始化异常：{0}</value>
+  </data>
+  <data name="error.render_failed_default" xml:space="preserve">
+    <value>渲染失败</value>
+  </data>
+  <data name="error.render_timeout" xml:space="preserve">
+    <value>渲染超时</value>
+  </data>
+  <data name="warning.open_panel_first" xml:space="preserve">
+    <value>请先打开 SlideTeX 面板。</value>
+  </data>
+  <data name="info.renumber_none" xml:space="preserve">
+    <value>未找到自动编号的公式。</value>
+  </data>
+  <data name="info.renumber_done" xml:space="preserve">
+    <value>已更新 {0} 个公式编号。</value>
+  </data>
+  <data name="warning.renumber_failed" xml:space="preserve">
+    <value>重新编号失败：{0}</value>
+  </data>
+  <data name="taskpane.webview_not_initialized" xml:space="preserve">
+    <value>WebView2 未初始化。</value>
+  </data>
+  <data name="taskpane.init_timeout" xml:space="preserve">
+    <value>WebView2 初始化超时。请稍后重试，或检查 WebView2 Runtime/安全软件策略。</value>
+  </data>
+  <data name="taskpane.page_not_found" xml:space="preserve">
+    <value>未找到 WebUI 页面：{0}</value>
+  </data>
+  <data name="taskpane.runtime_not_found" xml:space="preserve">
+    <value>未检测到 WebView2 Runtime。请安装后重启 PowerPoint。</value>
+  </data>
+  <data name="taskpane.init_no_write_permission" xml:space="preserve">
+    <value>WebView2 初始化失败：用户数据目录无写权限。请检查当前账户对 LocalAppData 的访问权限。</value>
+  </data>
+  <data name="taskpane.init_access_denied" xml:space="preserve">
+    <value>WebView2 初始化失败：拒绝访问（0x80070005）。请检查当前账户对 LocalAppData 的访问权限。</value>
+  </data>
+  <data name="taskpane.init_failed" xml:space="preserve">
+    <value>WebView2 初始化失败：{0}</value>
+  </data>
+</root>

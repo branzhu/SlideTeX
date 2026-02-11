@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <DirectoryRef Id="WEBUIFOLDER">
+      <Directory Id="DIR_WEBUIFOLDER_assets_1062A76636" Name="assets" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_50BE207E94" Name="vendor" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_assets_1062A76636">
+      <Directory Id="DIR_WEBUIFOLDER_assets_css_A7B43F1F6D" Name="css" />
+      <Directory Id="DIR_WEBUIFOLDER_assets_data_F45427FD49" Name="data" />
+      <Directory Id="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Name="js" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_50BE207E94">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Name="katex" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Name="fonts" />
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="SlideTeXProductComponents">
+      <Component Id="CMP_Microsoft_Office_Tools_C_2984A6D143" Directory="ADDINFOLDER" Guid="{D1A68429-4343-6649-6CD4-4FB02C0BF0DA}">
+        <File Id="FIL_Microsoft_Office_Tools_C_2984A6D143" Source="$(var.BuildOutputDir)\Microsoft.Office.Tools.Common.v4.0.Utilities.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_Microsoft_Web_WebView2_C_00DAB20835" Directory="ADDINFOLDER" Guid="{08B2DA00-6735-4623-5D0C-995CF1B588E3}">
+        <File Id="FIL_Microsoft_Web_WebView2_C_00DAB20835" Source="$(var.BuildOutputDir)\Microsoft.Web.WebView2.Core.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_Microsoft_Web_WebView2_W_2AF8A7A430" Directory="ADDINFOLDER" Guid="{A4A7F82A-FF30-AFA9-9C73-3FAF0867893A}">
+        <File Id="FIL_Microsoft_Web_WebView2_W_2AF8A7A430" Source="$(var.BuildOutputDir)\Microsoft.Web.WebView2.WinForms.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_SlideTeX_VstoAddin_dll_C3833C96E5" Directory="ADDINFOLDER" Guid="{963C83C3-8FE5-FDA6-DC62-D09EB01F34B0}">
+        <File Id="FIL_SlideTeX_VstoAddin_dll_C3833C96E5" Source="$(var.BuildOutputDir)\SlideTeX.VstoAddin.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_css_app_css_51E8A410A2" Directory="DIR_WEBUIFOLDER_assets_css_A7B43F1F6D" Guid="{10A4E851-2DA2-1C4B-D62A-3DB642A99296}">
+        <File Id="FIL_WebUI_assets_css_app_css_51E8A410A2" Source="$(var.BuildOutputDir)\WebUI\assets\css\app.css" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_data_katex__2F3FDA632A" Directory="DIR_WEBUIFOLDER_assets_data_F45427FD49" Guid="{63DA3F2F-792A-D69E-D7D7-3851915899F0}">
+        <File Id="FIL_WebUI_assets_data_katex__2F3FDA632A" Source="$(var.BuildOutputDir)\WebUI\assets\data\katex-commands.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_js_app_js_A7B1F92672" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{26F9B1A7-9B72-4B0C-3F45-0BFAE4132317}">
+        <File Id="FIL_WebUI_assets_js_app_js_A7B1F92672" Source="$(var.BuildOutputDir)\WebUI\assets\js\app.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_js_editor_a_357C8510F5" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{10857C35-45F5-451A-B6F4-3B6A571C862E}">
+        <File Id="FIL_WebUI_assets_js_editor_a_357C8510F5" Source="$(var.BuildOutputDir)\WebUI\assets\js\editor-adapter.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_index_html_F13E75ED66" Directory="WEBUIFOLDER" Guid="{ED753EF1-5B66-1EEF-B8F9-F316C9B6B9AC}">
+        <File Id="FIL_WebUI_index_html_F13E75ED66" Source="$(var.BuildOutputDir)\WebUI\index.html" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_html2canvas_EE7E30A121" Directory="DIR_WEBUIFOLDER_vendor_50BE207E94" Guid="{A1307EEE-5621-7050-87C7-34CA31D57257}">
+        <File Id="FIL_WebUI_vendor_html2canvas_EE7E30A121" Source="$(var.BuildOutputDir)\WebUI\vendor\html2canvas.min.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_D43CE38AE2" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{8AE33CD4-0BE2-92CC-44A8-736E95D4B203}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_D43CE38AE2" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_AMS-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_A74A25BE98" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{BE254AA7-1D98-6FC5-305B-BC6BE35186AA}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_A74A25BE98" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_AMS-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_158B87D3F6" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{D3878B15-B4F6-E597-FC78-ACC2168AECE8}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_158B87D3F6" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_AMS-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_74764BBA15" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{BA4B7674-5D15-AD9A-14A1-49AFCA325174}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_74764BBA15" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_81CB3E0474" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{043ECB81-1E74-F052-7C0F-8266C50B91FF}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_81CB3E0474" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Bold.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_A38FCDDA5B" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{DACD8FA3-9F5B-338C-D6BA-2784623E9DCD}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_A38FCDDA5B" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Bold.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_DA3DA24C21" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{4CA23DDA-4A21-8136-A8DE-62B643D28D51}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_DA3DA24C21" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_4E02476607" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{6647024E-2607-1B4C-FF78-03DC4095534B}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_4E02476607" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_52D1E121CA" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{21E1D152-2ACA-ADC0-1B7C-9A252176B5A5}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_52D1E121CA" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_9D0A0ED152" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{D10E0A9D-D052-86BD-15AA-48083156A4A4}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_9D0A0ED152" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_098DE138F4" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{38E18D09-99F4-5EB2-4103-CA0E23223C01}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_098DE138F4" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Bold.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_A0E58560B6" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{6085E5A0-2BB6-3602-58E6-429525C7A083}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_A0E58560B6" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Bold.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_248AF6BD01" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{BDF68A24-4D01-AA23-766A-91B7283F527D}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_248AF6BD01" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_4E6744CB78" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{CB44674E-D878-75B0-1279-94BF49C15DBC}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_4E6744CB78" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_CFCCDDA110" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{A1DDCCCF-F510-E56A-8213-C1AF071EAEC8}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_CFCCDDA110" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_E0FA71AE95" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{AE71FAE0-AD95-2FD7-D623-37D7B72FC6D4}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_E0FA71AE95" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_58971ACF17" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{CF1A9758-0517-ADCA-531F-B65CB161FE09}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_58971ACF17" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Bold.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_E92A3CF4AB" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{F43C2AE9-5AAB-C6CB-4A23-B2FE1E1C8FDF}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_E92A3CF4AB" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Bold.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_E4716208FA" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{086271E4-42FA-1C6D-2BE8-7780750E11FE}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_E4716208FA" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-BoldItalic.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_5DF0CFA751" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{A7CFF05D-C351-BBD3-256E-07911D00D641}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_5DF0CFA751" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-BoldItalic.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_841BFCA138" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{A1FC1B84-DD38-996C-97DC-83912735ACCB}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_841BFCA138" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-BoldItalic.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_3328BA04A0" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{04BA2833-4DA0-0282-2A02-C3EA21F031C5}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_3328BA04A0" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Italic.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_EB6CD82075" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{20D86CEB-3675-AFEA-A238-3727D889964E}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_EB6CD82075" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Italic.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_5097BDC234" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{C2BD9750-B434-631C-8710-B74128B27713}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_5097BDC234" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Italic.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_702BBE14A4" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{14BE2B70-11A4-EBD2-D24C-98B4F79F5835}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_702BBE14A4" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_F22FAB4878" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{48AB2FF2-A078-911C-31CC-68B49FCC2A11}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_F22FAB4878" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_03351B02C2" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{021B3503-37C2-673B-0D50-731CD08F7AFE}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_03351B02C2" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_CB2AD733C3" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{33D72ACB-1CC3-C26F-5DB4-17923FB2D519}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_CB2AD733C3" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-BoldItalic.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_2BA3E547E3" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{47E5A32B-E0E3-F1E9-5C45-8177E2FD15AB}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_2BA3E547E3" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-BoldItalic.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_84A89753BC" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{5397A884-19BC-4C25-D74B-A1B61F7379AC}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_84A89753BC" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-BoldItalic.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_D787517C83" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{7C5187D7-2783-D32F-8BE0-0530E08E00AA}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_D787517C83" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-Italic.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_53EED9EC98" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{ECD9EE53-6B98-5A1A-184C-F9E0E0FB9713}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_53EED9EC98" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-Italic.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_A49FF0FCD2" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{FCF09FA4-56D2-6056-C63A-A54B69B6CE7E}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_A49FF0FCD2" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-Italic.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_15FC9C81A0" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{819CFC15-5BA0-DFB2-5EFF-B119BB7602C2}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_15FC9C81A0" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Bold.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_A80B4EF20A" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{F24E0BA8-AF0A-0A4A-4A18-35F386C55631}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_A80B4EF20A" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Bold.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_55CA9593F7" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{9395CA55-E6F7-12E3-6B1C-9A7BCD71D056}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_55CA9593F7" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Bold.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_4158AAE0DB" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{E0AA5841-15DB-7DF6-D528-6F27B64465F6}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_4158AAE0DB" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Italic.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_B9B063C88B" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{C863B0B9-A48B-971B-7196-033AAE3D2FDF}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_B9B063C88B" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Italic.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_08FB0C367E" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{360CFB08-567E-DA4D-2947-A22D1865F6D4}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_08FB0C367E" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Italic.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_E02AC3EA5D" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{EAC32AE0-7C5D-287D-AB9C-B7783F99DF9F}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_E02AC3EA5D" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_B04511C677" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{C61145B0-C677-55D9-61F1-F7B240B3898F}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_B04511C677" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_B108EB212C" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{21EB08B1-FA2C-41C1-D3E3-3A97656A1ECE}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_B108EB212C" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_2BD09C1574" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{159CD02B-EF74-6057-8DE3-5F0D0504305D}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_2BD09C1574" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Script-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_C0622B1901" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{192B62C0-EA01-3452-047F-642DE779F7AC}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_C0622B1901" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Script-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_60812289DB" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{89228160-A3DB-9D0C-9DA1-0795044F21BB}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_60812289DB" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Script-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_DD0111979F" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{971101DD-5B9F-D84E-926B-D3DE2A31C8D5}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_DD0111979F" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size1-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_B76A260B52" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{0B266AB7-7B52-0AEE-6DAF-971111E64789}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_B76A260B52" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size1-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_F39755D040" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{D05597F3-9C40-EC09-A378-EA23EAE07F97}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_F39755D040" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size1-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_12805B6ECF" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{6E5B8012-99CF-AEAF-70E9-6091A309FA01}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_12805B6ECF" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size2-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_CFC968E16C" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{E168C9CF-B06C-7A5E-2236-CA96F5E5034F}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_CFC968E16C" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size2-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_3A1B4CFA21" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{FA4C1B3A-5721-C8CA-CD62-DF315F8F64ED}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_3A1B4CFA21" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size2-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_97211C8C54" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{8C1C2197-6854-BC1D-98B4-87730AB37886}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_97211C8C54" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size3-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_32C0D376DE" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{76D3C032-55DE-5CE0-F6E9-8AFB22EAF471}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_32C0D376DE" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size3-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_A70C6459D9" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{59640CA7-58D9-0A48-87E9-89CA948CDBED}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_A70C6459D9" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size3-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_53E1F3512C" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{51F3E153-AE2C-38A7-9534-0C579BF7F1FA}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_53E1F3512C" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size4-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_605E82E204" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{E2825E60-2804-3655-AC3B-07214AE4B50A}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_605E82E204" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size4-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_6E154B8C28" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{8C4B156E-A228-E1D2-1ED1-8ACE28EBB602}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_6E154B8C28" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size4-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_0E05C7035B" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{03C7050E-765B-DF8B-BA98-8EF9BF623732}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_0E05C7035B" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Typewriter-Regular.ttf" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_1A9C185291" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{52189C1A-9E91-53EF-F575-5B0423841AAB}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_1A9C185291" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Typewriter-Regular.woff" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_fonts_34ADB39F10" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{9FB3AD34-5C10-77A7-BA09-4442E51159CB}">
+        <File Id="FIL_WebUI_vendor_katex_fonts_34ADB39F10" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Typewriter-Regular.woff2" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_katex_318D7CA2BF" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{A27C8D31-F8BF-7E73-FF18-132C15A19603}">
+        <File Id="FIL_WebUI_vendor_katex_katex_318D7CA2BF" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\katex.min.css" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_katex_A2BB201405" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{1420BBA2-A405-B0D6-E985-8EC3AEA04692}">
+        <File Id="FIL_WebUI_vendor_katex_katex_A2BB201405" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\katex.min.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_katex_READM_6BD80A8FEC" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{8F0AD86B-CFEC-4071-F462-E578F25A4C9E}">
+        <File Id="FIL_WebUI_vendor_katex_READM_6BD80A8FEC" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\README.md" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
+

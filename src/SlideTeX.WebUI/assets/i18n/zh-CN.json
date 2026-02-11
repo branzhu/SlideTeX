@@ -1,0 +1,37 @@
+{
+  "webui": {
+    "label": {
+      "latex": "LaTeX",
+      "font_size": "字号",
+      "dpi": "DPI",
+      "color": "颜色",
+      "mode": "模式",
+      "transparent": "透明"
+    },
+    "option": {
+      "auto": "自动",
+      "inline": "行内",
+      "display": "块级"
+    },
+    "title": {
+      "preview": "预览"
+    },
+    "button": {
+      "insert": "插入",
+      "update": "更新",
+      "renumber": "重新编号"
+    },
+    "status": {
+      "waiting": "等待渲染",
+      "render_failed": "渲染失败",
+      "render_success": "渲染完成{warningSuffix} {width}x{height}px @ {dpi} DPI (mode={mode})",
+      "warning_suffix": "（含警告 {count} 条）"
+    },
+    "error": {
+      "empty_latex": "请输入 LaTeX 公式。",
+      "katex_missing": "KaTeX 资源不存在，请先同步 vendor/katex 目录。",
+      "katex_render_failed": "KaTeX 渲染失败，请检查公式语法。",
+      "katex_render_failed_with_detail": "KaTeX 渲染失败：{detail}"
+    }
+  }
+}

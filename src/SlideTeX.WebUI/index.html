@@ -1,0 +1,156 @@
+<!doctype html>
+<!-- SlideTeX Note: HTML entry document for a SlideTeX web surface. -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SlideTeX</title>
+  <link rel="stylesheet" href="./vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <label for="latexInput" data-i18n="webui.label.latex">LaTeX</label>
+      <textarea id="latexInput" rows="6" spellcheck="false">\frac{a}{b}</textarea>
+    </section>
+
+    <section class="panel">
+      <div class="settings-row">
+        <label><span data-i18n="webui.label.font_size">字号</span>
+          <input id="fontPtInput" type="number" min="8" max="120" value="24" />
+        </label>
+        <label><span data-i18n="webui.label.dpi">DPI</span>
+          <select id="dpiSelect">
+            <option value="150">150</option>
+            <option value="300" selected>300</option>
+            <option value="600">600</option>
+          </select>
+        </label>
+        <label><span data-i18n="webui.label.color">颜色</span>
+          <input id="colorInput" type="color" value="#000000" />
+        </label>
+        <label><span data-i18n="webui.label.mode">模式</span>
+          <select id="displayModeSelect">
+            <option value="auto" selected data-i18n="webui.option.auto">auto</option>
+            <option value="inline" data-i18n="webui.option.inline">inline</option>
+            <option value="display" data-i18n="webui.option.display">display</option>
+          </select>
+        </label>
+        <label class="check-inline"><span data-i18n="webui.label.transparent">透明</span>
+          <input id="transparentCheckbox" type="checkbox" checked />
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 data-i18n="webui.title.preview">预览</h2>
+      <div id="previewBox" class="preview-box">
+        <div id="previewContent" class="preview-content"></div>
+      </div>
+      <p id="errorMessage" class="error hidden"></p>
+      <div id="status" class="status" data-i18n="webui.status.waiting">等待渲染</div>
+    </section>
+
+    <section class="panel">
+      <div class="actions">
+        <button id="insertBtn" type="button" class="primary" disabled data-i18n="webui.button.insert">插入</button>
+        <button id="updateBtn" type="button" disabled data-i18n="webui.button.update">更新</button>
+        <button id="renumberBtn" type="button" data-i18n="webui.button.renumber">重新编号</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="./vendor/katex/katex.min.js"></script>
+  <script src="./vendor/html2canvas.min.js"></script>
+  <script src="./assets/data/katex-commands.js"></script>
+  <script src="./assets/js/editor-adapter.js"></script>
+  <!-- SLIDETEX_I18N_BUNDLE_START -->
+<script id="slidetex-i18n-bundle">
+window.__SLIDETEX_I18N_BUNDLE__ = {
+  "version": 1,
+  "defaultLocale": "en-US",
+  "locales": {
+    "en-US": {
+      "webui": {
+        "label": {
+          "latex": "LaTeX",
+          "font_size": "Font Size",
+          "dpi": "DPI",
+          "color": "Color",
+          "mode": "Mode",
+          "transparent": "Transparent"
+        },
+        "option": {
+          "auto": "Auto",
+          "inline": "Inline",
+          "display": "Display"
+        },
+        "title": {
+          "preview": "Preview"
+        },
+        "button": {
+          "insert": "Insert",
+          "update": "Update",
+          "renumber": "Renumber"
+        },
+        "status": {
+          "waiting": "Waiting to render",
+          "render_failed": "Render failed",
+          "render_success": "Rendered{warningSuffix} {width}x{height}px @ {dpi} DPI (mode={mode})",
+          "warning_suffix": " (warnings: {count})"
+        },
+        "error": {
+          "empty_latex": "Please enter a LaTeX formula.",
+          "katex_missing": "KaTeX assets are missing. Please sync vendor/katex first.",
+          "katex_render_failed": "KaTeX render failed. Please check formula syntax.",
+          "katex_render_failed_with_detail": "KaTeX render failed: {detail}"
+        }
+      }
+    },
+    "zh-CN": {
+      "webui": {
+        "label": {
+          "latex": "LaTeX",
+          "font_size": "字号",
+          "dpi": "DPI",
+          "color": "颜色",
+          "mode": "模式",
+          "transparent": "透明"
+        },
+        "option": {
+          "auto": "自动",
+          "inline": "行内",
+          "display": "块级"
+        },
+        "title": {
+          "preview": "预览"
+        },
+        "button": {
+          "insert": "插入",
+          "update": "更新",
+          "renumber": "重新编号"
+        },
+        "status": {
+          "waiting": "等待渲染",
+          "render_failed": "渲染失败",
+          "render_success": "渲染完成{warningSuffix} {width}x{height}px @ {dpi} DPI (mode={mode})",
+          "warning_suffix": "（含警告 {count} 条）"
+        },
+        "error": {
+          "empty_latex": "请输入 LaTeX 公式。",
+          "katex_missing": "KaTeX 资源不存在，请先同步 vendor/katex 目录。",
+          "katex_render_failed": "KaTeX 渲染失败，请检查公式语法。",
+          "katex_render_failed_with_detail": "KaTeX 渲染失败：{detail}"
+        }
+      }
+    }
+  }
+};
+</script>
+<!-- SLIDETEX_I18N_BUNDLE_END -->
+  <script src="./assets/js/i18n.js"></script>
+  <script src="./assets/js/app.js"></script>
+</body>
+</html>
+

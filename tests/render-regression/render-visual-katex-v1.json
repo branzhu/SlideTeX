@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "name": "KaTeX visual known-good",
+    "version": 2,
+    "katexVersion": "0.16.11",
+    "note": "Visual regression baseline for SlideTeX WebUI render output."
+  },
+  "defaults": {
+    "locale": "zh-CN",
+    "fontChecks": [
+      "KaTeX_Main",
+      "KaTeX_Math"
+    ],
+    "options": {
+      "fontPt": 24,
+      "dpi": 300,
+      "colorHex": "#000000",
+      "isTransparent": true,
+      "displayMode": "auto"
+    },
+    "imageDiff": {
+      "maxDiffPixels": 120,
+      "maxDiffRatio": 0.003
+    },
+    "layout": {
+      "allowTagOverlap": false,
+      "minTagGapPx": 2,
+      "maxTagGapPx": 48,
+      "requireNotClipped": true
+    }
+  },
+  "cases": [
+    {
+      "id": "align_single_tag",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{align} a &= b \\tag{1} \\end{align}",
+      "expected": { "tags": ["(1)"] }
+    },
+    {
+      "id": "align_multi_tags",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{align} a &= b \\tag{1} \\\\ c &= d \\tag{2} \\end{align}",
+      "expected": { "tags": ["(1)", "(2)"] }
+    },
+    {
+      "id": "gather_multi_tags",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{gather} a=b \\tag{1} \\\\ c=d \\tag{2} \\\\ e=f \\tag{3} \\end{gather}",
+      "expected": { "tags": ["(1)", "(2)", "(3)"] }
+    },
+    {
+      "id": "equation_custom_tag",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{equation} E=mc^2 \\tag{X} \\end{equation}",
+      "expected": { "tags": ["(X)"] }
+    },
+    {
+      "id": "fraction_sqrt_layout",
+      "suite": ["smoke", "full"],
+      "latex": "\\frac{\\sqrt{a^2+b^2}}{\\int_0^1 x^2 \\, dx}",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "matrix_layout",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "inline_mode_basic_en",
+      "suite": ["smoke", "full"],
+      "locale": "en-US",
+      "latex": "a^2+b^2=c^2",
+      "options": { "displayMode": "inline" },
+      "expected": { "tags": [], "requireDisplay": false }
+    },
+    {
+      "id": "long_formula_tag",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{align}\\sum_{i=1}^{n} i^2 &= \\frac{n(n+1)(2n+1)}{6} \\tag{9}\\end{align}",
+      "expected": { "tags": ["(9)"] }
+    },
+    {
+      "id": "multline_unsupported",
+      "suite": ["smoke", "full"],
+      "latex": "\\begin{multline} a+b+c \\\\ d+e \\\\ f+g \\end{multline}",
+      "skipImageDiff": true,
+      "expected": { "tags": [], "errorContains": "No such environment" }
+    },
+
+    {
+      "id": "force_display_simple",
+      "suite": "full",
+      "latex": "a^2+b^2=c^2",
+      "options": { "displayMode": "display" },
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "force_inline_fraction",
+      "suite": "full",
+      "latex": "\\frac{a}{b}+1",
+      "options": { "displayMode": "inline" },
+      "expected": { "tags": [], "requireDisplay": false }
+    },
+    {
+      "id": "aligned_env_two_lines",
+      "suite": "full",
+      "latex": "\\begin{aligned} a&=b \\\\ c&=d \\end{aligned}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "split_env_in_equation",
+      "suite": "full",
+      "latex": "\\begin{equation}\\begin{split}a+b&=c\\\\d+e&=f\\end{split}\\end{equation}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "cases_piecewise",
+      "suite": "full",
+      "latex": "f(x)=\\begin{cases} x^2, & x\\ge 0 \\\\ -x, & x<0 \\end{cases}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "bmatrix_layout",
+      "suite": "full",
+      "latex": "\\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "brace_matrix_layout",
+      "suite": "full",
+      "latex": "\\begin{Bmatrix} 1 & 2 \\\\ 3 & 4 \\end{Bmatrix}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "vmatrix_layout",
+      "suite": "full",
+      "latex": "\\begin{vmatrix} 1 & 2 \\\\ 3 & 4 \\end{vmatrix}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "double_bar_matrix_layout",
+      "suite": "full",
+      "latex": "\\begin{Vmatrix} 1 & 2 \\\\ 3 & 4 \\end{Vmatrix}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "left_right_delimiters",
+      "suite": "full",
+      "latex": "\\left(\\frac{a+b}{c+d}\\right)^2",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "sum_limits_display",
+      "suite": "full",
+      "latex": "\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}",
+      "options": { "displayMode": "display" },
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "integral_limits_display",
+      "suite": "full",
+      "latex": "\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}",
+      "options": { "displayMode": "display" },
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "nested_fraction",
+      "suite": "full",
+      "latex": "\\frac{1}{1+\\frac{1}{1+x}}",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "overbrace_expression",
+      "suite": "full",
+      "latex": "\\overbrace{a+b+\\cdots+z}^{26\\ terms}",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "binom_expression",
+      "suite": "full",
+      "latex": "\\binom{n}{k}=\\frac{n!}{k!(n-k)!}",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "text_and_operator",
+      "suite": "full",
+      "latex": "\\operatorname{Var}(X)=\\mathbb{E}[X^2]-\\mathbb{E}[X]^2",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "color_expression",
+      "suite": "full",
+      "latex": "\\color{red}{x^2}+\\color{blue}{y^2}=z^2",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "spacing_expression",
+      "suite": "full",
+      "latex": "a\\,b\\;c\\quad d\\qquad e",
+      "expected": { "tags": [] }
+    },
+    {
+      "id": "equation_notag",
+      "suite": "full",
+      "latex": "\\begin{equation} E=mc^2 \\notag \\end{equation}",
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "gather_custom_mix",
+      "suite": "full",
+      "latex": "\\begin{gather} a=b \\tag{A} \\\\ c=d \\tag{B} \\end{gather}",
+      "expected": { "tags": ["(A)", "(B)"] }
+    },
+    {
+      "id": "parse_error_unexpected_end",
+      "suite": "full",
+      "latex": "\\frac{a}{b",
+      "skipImageDiff": true,
+      "expected": { "tags": [], "errorContains": "Unexpected end of input" }
+    },
+    {
+      "id": "locale_en_display_tag",
+      "suite": "full",
+      "locale": "en-US",
+      "latex": "\\begin{equation} x+y=z \\tag{EN} \\end{equation}",
+      "expected": { "tags": ["(EN)"] }
+    },
+    {
+      "id": "opaque_background",
+      "suite": "full",
+      "latex": "x^2+y^2=z^2",
+      "options": { "isTransparent": false, "displayMode": "inline" },
+      "expected": { "tags": [], "requireDisplay": false }
+    },
+    {
+      "id": "dpi600_small_font",
+      "suite": "full",
+      "latex": "\\sum_{k=1}^{20} k^3",
+      "options": { "fontPt": 14, "dpi": 600, "displayMode": "display" },
+      "expected": { "tags": [], "requireDisplay": true }
+    },
+    {
+      "id": "align_three_tags",
+      "suite": "full",
+      "latex": "\\begin{align} a&=b \\tag{1} \\\\ c&=d \\tag{2} \\\\ e&=f \\tag{3} \\end{align}",
+      "expected": { "tags": ["(1)", "(2)", "(3)"] }
+    },
+    {
+      "id": "cases_with_text_mod",
+      "suite": "full",
+      "latex": "\\begin{cases} \\text{odd}, & n\\equiv1\\pmod 2 \\\\ \\text{even}, & n\\equiv0\\pmod 2 \\end{cases}",
+      "expected": { "tags": [], "requireDisplay": true }
+    }
+  ]
+}

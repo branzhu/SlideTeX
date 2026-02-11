@@ -1,0 +1,291 @@
+/* SlideTeX Note: Stylesheet for the SlideTeX web interface. */
+
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --line: #d8dce3;
+  --text: #1f2329;
+  --muted: #6b7280;
+  --accent: #0b5cff;
+  --danger: #c62828;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  color: var(--text);
+}
+
+.app {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.header p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 0;
+}
+
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+textarea,
+input,
+select,
+button {
+  font: inherit;
+}
+
+.stex-cm-container {
+  width: 100%;
+}
+
+.stex-cm-container .cm-editor {
+  width: 100%;
+}
+
+.stex-cm-container .cm-focused {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(11, 92, 255, 0.12);
+}
+
+.stex-cm-container .cm-tooltip-autocomplete {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.stex-cm-container .cm-tooltip-autocomplete > ul {
+  font-family: "Cascadia Code", "Consolas", monospace;
+  font-size: 13px;
+}
+
+textarea,
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: var(--text);
+  background: #fff;
+}
+
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 6px;
+}
+
+.settings-row > label {
+  min-width: 0;
+}
+
+.settings-row > label:not(.check-inline) {
+  grid-template-rows: 1.25em auto;
+}
+
+.settings-row > label > span {
+  display: block;
+  min-height: 1.25em;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.settings-row > label:nth-child(1) {
+  flex: 0 1 58px;
+}
+
+.settings-row > label:nth-child(2) {
+  flex: 0 1 58px;
+}
+
+.settings-row > label:nth-child(3) {
+  flex: 0 1 58px;
+}
+
+.settings-row > label:nth-child(4) {
+  flex: 0 1 72px;
+  min-width: 0;
+}
+
+.settings-row > label input,
+.settings-row > label select {
+  padding: 4px 6px;
+}
+
+#fontPtInput,
+#dpiSelect,
+#colorInput,
+#displayModeSelect {
+  height: 28px;
+}
+
+.settings-row > .check-inline {
+  flex: 0 0 auto;
+  justify-items: center;
+  align-self: stretch;
+  grid-template-rows: auto 1fr;
+}
+
+.settings-row > .check-inline > span {
+  white-space: nowrap;
+}
+
+.settings-row > .check-inline input[type="checkbox"] {
+  width: auto;
+  align-self: center;
+}
+
+/* When Transparent wraps to a dedicated second line, use horizontal label+checkbox layout. */
+.settings-row.settings-row-wrapped > .check-inline {
+  margin-left: 0;
+  flex-basis: auto;
+  justify-items: start;
+  justify-content: start;
+  align-self: center;
+  grid-template-rows: none;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.settings-row.settings-row-wrapped > .check-inline > span {
+  min-height: 0;
+}
+
+.preview-box {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  min-height: 100px;
+  background: #fff;
+  padding: 10px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.preview-content {
+  display: inline-block;
+}
+
+.error {
+  margin: 8px 0 0;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.status {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Autocomplete dropdown --- */
+
+.stex-ac-dropdown {
+  position: fixed;
+  z-index: 9999;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  max-height: 260px;
+  overflow-y: auto;
+  width: 200px;
+  padding: 4px 0;
+}
+
+.stex-ac-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  line-height: 22px;
+}
+
+.stex-ac-item:hover,
+.stex-ac-selected {
+  background: #e8f0fe;
+}
+
+.stex-ac-label {
+  font-family: "Cascadia Code", "Consolas", monospace;
+  font-size: 13px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.stex-ac-desc {
+  font-size: 11px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

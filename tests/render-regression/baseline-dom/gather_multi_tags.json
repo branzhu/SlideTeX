@@ -1,0 +1,22 @@
+{
+  "tags": [
+    "(1)",
+    "(2)",
+    "(3)"
+  ],
+  "displayCount": 1,
+  "hasKatexError": false,
+  "fontChecks": [
+    {
+      "font": "KaTeX_Main",
+      "ok": true
+    },
+    {
+      "font": "KaTeX_Math",
+      "ok": true
+    }
+  ],
+  "overlapCount": 0,
+  "gapViolations": 0,
+  "isClipped": false
+}

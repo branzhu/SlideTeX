@@ -1,0 +1,67 @@
+{
+  "engine": {
+    "name": "MathJax",
+    "version": "3.x (cdn jsdelivr)",
+    "tagsMode": "ams",
+    "generatedAtUtc": "2026-02-11T08:55:00Z",
+    "note": "Tags are extracted from MathJax tex2svg() rendered text content."
+  },
+  "cases": [
+    {
+      "id": "align_single",
+      "latex": "\\begin{align} a &= b \\end{align}",
+      "startNumber": 1,
+      "expectedTags": ["(1)"],
+      "expectedAutoNumberLineCount": 1
+    },
+    {
+      "id": "align_multi",
+      "latex": "\\begin{align} a &= b \\\\ c &= d \\end{align}",
+      "startNumber": 1,
+      "expectedTags": ["(1)", "(2)"],
+      "expectedAutoNumberLineCount": 2
+    },
+    {
+      "id": "align_notag",
+      "latex": "\\begin{align} a &= b \\notag \\\\ c &= d \\end{align}",
+      "startNumber": 1,
+      "expectedTags": ["(1)"],
+      "expectedAutoNumberLineCount": 1
+    },
+    {
+      "id": "align_custom_tag",
+      "latex": "\\begin{align} a &= b \\tag{A} \\\\ c &= d \\end{align}",
+      "startNumber": 1,
+      "expectedTags": ["(A)", "(1)"],
+      "expectedAutoNumberLineCount": 1
+    },
+    {
+      "id": "equation_auto",
+      "latex": "\\begin{equation} E=mc^2 \\end{equation}",
+      "startNumber": 1,
+      "expectedTags": ["(1)"],
+      "expectedAutoNumberLineCount": 1
+    },
+    {
+      "id": "equation_notag",
+      "latex": "\\begin{equation} E=mc^2 \\notag \\end{equation}",
+      "startNumber": 1,
+      "expectedTags": [],
+      "expectedAutoNumberLineCount": 0
+    },
+    {
+      "id": "equation_custom_only",
+      "latex": "\\begin{equation} E=mc^2 \\tag{X} \\end{equation}",
+      "startNumber": 1,
+      "expectedTags": ["(X)"],
+      "expectedAutoNumberLineCount": 0
+    },
+    {
+      "id": "gather_multi",
+      "latex": "\\begin{gather} a=b \\\\ c=d \\\\ e=f \\end{gather}",
+      "startNumber": 1,
+      "expectedTags": ["(1)", "(2)", "(3)"],
+      "expectedAutoNumberLineCount": 3
+    }
+  ]
+}

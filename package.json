@@ -1,0 +1,17 @@
+{
+  "name": "slidetex-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SlideTeX local test tooling",
+  "scripts": {
+    "test:render-known-good": "node ./scripts/render-known-good.mjs --mode verify --suite all",
+    "test:render-known-good:smoke": "node ./scripts/render-known-good.mjs --mode verify --suite smoke",
+    "test:render-known-good:full": "node ./scripts/render-known-good.mjs --mode verify --suite full",
+    "test:render-known-good:update": "node ./scripts/render-known-good.mjs --mode update-baseline --suite all"
+  },
+  "devDependencies": {
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0",
+    "puppeteer-core": "24.31.0"
+  }
+}

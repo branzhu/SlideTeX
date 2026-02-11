@@ -1,0 +1,71 @@
+# Build outputs
+bin/
+obj/
+artifacts/
+
+# IDE and editor files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET CLI home (for local SDK isolation)
+.dotnet-home/
+
+# Temporary files
+.tmp/
+*.tmp
+~$*
+node_modules/
+
+# Build logs
+*.log
+
+# Cache files
+*.cache
+project.lock.json
+project.fragment.lock.json
+artifacts.txt
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# MSBuild
+*.binlog
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Test results
+TestResults/
+*.trx
+coverage*.json
+coverage*.xml
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# WiX installer outputs
+*.msi
+*.wixpdb
+*.wixobj
+
+# Backup files
+*.bak
+*.orig
+
+# Local development overrides
+local.settings.json
+appsettings.local.json

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="SlideTeXProductComponents">
+      <Component Id="SlideTeXMainDll" Directory="ADDINFOLDER" Guid="{84DB9C37-82CB-4F4D-B131-887B04A0A5FC}">
+        <File Id="SlideTeXAddinDll" Source="$(var.BuildOutputDir)\\SlideTeX.Addin.dll" KeyPath="yes" />
+      </Component>
+
+      <Component Id="SlideTeXCoreDll" Directory="ADDINFOLDER" Guid="{A29A8B88-B1CB-43EE-B97A-A6C913D767FC}">
+        <File Id="SlideTeXCoreDllFile" Source="$(var.BuildOutputDir)\\SlideTeX.Core.dll" KeyPath="yes" />
+      </Component>
+
+      <Component Id="SlideTeXWebIndex" Directory="WEBUIFOLDER" Guid="{D7A27707-BD9B-4306-8EA2-15488FF74E5A}">
+        <File Id="SlideTeXWebIndexFile" Source="$(var.BuildOutputDir)\\WebUI\\index.html" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
