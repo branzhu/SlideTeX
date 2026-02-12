@@ -273,7 +273,7 @@ namespace SlideTeX.VstoAddin.Ocr
         {
             foreach (var pair in session.OutputMetadata)
             {
-                if (pair.Value != null && pair.Value.ElementType == TensorElementType.Float)
+                if (pair.Value != null && pair.Value.ElementType == typeof(float))
                 {
                     return pair.Key;
                 }
@@ -299,7 +299,7 @@ namespace SlideTeX.VstoAddin.Ocr
 
             foreach (var pair in session.OutputMetadata)
             {
-                if (pair.Value != null && pair.Value.ElementType == TensorElementType.Float)
+                if (pair.Value != null && pair.Value.ElementType == typeof(float))
                 {
                     return pair.Key;
                 }
@@ -423,7 +423,7 @@ namespace SlideTeX.VstoAddin.Ocr
                 inputIdTensor[0, i] = tokenIds[i];
             }
 
-            var encoderLength = encoderHiddenStates.Dimensions.Count > 1 ? encoderHiddenStates.Dimensions[1] : 1;
+            var encoderLength = encoderHiddenStates.Dimensions.Length > 1 ? encoderHiddenStates.Dimensions[1] : 1;
             var decoderAttentionMask = CreateOnesTensor(tokenIds.Count);
             var encoderAttentionMask = CreateOnesTensor(encoderLength);
             var positionIds = CreateRangeTensor(tokenIds.Count);
@@ -519,7 +519,7 @@ namespace SlideTeX.VstoAddin.Ocr
 
         private static long ArgMaxFromLastLogits(DenseTensor<float> logits)
         {
-            if (logits == null || logits.Dimensions.Count < 2)
+            if (logits == null || logits.Dimensions.Length < 2)
             {
                 throw new FormulaOcrException(OcrErrorCode.InferenceFailed, "Decoder logits rank is invalid.");
             }
