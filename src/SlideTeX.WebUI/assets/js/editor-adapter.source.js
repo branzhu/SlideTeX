@@ -409,10 +409,10 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
             }
           },
           indentWithTab,
+          ...completionKeymap,
           ...historyKeymap,
           ...defaultKeymap,
-          ...searchKeymap,
-          ...completionKeymap
+          ...searchKeymap
         ])),
         createBeginEndSyncExtension(),
         EditorView.domEventHandlers({
@@ -503,5 +503,4 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
     create: create
   };
 })();
-
 

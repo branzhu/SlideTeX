@@ -238,6 +238,7 @@
     elements.previewContent.style.color = options.colorHex;
     elements.previewContent.style.background = options.isTransparent ? "transparent" : "#ffffff";
     elements.previewContent.style.display = "inline-block";
+    elements.previewContent.style.whiteSpace = effectiveDisplayMode === "inline" ? "nowrap" : "normal";
     elements.previewContent.style.alignItems = "";
     elements.previewContent.style.columnGap = "";
 
