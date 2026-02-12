@@ -69,3 +69,9 @@ Desktop.ini
 # Local development overrides
 local.settings.json
 appsettings.local.json
+
+# OCR model artifacts (downloaded by sync script, not committed)
+src/SlideTeX.VstoAddin/Assets/OcrModels/**
+!src/SlideTeX.VstoAddin/Assets/OcrModels/**/
+!src/SlideTeX.VstoAddin/Assets/OcrModels/**/README.md
+!src/SlideTeX.VstoAddin/Assets/OcrModels/**/MODEL_MANIFEST.json

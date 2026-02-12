@@ -34,3 +34,5 @@
   - `tokenizer.json`
   - `generation_config.json`
   - `MODEL_MANIFEST.json`（可选，未提供时采用内置默认配置）
+- 模型文件建议通过脚本同步（默认不提交 git）：
+  - `pwsh ./scripts/Sync-KaTeX.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"`

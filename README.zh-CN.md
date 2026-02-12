@@ -51,10 +51,22 @@ wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
 
 ## 快速开始
 
-1. 同步 KaTeX 资源：
+1. 同步第三方资源：
 
 ```powershell
 pwsh ./scripts/Sync-KaTeX.ps1 -Version 0.16.11
+```
+
+同步 pix2text-mfr OCR 模型文件（从 Hugging Face 下载）：
+
+```powershell
+pwsh ./scripts/Sync-KaTeX.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
+```
+
+一次同步全部已支持第三方资源：
+
+```powershell
+pwsh ./scripts/Sync-KaTeX.ps1 -Component all
 ```
 
 2. 当 `src/SlideTeX.WebUI/assets/i18n/*.json` 变更后，生成 i18n 内联资源：
@@ -179,6 +191,7 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 说明：
 - 以上版本来自仓库固定脚本/配置（`package.json`、`src/SlideTeX.WebUI/vendor/codemirror/VERSIONS.md`）。
 - 以上协议信息来自对应上游包元数据；完整法律文本请以各组件官方仓库与发行包为准。
+- `src/SlideTeX.VstoAddin/Assets/OcrModels` 下 OCR 模型二进制默认不提交 git，建议通过 `scripts/Sync-KaTeX.ps1` 同步。
 
 ## 开源协议
 

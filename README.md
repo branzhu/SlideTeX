@@ -53,10 +53,22 @@ wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
 
 ## Quick Start
 
-1. Sync KaTeX assets:
+1. Sync third-party assets:
 
 ```powershell
 pwsh ./scripts/Sync-KaTeX.ps1 -Version 0.16.11
+```
+
+Sync pix2text-mfr OCR model files (download from Hugging Face):
+
+```powershell
+pwsh ./scripts/Sync-KaTeX.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
+```
+
+Sync all supported third-party assets:
+
+```powershell
+pwsh ./scripts/Sync-KaTeX.ps1 -Component all
 ```
 
 2. Generate inline i18n bundle after `src/SlideTeX.WebUI/assets/i18n/*.json` changes:
@@ -181,6 +193,7 @@ The table below lists the main third-party components used in this project:
 Notes:
 - Versions are pinned in repository configs/scripts (`package.json`, `src/SlideTeX.WebUI/vendor/codemirror/VERSIONS.md`).
 - License identifiers are based on upstream package metadata. Refer to upstream repositories/distributions for full license texts.
+- OCR model binaries under `src/SlideTeX.VstoAddin/Assets/OcrModels` are ignored by git and should be synced via `scripts/Sync-KaTeX.ps1`.
 
 ## License
 

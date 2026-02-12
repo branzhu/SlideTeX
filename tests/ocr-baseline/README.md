@@ -26,6 +26,11 @@ Set model directory by one of the following:
 
 - Pass `-ModelDir <path>` to `Test-OcrBaseline.ps1`
 - Or set environment variable `SLIDETEX_OCR_MODEL_DIR`
+- Or sync into default directory with:
+
+```powershell
+pwsh ./scripts/Sync-KaTeX.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
+```
 
 Model directory must contain:
 
