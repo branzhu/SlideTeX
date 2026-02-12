@@ -214,8 +214,8 @@
       return;
     }
 
-    const formattedLatex = formatOcrLatex(latex);
-    const outputLatex = formattedLatex.length > 0 ? formattedLatex : latex;
+    const cleanedLatex = sanitizeOcrLatex(latex);
+    const outputLatex = cleanedLatex.length > 0 ? cleanedLatex : latex;
 
     if (editor) {
       suppressEditorRender = true;
@@ -271,71 +271,18 @@
     }
   }
 
-  function formatOcrLatex(source) {
+  function sanitizeOcrLatex(source) {
     let result = String(source || "").trim();
     if (!result) {
       return "";
     }
 
     result = result.replace(/\r\n?/g, "\n");
-    result = result.replace(/[ \t]+/g, " ");
-    result = result.replace(/\n+/g, " ");
-    result = result.replace(/\\\\\s*\{/g, "\\\\ {");
-    result = result.replace(/\\([A-Za-z]+)\s+\{/g, "\\$1{");
-    result = result.replace(/([_^])\s*\{\s*([^{}]+?)\s*\}/g, (match, marker, body) => {
-      return `${marker}{${compactIndexBody(body)}}`;
-    });
-    result = result.replace(/\\(mathrm|text|operatorname)\s*\{\s*([^{}]+?)\s*\}/g, (match, cmd, body) => {
-      return `\\${cmd}{${compactTextBody(body)}}`;
-    });
-    result = result.replace(/\{\s+/g, "{");
-    result = result.replace(/\s+\}/g, "}");
-    result = result.replace(/\s*([{}_^=+\-])\s*/g, "$1");
-    result = result.replace(/\s*&\s*/g, " & ");
-    result = result.replace(/\s+,/g, ",");
-    result = result.replace(/,\s+/g, ", ");
-    result = result.replace(/\s*\\,\s*/g, "\\,");
-    result = result.replace(/\s*\\;\s*/g, "\\;");
-    result = result.replace(/\s*\\quad\s*/g, "\\quad ");
-    result = result.replace(/\s*\\qquad\s*/g, "\\qquad ");
-    result = result.replace(/\s{2,}/g, " ");
-    result = result.trim();
-
-    if (/\\begin\{(?:align|aligned|cases|gather|split|matrix|pmatrix|bmatrix|Bmatrix|vmatrix|Vmatrix|equation)\*?\}/.test(result)) {
-      result = result.replace(/\s*\\\\\s*/g, " \\\\\n  ");
-      result = result.replace(/\n{3,}/g, "\n\n");
-      result = result.trim();
-    }
-
-    return result;
-  }
-
-  function compactIndexBody(body) {
-    const tokens = String(body || "").trim().split(/\s+/).filter(Boolean);
-    if (tokens.length <= 1) {
-      return tokens.join("");
-    }
-
-    const onlySimpleTokens = tokens.every((token) => /^[A-Za-z0-9]+$/.test(token));
-    if (onlySimpleTokens) {
-      return tokens.join("");
-    }
-
-    return tokens.join(" ");
-  }
-
-  function compactTextBody(body) {
-    const tokens = String(body || "").trim().split(/\s+/).filter(Boolean);
-    if (tokens.length <= 1) {
-      return tokens.join("");
-    }
-
-    const allSingleLetters = tokens.every((token) => /^[A-Za-z]$/.test(token));
-    if (allSingleLetters) {
-      return tokens.join("");
-    }
-
-    return tokens.join(" ");
+    result = result.replace(/\u00A0/g, " ");
+    result = result.replace(/[ \t]{2,}/g, " ");
+    result = result.replace(/[ \t]+\n/g, "\n");
+    result = result.replace(/\n{3,}/g, "\n\n");
+    return result.trim();
   }
 
   // Tracks whether the Transparent field wrapped to a dedicated second line.

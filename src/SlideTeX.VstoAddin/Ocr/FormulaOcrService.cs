@@ -27,6 +27,8 @@ namespace SlideTeX.VstoAddin.Ocr
         private string[] _decoderInputNames;
         private string[] _idToToken;
         private HashSet<long> _specialTokenIds;
+        private bool _useByteLevelDecoder;
+        private Dictionary<char, byte> _byteDecoderMap;
         private ModelManifest _manifest;
         private bool _initialized;
 
@@ -629,12 +631,17 @@ namespace SlideTeX.VstoAddin.Ocr
                 builder.Append(token);
             }
 
-            var decoded = builder.ToString();
-            decoded = decoded.Replace("▁", " ");
-            decoded = decoded.Replace("Ġ", " ");
-            decoded = decoded.Replace("</w>", " ");
-            decoded = decoded.Replace("Ċ", "\n");
-            decoded = decoded.Replace("\\ ", "\\");
+            var encoded = builder.ToString();
+            if (string.IsNullOrEmpty(encoded))
+            {
+                return string.Empty;
+            }
+
+            var decoded = _useByteLevelDecoder
+                ? DecodeByteLevelText(encoded)
+                : encoded;
+
+            decoded = decoded.Replace("\r\n", "\n").Replace("\r", "\n");
             return decoded.Trim();
         }
 
@@ -734,6 +741,92 @@ namespace SlideTeX.VstoAddin.Ocr
             specialTokenIds.Add(manifest.BosTokenId);
             specialTokenIds.Add(manifest.EosTokenId);
             specialTokenIds.Add(manifest.PadTokenId);
+
+            _useByteLevelDecoder = DetectByteLevelDecoder(root);
+            _byteDecoderMap = _useByteLevelDecoder ? CreateByteDecoderMap() : null;
+        }
+
+        private static bool DetectByteLevelDecoder(Dictionary<string, object> root)
+        {
+            if (root == null || !root.ContainsKey("decoder"))
+            {
+                return false;
+            }
+
+            var decoder = root["decoder"] as Dictionary<string, object>;
+            if (decoder == null || !decoder.ContainsKey("type") || decoder["type"] == null)
+            {
+                return false;
+            }
+
+            return string.Equals(
+                decoder["type"].ToString(),
+                "ByteLevel",
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<char, byte> CreateByteDecoderMap()
+        {
+            var bs = new List<int>();
+            for (var i = 33; i <= 126; i++)
+            {
+                bs.Add(i);
+            }
+            for (var i = 161; i <= 172; i++)
+            {
+                bs.Add(i);
+            }
+            for (var i = 174; i <= 255; i++)
+            {
+                bs.Add(i);
+            }
+
+            var cs = new List<int>(bs);
+            var baseSet = new HashSet<int>(bs);
+            var n = 0;
+            for (var b = 0; b < 256; b++)
+            {
+                if (baseSet.Contains(b))
+                {
+                    continue;
+                }
+
+                bs.Add(b);
+                cs.Add(256 + n);
+                n++;
+            }
+
+            var map = new Dictionary<char, byte>(cs.Count);
+            for (var i = 0; i < bs.Count; i++)
+            {
+                map[(char)cs[i]] = (byte)bs[i];
+            }
+
+            return map;
+        }
+
+        private string DecodeByteLevelText(string encoded)
+        {
+            if (string.IsNullOrEmpty(encoded))
+            {
+                return string.Empty;
+            }
+
+            var byteValues = new List<byte>(encoded.Length);
+            for (var i = 0; i < encoded.Length; i++)
+            {
+                byte value;
+                if (_byteDecoderMap != null && _byteDecoderMap.TryGetValue(encoded[i], out value))
+                {
+                    byteValues.Add(value);
+                    continue;
+                }
+
+                var fallbackBytes = Encoding.UTF8.GetBytes(new[] { encoded[i] });
+                byteValues.AddRange(fallbackBytes);
+            }
+
+            return Encoding.UTF8.GetString(byteValues.ToArray());
         }
 
         private static string GetString(Dictionary<string, object> root, string key, string fallback)
