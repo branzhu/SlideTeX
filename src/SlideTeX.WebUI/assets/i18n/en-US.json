@@ -17,18 +17,23 @@
       "preview": "Preview"
     },
     "button": {
+      "ocr": "OCR Image",
       "insert": "Insert",
       "update": "Update",
       "renumber": "Renumber"
     },
     "status": {
       "waiting": "Waiting to render",
+      "ocr_running": "Recognizing formula image...",
       "render_failed": "Render failed",
       "render_success": "Rendered{warningSuffix} {width}x{height}px @ {dpi} DPI (mode={mode})",
       "warning_suffix": " (warnings: {count})"
     },
     "error": {
       "empty_latex": "Please enter a LaTeX formula.",
+      "ocr_host_unavailable": "Host OCR bridge is unavailable.",
+      "ocr_empty_result": "OCR returned an empty formula.",
+      "ocr_failed": "Formula OCR failed.",
       "katex_missing": "KaTeX assets are missing. Please sync vendor/katex first.",
       "katex_render_failed": "KaTeX render failed. Please check formula syntax.",
       "katex_render_failed_with_detail": "KaTeX render failed: {detail}"

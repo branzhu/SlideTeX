@@ -53,6 +53,9 @@
     <Compile Include="Contracts\HostCommandRequestedEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Contracts\FormulaOcrRequestedEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Contracts\RenderNotificationEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -135,6 +138,9 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Tools.v4.0.Framework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -272,6 +278,21 @@
     <Compile Include="Localization\LocalizationManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Ocr\FormulaOcrException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ocr\FormulaOcrOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ocr\FormulaOcrResult.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ocr\FormulaOcrService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ocr\OcrErrorCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <None Include="SlideTeX.VstoAddin_TemporaryKey.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
@@ -291,6 +312,10 @@
     </Content>
     <Content Update="..\SlideTeX.WebUI\vendor\codemirror\VERSIONS.md">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\OcrModels\**\*.*">
+      <Link>OcrModels\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <PropertyGroup>

@@ -23,3 +23,14 @@
 - `scripts/Build-Installer.ps1` 默认按 `SlideTeX.VstoAddin.vsto` 写入注册表 Manifest。
 - 安装构建时会将 VSTO 输出目录产物（含 `.vsto/.manifest`）同步到 MSI 打包暂存目录。
 - 安装构建支持 `LegacyAddinProgId` 参数（默认 `SlideTeX.VstoAddin`），用于升级时清理旧注册键。
+
+## 公式 OCR 模型约定
+- Host 侧 OCR 采用 ONNX Runtime（NuGet: `Microsoft.ML.OnnxRuntime`）。
+- 默认模型目录：`OcrModels/pix2text-mfr`（运行目录相对路径）。
+- 可用环境变量覆盖模型目录：`SLIDETEX_OCR_MODEL_DIR`。
+- 需至少包含：
+  - `encoder_model.onnx`
+  - `decoder_model_merged_quantized.onnx`
+  - `tokenizer.json`
+  - `generation_config.json`
+  - `MODEL_MANIFEST.json`（可选，未提供时采用内置默认配置）

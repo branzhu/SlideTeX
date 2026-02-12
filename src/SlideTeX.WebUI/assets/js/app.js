@@ -25,6 +25,8 @@
     previewContent: document.getElementById("previewContent"),
     errorMessage: document.getElementById("errorMessage"),
     status: document.getElementById("status"),
+    ocrBtn: document.getElementById("ocrBtn"),
+    ocrImageInput: document.getElementById("ocrImageInput"),
     insertBtn: document.getElementById("insertBtn"),
     updateBtn: document.getElementById("updateBtn"),
     renumberBtn: document.getElementById("renumberBtn")
@@ -55,6 +57,12 @@
   window.slideTex = {
     renderFromHost: async (request) => {
       await render(request?.latex, request?.options, request?.renderLatex);
+    },
+    onFormulaOcrSuccess: (payload) => {
+      handleFormulaOcrSuccess(payload);
+    },
+    onFormulaOcrError: (payload) => {
+      handleFormulaOcrError(payload);
     }
   };
 
@@ -147,11 +155,117 @@
       }
     });
 
+    elements.ocrBtn.addEventListener("click", () => {
+      if (!elements.ocrImageInput) {
+        return;
+      }
+      elements.ocrImageInput.click();
+    });
+
+    elements.ocrImageInput.addEventListener("change", async () => {
+      const files = elements.ocrImageInput.files;
+      const file = files && files.length > 0 ? files[0] : null;
+      elements.ocrImageInput.value = "";
+      if (!file) {
+        return;
+      }
+
+      await requestFormulaOcrFromFile(file);
+    });
+
     elements.renumberBtn.addEventListener("click", () => {
       if (host?.requestRenumber) {
         host.requestRenumber();
       }
     });
+  }
+
+  async function requestFormulaOcrFromFile(file) {
+    if (!host?.requestFormulaOcr) {
+      showError(t("webui.error.ocr_host_unavailable"), false);
+      return;
+    }
+
+    try {
+      setOcrBusy(true);
+      hideError();
+      setStatusByKey("webui.status.ocr_running");
+
+      const dataUrl = await readFileAsDataUrl(file);
+      const options = {
+        maxTokens: 256,
+        timeoutMs: 15000
+      };
+      host.requestFormulaOcr(dataUrl, JSON.stringify(options));
+    } catch (error) {
+      setOcrBusy(false);
+      const message = error instanceof Error ? error.message : String(error);
+      showError(message, false);
+    }
+  }
+
+  function handleFormulaOcrSuccess(payload) {
+    const data = normalizeHostPayload(payload);
+    const latex = String(data.latex || "").trim();
+    setOcrBusy(false);
+
+    if (!latex) {
+      showError(t("webui.error.ocr_empty_result"), false);
+      return;
+    }
+
+    if (editor) {
+      suppressEditorRender = true;
+      try {
+        editor.setValue(latex);
+      } finally {
+        suppressEditorRender = false;
+      }
+    } else {
+      elements.latexInput.value = latex;
+    }
+
+    render().catch((error) => {
+      showError(error instanceof Error ? error.message : String(error), false);
+    });
+  }
+
+  function handleFormulaOcrError(payload) {
+    const data = normalizeHostPayload(payload);
+    setOcrBusy(false);
+    const message = String(data.message || t("webui.error.ocr_failed"));
+    showError(message, false);
+  }
+
+  function normalizeHostPayload(payload) {
+    if (payload && typeof payload === "object") {
+      return payload;
+    }
+
+    if (typeof payload === "string") {
+      try {
+        return JSON.parse(payload);
+      } catch {
+        return { message: payload };
+      }
+    }
+
+    return {};
+  }
+
+  function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error || new Error("Failed to read image file."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function setOcrBusy(isBusy) {
+    if (elements.ocrBtn) {
+      elements.ocrBtn.disabled = Boolean(isBusy);
+    }
   }
 
   // Tracks whether the Transparent field wrapped to a dedicated second line.

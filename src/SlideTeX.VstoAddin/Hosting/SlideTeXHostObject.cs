@@ -15,6 +15,7 @@ namespace SlideTeX.VstoAddin.Hosting
     {
         public event EventHandler<RenderNotificationEventArgs> RenderNotificationReceived;
         public event EventHandler<HostCommandRequestedEventArgs> CommandRequested;
+        public event EventHandler<FormulaOcrRequestedEventArgs> FormulaOcrRequested;
 
         /// <summary>
         /// Receives successful render payloads from WebUI.
@@ -81,6 +82,18 @@ namespace SlideTeX.VstoAddin.Hosting
         }
 
         /// <summary>
+        /// Requests host-side formula OCR for an image payload.
+        /// </summary>
+        public void requestFormulaOcr(string imageBase64, string optionsJson)
+        {
+            var handler = FormulaOcrRequested;
+            if (handler != null)
+            {
+                handler(this, new FormulaOcrRequestedEventArgs(imageBase64, optionsJson));
+            }
+        }
+
+        /// <summary>
         /// Normalizes command event dispatch through a single payload shape.
         /// </summary>
         private void RaiseCommand(HostCommandPayload payload)
@@ -93,5 +106,4 @@ namespace SlideTeX.VstoAddin.Hosting
         }
     }
 }
-
 

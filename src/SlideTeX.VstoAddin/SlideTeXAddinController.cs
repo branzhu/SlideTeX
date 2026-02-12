@@ -14,6 +14,7 @@ using SlideTeX.VstoAddin.Diagnostics;
 using SlideTeX.VstoAddin.Hosting;
 using SlideTeX.VstoAddin.Localization;
 using SlideTeX.VstoAddin.Metadata;
+using SlideTeX.VstoAddin.Ocr;
 using SlideTeX.VstoAddin.PowerPoint;
 
 namespace SlideTeX.VstoAddin
@@ -35,6 +36,7 @@ namespace SlideTeX.VstoAddin
         private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
         private readonly PowerPointEquationShapeService _equationShapeService = new PowerPointEquationShapeService();
         private readonly ShapeTagMetadataStore _metadataStore = new ShapeTagMetadataStore();
+        private readonly FormulaOcrService _formulaOcrService = new FormulaOcrService();
 
         private TaskPaneHostControl _taskPaneControl;
         private Microsoft.Office.Tools.CustomTaskPane _taskPane;
@@ -122,6 +124,7 @@ namespace SlideTeX.VstoAddin
             _taskPaneControl = new TaskPaneHostControl();
             _taskPaneControl.RenderNotificationReceived += OnRenderNotificationReceived;
             _taskPaneControl.CommandRequested += OnCommandRequested;
+            _taskPaneControl.FormulaOcrRequested += OnFormulaOcrRequested;
 
             _taskPane = _addIn.CustomTaskPanes.Add(_taskPaneControl, LocalizationManager.Get("app.taskpane_title"));
             _taskPane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
@@ -328,7 +331,10 @@ namespace SlideTeX.VstoAddin
             {
                 _taskPaneControl.RenderNotificationReceived -= OnRenderNotificationReceived;
                 _taskPaneControl.CommandRequested -= OnCommandRequested;
+                _taskPaneControl.FormulaOcrRequested -= OnFormulaOcrRequested;
             }
+
+            _formulaOcrService.Dispose();
 
             if (_taskPane != null)
             {
@@ -477,6 +483,166 @@ namespace SlideTeX.VstoAddin
             // the command handler would deadlock due to COM reentrancy.
             var commandType = args.Payload.CommandType;
             _taskPaneControl.BeginInvoke(new Action(() => ExecuteCommand(commandType)));
+        }
+
+        private void OnFormulaOcrRequested(object sender, FormulaOcrRequestedEventArgs args)
+        {
+            if (args == null || string.IsNullOrWhiteSpace(args.ImageBase64))
+            {
+                NotifyFormulaOcrError("BAD_IMAGE", "OCR input image is empty.");
+                return;
+            }
+
+            var options = ParseFormulaOcrOptions(args.OptionsJson);
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                try
+                {
+                    var sw = Stopwatch.StartNew();
+                    var inferenceTask = System.Threading.Tasks.Task.Run(() => _formulaOcrService.Recognize(args.ImageBase64, options));
+                    if (!inferenceTask.Wait(options.TimeoutMs))
+                    {
+                        throw new FormulaOcrException(OcrErrorCode.Timeout, "Formula OCR timed out.");
+                    }
+
+                    var result = inferenceTask.Result;
+                    sw.Stop();
+                    if (result != null && result.ElapsedMs <= 0)
+                    {
+                        result.ElapsedMs = sw.ElapsedMilliseconds;
+                    }
+                    NotifyFormulaOcrSuccess(result);
+                }
+                catch (FormulaOcrException ex)
+                {
+                    NotifyFormulaOcrError(ToHostOcrCode(ex.Code), ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    NotifyFormulaOcrError("INFERENCE_FAILED", ex.Message);
+                }
+            });
+        }
+
+        private FormulaOcrOptions ParseFormulaOcrOptions(string optionsJson)
+        {
+            var options = FormulaOcrOptions.Default;
+            if (string.IsNullOrWhiteSpace(optionsJson))
+            {
+                return options;
+            }
+
+            try
+            {
+                var map = _serializer.DeserializeObject(optionsJson) as Dictionary<string, object>;
+                if (map == null)
+                {
+                    return options;
+                }
+
+                if (map.ContainsKey("maxTokens"))
+                {
+                    options.MaxTokens = SafeConvertToInt(map["maxTokens"], options.MaxTokens);
+                }
+                if (map.ContainsKey("timeoutMs"))
+                {
+                    options.TimeoutMs = SafeConvertToInt(map["timeoutMs"], options.TimeoutMs);
+                }
+
+                options.MaxTokens = Math.Max(16, Math.Min(1024, options.MaxTokens));
+                options.TimeoutMs = Math.Max(1000, Math.Min(60000, options.TimeoutMs));
+                return options;
+            }
+            catch
+            {
+                return options;
+            }
+        }
+
+        private void NotifyFormulaOcrSuccess(FormulaOcrResult result)
+        {
+            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            {
+                return;
+            }
+
+            var payload = _serializer.Serialize(new
+            {
+                latex = result != null ? result.Latex : string.Empty,
+                elapsedMs = result != null ? result.ElapsedMs : 0L,
+                engine = result != null ? result.Engine : "onnxruntime-cpu"
+            });
+
+            _taskPaneControl.BeginInvoke(new Action(() =>
+            {
+                var script = "window.slideTex && window.slideTex.onFormulaOcrSuccess(" + payload + ");";
+                _taskPaneControl.ExecuteScript(script);
+            }));
+        }
+
+        private void NotifyFormulaOcrError(string code, string message)
+        {
+            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            {
+                return;
+            }
+
+            var payload = _serializer.Serialize(new
+            {
+                code = string.IsNullOrWhiteSpace(code) ? "INFERENCE_FAILED" : code,
+                message = string.IsNullOrWhiteSpace(message) ? "Formula OCR failed." : message
+            });
+
+            _taskPaneControl.BeginInvoke(new Action(() =>
+            {
+                var script = "window.slideTex && window.slideTex.onFormulaOcrError(" + payload + ");";
+                _taskPaneControl.ExecuteScript(script);
+            }));
+        }
+
+        private static string ToHostOcrCode(OcrErrorCode code)
+        {
+            switch (code)
+            {
+                case OcrErrorCode.ModelNotFound:
+                    return "MODEL_NOT_FOUND";
+                case OcrErrorCode.ModelInitFailed:
+                    return "MODEL_INIT_FAILED";
+                case OcrErrorCode.Timeout:
+                    return "TIMEOUT";
+                case OcrErrorCode.BadImage:
+                    return "BAD_IMAGE";
+                default:
+                    return "INFERENCE_FAILED";
+            }
+        }
+
+        private static int SafeConvertToInt(object value, int fallback)
+        {
+            if (value == null)
+            {
+                return fallback;
+            }
+
+            int intValue;
+            if (value is int)
+            {
+                return (int)value;
+            }
+            if (value is long)
+            {
+                return (int)(long)value;
+            }
+            if (value is double)
+            {
+                return (int)(double)value;
+            }
+            if (int.TryParse(value.ToString(), out intValue))
+            {
+                return intValue;
+            }
+
+            return fallback;
         }
 
         /// <summary>
@@ -1516,4 +1682,3 @@ namespace SlideTeX.VstoAddin
         }
     }
 }
-

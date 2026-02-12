@@ -42,6 +42,14 @@ namespace SlideTeX.VstoAddin.Hosting
                     handler(this, args);
                 }
             };
+            _hostObject.FormulaOcrRequested += delegate(object sender, FormulaOcrRequestedEventArgs args)
+            {
+                var handler = FormulaOcrRequested;
+                if (handler != null)
+                {
+                    handler(this, args);
+                }
+            };
 
             Dock = DockStyle.Fill;
             _fallbackLabel = new Label
@@ -57,6 +65,8 @@ namespace SlideTeX.VstoAddin.Hosting
         public event EventHandler<RenderNotificationEventArgs> RenderNotificationReceived;
 
         public event EventHandler<HostCommandRequestedEventArgs> CommandRequested;
+
+        public event EventHandler<FormulaOcrRequestedEventArgs> FormulaOcrRequested;
 
         public string LastInitializationError { get; private set; }
 
@@ -348,5 +358,4 @@ namespace SlideTeX.VstoAddin.Hosting
         }
     }
 }
-
 

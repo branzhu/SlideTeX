@@ -1,0 +1,15 @@
+{
+  "modelName": "pix2text-mfr",
+  "modelVersion": "mfr-1.5",
+  "encoderFile": "encoder_model.onnx",
+  "decoderFile": "decoder_model_merged_quantized.onnx",
+  "tokenizerFile": "tokenizer.json",
+  "generationConfigFile": "generation_config.json",
+  "imageSize": 384,
+  "pixelMean": [0.5, 0.5, 0.5],
+  "pixelStd": [0.5, 0.5, 0.5],
+  "bosTokenId": 0,
+  "padTokenId": 1,
+  "eosTokenId": 2,
+  "decoderStartTokenId": 2
+}

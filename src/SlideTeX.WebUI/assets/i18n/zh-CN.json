@@ -17,18 +17,23 @@
       "preview": "预览"
     },
     "button": {
+      "ocr": "识别图片",
       "insert": "插入",
       "update": "更新",
       "renumber": "重新编号"
     },
     "status": {
       "waiting": "等待渲染",
+      "ocr_running": "正在识别公式图片...",
       "render_failed": "渲染失败",
       "render_success": "渲染完成{warningSuffix} {width}x{height}px @ {dpi} DPI (mode={mode})",
       "warning_suffix": "（含警告 {count} 条）"
     },
     "error": {
       "empty_latex": "请输入 LaTeX 公式。",
+      "ocr_host_unavailable": "宿主 OCR 桥接不可用。",
+      "ocr_empty_result": "OCR 未识别到公式内容。",
+      "ocr_failed": "公式 OCR 失败。",
       "katex_missing": "KaTeX 资源不存在，请先同步 vendor/katex 目录。",
       "katex_render_failed": "KaTeX 渲染失败，请检查公式语法。",
       "katex_render_failed_with_detail": "KaTeX 渲染失败：{detail}"
