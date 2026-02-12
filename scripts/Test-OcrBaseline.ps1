@@ -44,6 +44,69 @@ function Resolve-RelativePath {
     return [System.IO.Path]::GetFullPath((Join-Path $BasePath $CandidatePath))
 }
 
+function Resolve-DirectoryInput {
+    param(
+        [string]$InputPath,
+        [string[]]$BasePaths
+    )
+
+    if ([string]::IsNullOrWhiteSpace($InputPath)) {
+        return [pscustomobject]@{
+            ResolvedPath = ''
+            Candidates = @()
+        }
+    }
+
+    $raw = [Environment]::ExpandEnvironmentVariables($InputPath.Trim())
+    if ($raw.StartsWith('~')) {
+        $home = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+        if (-not [string]::IsNullOrWhiteSpace($home)) {
+            if ($raw.Length -eq 1) {
+                $raw = $home
+            }
+            elseif ($raw[1] -eq '\' -or $raw[1] -eq '/') {
+                $raw = Join-Path $home $raw.Substring(2)
+            }
+        }
+    }
+
+    $allCandidates = New-Object System.Collections.Generic.List[string]
+    if ([System.IO.Path]::IsPathRooted($raw)) {
+        $allCandidates.Add([System.IO.Path]::GetFullPath($raw)) | Out-Null
+    }
+    else {
+        foreach ($base in $BasePaths) {
+            if ([string]::IsNullOrWhiteSpace($base)) {
+                continue
+            }
+            $candidate = [System.IO.Path]::GetFullPath((Join-Path $base $raw))
+            $allCandidates.Add($candidate) | Out-Null
+        }
+    }
+
+    $dedup = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    $ordered = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in $allCandidates) {
+        if ($dedup.Add($candidate)) {
+            $ordered.Add($candidate) | Out-Null
+        }
+    }
+
+    foreach ($candidate in $ordered) {
+        if (Test-Path -LiteralPath $candidate -PathType Container) {
+            return [pscustomobject]@{
+                ResolvedPath = $candidate
+                Candidates = @($ordered)
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        ResolvedPath = ''
+        Candidates = @($ordered)
+    }
+}
+
 function Get-SuiteList {
     param([object]$SuiteValue)
 
@@ -142,6 +205,7 @@ $artifactFullPath = [System.IO.Path]::GetFullPath($ArtifactsDir)
 New-Item -ItemType Directory -Path $artifactFullPath -Force | Out-Null
 
 $fixtureDir = Split-Path $fixtureFullPath -Parent
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $fixture = Get-Content -Raw -Path $fixtureFullPath | ConvertFrom-Json -Depth 20
 if ($null -eq $fixture -or $null -eq $fixture.cases -or $fixture.cases.Count -eq 0) {
     throw "Fixture has no cases: $fixtureFullPath"
@@ -171,12 +235,39 @@ if (-not (Test-Path $assemblyPath)) {
     throw "Assembly not found: $assemblyPath. Build SlideTeX.VstoAddin first."
 }
 
+$modelSearchBases = @(
+    (Get-Location).Path
+    $repoRoot
+    $fixtureDir
+    $PSScriptRoot
+)
+
 $resolvedModelDir = ''
 if (-not [string]::IsNullOrWhiteSpace($ModelDir)) {
-    $resolvedModelDir = [System.IO.Path]::GetFullPath($ModelDir)
+    $modelResolution = Resolve-DirectoryInput -InputPath $ModelDir -BasePaths $modelSearchBases
+    if ([string]::IsNullOrWhiteSpace($modelResolution.ResolvedPath)) {
+        $detail = if ($modelResolution.Candidates.Count -gt 0) {
+            ($modelResolution.Candidates -join '; ')
+        }
+        else {
+            '(none)'
+        }
+        throw "OCR model directory not found from ModelDir='$ModelDir'. Candidates: $detail"
+    }
+    $resolvedModelDir = $modelResolution.ResolvedPath
 }
 elseif (-not [string]::IsNullOrWhiteSpace($env:SLIDETEX_OCR_MODEL_DIR)) {
-    $resolvedModelDir = [System.IO.Path]::GetFullPath($env:SLIDETEX_OCR_MODEL_DIR)
+    $envResolution = Resolve-DirectoryInput -InputPath $env:SLIDETEX_OCR_MODEL_DIR -BasePaths $modelSearchBases
+    if ([string]::IsNullOrWhiteSpace($envResolution.ResolvedPath)) {
+        $detail = if ($envResolution.Candidates.Count -gt 0) {
+            ($envResolution.Candidates -join '; ')
+        }
+        else {
+            '(none)'
+        }
+        throw "OCR model directory not found from environment variable SLIDETEX_OCR_MODEL_DIR='$($env:SLIDETEX_OCR_MODEL_DIR)'. Candidates: $detail"
+    }
+    $resolvedModelDir = $envResolution.ResolvedPath
 }
 else {
     $resolvedModelDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\src\SlideTeX.VstoAddin\Assets\OcrModels\pix2text-mfr'))
