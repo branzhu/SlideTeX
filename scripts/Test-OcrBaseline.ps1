@@ -457,6 +457,9 @@ if ($Strict.IsPresent) {
     $overallPass = $overallPass -and ($passCount -eq $totalCount)
 }
 
+$failureArray = $failures.ToArray()
+$resultArray = $results.ToArray()
+
 $report = [pscustomobject]@{
     meta = [pscustomobject]@{
         fixture = $fixtureFullPath
@@ -478,8 +481,8 @@ $report = [pscustomobject]@{
         averageCer = $avgCer
         overallPass = $overallPass
     }
-    failures = @($failures)
-    results = @($results)
+    failures = $failureArray
+    results = $resultArray
 }
 
 $reportPath = Join-Path $artifactFullPath 'report.json'
