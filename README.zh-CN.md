@@ -27,6 +27,7 @@
 - `scripts`: 构建、打包、烟雾测试、回归脚本。
 - `tests/render-regression`: 渲染视觉回归基线与用例。
 - `tests/equation-numbering`: 编号回归 known-good 用例。
+- `tests/ocr-baseline`: OCR 图片-公式 known-pairs 基线用例。
 - `docs`: 调试、部署、回归说明文档。
 
 ## 环境要求
@@ -124,6 +125,19 @@ pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
+```
+
+- 从渲染基线生成 OCR known-pairs fixture：
+
+```powershell
+node ./scripts/build-ocr-baseline-fixture.mjs
+```
+
+- OCR baseline（快速/完整）：
+
+```powershell
+pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
+pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
 ```
 
 ## CI/CD

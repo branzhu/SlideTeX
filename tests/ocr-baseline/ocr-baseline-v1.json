@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "name": "OCR baseline known pairs",
+    "version": 1,
+    "generatedAt": "2026-02-12T05:29:35.337Z",
+    "sourceFixture": "tests/render-regression/render-visual-katex-v1.json",
+    "katexVersion": "0.16.11"
+  },
+  "defaults": {
+    "ocrOptions": {
+      "maxTokens": 256,
+      "timeoutMs": 20000
+    },
+    "passCriteria": {
+      "requireExact": false,
+      "maxCer": 0.35,
+      "minPassRatio": 0.65
+    }
+  },
+  "cases": [
+    {
+      "id": "align_single_tag",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/align_single_tag.png",
+      "latex": "\\begin{align} a &= b \\tag{1} \\end{align}"
+    },
+    {
+      "id": "align_multi_tags",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/align_multi_tags.png",
+      "latex": "\\begin{align} a &= b \\tag{1} \\\\ c &= d \\tag{2} \\end{align}"
+    },
+    {
+      "id": "gather_multi_tags",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/gather_multi_tags.png",
+      "latex": "\\begin{gather} a=b \\tag{1} \\\\ c=d \\tag{2} \\\\ e=f \\tag{3} \\end{gather}"
+    },
+    {
+      "id": "equation_custom_tag",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/equation_custom_tag.png",
+      "latex": "\\begin{equation} E=mc^2 \\tag{X} \\end{equation}"
+    },
+    {
+      "id": "fraction_sqrt_layout",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/fraction_sqrt_layout.png",
+      "latex": "\\frac{\\sqrt{a^2+b^2}}{\\int_0^1 x^2 \\, dx}"
+    },
+    {
+      "id": "matrix_layout",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/matrix_layout.png",
+      "latex": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+    },
+    {
+      "id": "inline_mode_basic_en",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/inline_mode_basic_en.png",
+      "latex": "a^2+b^2=c^2"
+    },
+    {
+      "id": "long_formula_tag",
+      "suite": [
+        "smoke",
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/long_formula_tag.png",
+      "latex": "\\begin{align}\\sum_{i=1}^{n} i^2 &= \\frac{n(n+1)(2n+1)}{6} \\tag{9}\\end{align}"
+    },
+    {
+      "id": "force_display_simple",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/force_display_simple.png",
+      "latex": "a^2+b^2=c^2"
+    },
+    {
+      "id": "force_inline_fraction",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/force_inline_fraction.png",
+      "latex": "\\frac{a}{b}+1"
+    },
+    {
+      "id": "aligned_env_two_lines",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/aligned_env_two_lines.png",
+      "latex": "\\begin{aligned} a&=b \\\\ c&=d \\end{aligned}"
+    },
+    {
+      "id": "split_env_in_equation",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/split_env_in_equation.png",
+      "latex": "\\begin{equation}\\begin{split}a+b&=c\\\\d+e&=f\\end{split}\\end{equation}"
+    },
+    {
+      "id": "cases_piecewise",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/cases_piecewise.png",
+      "latex": "f(x)=\\begin{cases} x^2, & x\\ge 0 \\\\ -x, & x<0 \\end{cases}"
+    },
+    {
+      "id": "bmatrix_layout",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/bmatrix_layout.png",
+      "latex": "\\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}"
+    },
+    {
+      "id": "brace_matrix_layout",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/brace_matrix_layout.png",
+      "latex": "\\begin{Bmatrix} 1 & 2 \\\\ 3 & 4 \\end{Bmatrix}"
+    },
+    {
+      "id": "vmatrix_layout",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/vmatrix_layout.png",
+      "latex": "\\begin{vmatrix} 1 & 2 \\\\ 3 & 4 \\end{vmatrix}"
+    },
+    {
+      "id": "double_bar_matrix_layout",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/double_bar_matrix_layout.png",
+      "latex": "\\begin{Vmatrix} 1 & 2 \\\\ 3 & 4 \\end{Vmatrix}"
+    },
+    {
+      "id": "left_right_delimiters",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/left_right_delimiters.png",
+      "latex": "\\left(\\frac{a+b}{c+d}\\right)^2"
+    },
+    {
+      "id": "sum_limits_display",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/sum_limits_display.png",
+      "latex": "\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}"
+    },
+    {
+      "id": "integral_limits_display",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/integral_limits_display.png",
+      "latex": "\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}"
+    },
+    {
+      "id": "nested_fraction",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/nested_fraction.png",
+      "latex": "\\frac{1}{1+\\frac{1}{1+x}}"
+    },
+    {
+      "id": "overbrace_expression",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/overbrace_expression.png",
+      "latex": "\\overbrace{a+b+\\cdots+z}^{26\\ terms}"
+    },
+    {
+      "id": "binom_expression",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/binom_expression.png",
+      "latex": "\\binom{n}{k}=\\frac{n!}{k!(n-k)!}"
+    },
+    {
+      "id": "text_and_operator",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/text_and_operator.png",
+      "latex": "\\operatorname{Var}(X)=\\mathbb{E}[X^2]-\\mathbb{E}[X]^2"
+    },
+    {
+      "id": "color_expression",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/color_expression.png",
+      "latex": "\\color{red}{x^2}+\\color{blue}{y^2}=z^2"
+    },
+    {
+      "id": "spacing_expression",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/spacing_expression.png",
+      "latex": "a\\,b\\;c\\quad d\\qquad e"
+    },
+    {
+      "id": "equation_notag",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/equation_notag.png",
+      "latex": "\\begin{equation} E=mc^2 \\notag \\end{equation}"
+    },
+    {
+      "id": "gather_custom_mix",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/gather_custom_mix.png",
+      "latex": "\\begin{gather} a=b \\tag{A} \\\\ c=d \\tag{B} \\end{gather}"
+    },
+    {
+      "id": "locale_en_display_tag",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/locale_en_display_tag.png",
+      "latex": "\\begin{equation} x+y=z \\tag{EN} \\end{equation}"
+    },
+    {
+      "id": "opaque_background",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/opaque_background.png",
+      "latex": "x^2+y^2=z^2"
+    },
+    {
+      "id": "dpi600_small_font",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/dpi600_small_font.png",
+      "latex": "\\sum_{k=1}^{20} k^3"
+    },
+    {
+      "id": "align_three_tags",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/align_three_tags.png",
+      "latex": "\\begin{align} a&=b \\tag{1} \\\\ c&=d \\tag{2} \\\\ e&=f \\tag{3} \\end{align}"
+    },
+    {
+      "id": "cases_with_text_mod",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/cases_with_text_mod.png",
+      "latex": "\\begin{cases} \\text{odd}, & n\\equiv1\\pmod 2 \\\\ \\text{even}, & n\\equiv0\\pmod 2 \\end{cases}"
+    }
+  ]
+}

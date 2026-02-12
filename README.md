@@ -29,6 +29,7 @@ English WebUI preview:
 - `scripts`: build, packaging, smoke tests, and regression scripts.
 - `tests/render-regression`: visual rendering baselines and fixtures.
 - `tests/equation-numbering`: equation numbering known-good fixtures.
+- `tests/ocr-baseline`: OCR known image-LaTeX pair fixture.
 - `docs`: debugging, deployment, and regression guides.
 
 ## Requirements
@@ -126,6 +127,19 @@ pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
+```
+
+- Build OCR baseline fixture from render known-good pairs:
+
+```powershell
+node ./scripts/build-ocr-baseline-fixture.mjs
+```
+
+- OCR baseline (smoke/full):
+
+```powershell
+pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
+pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
 ```
 
 ## CI/CD

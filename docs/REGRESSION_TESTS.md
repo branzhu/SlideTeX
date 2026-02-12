@@ -1,9 +1,10 @@
-# Regression Testing Guide (Numbering + Rendering)
+# Regression Testing Guide (Numbering + Rendering + OCR)
 
 ## Scope
 This document consolidates regression testing for:
 - Equation numbering semantics (`equation/align/gather/multline` behavior).
 - Rendering quality (visual/layout checks, font loading, and tag positioning).
+- OCR quality (known image-LaTeX pair baseline checks).
 
 ## Objectives
 - Keep equation numbering aligned with LaTeX semantics.
@@ -20,6 +21,11 @@ This document consolidates regression testing for:
   - `tests/render-regression/baseline-dom/*.json`
 - Runtime artifacts:
   - `artifacts/render-regression/`
+- OCR known-pairs baseline:
+  - `tests/ocr-baseline/ocr-baseline-v1.json`
+  - `tests/render-regression/baseline-images/*.png` (referenced by OCR fixture)
+- OCR runtime artifacts:
+  - `artifacts/ocr-baseline/`
 
 ## Prerequisites
 - Build prerequisites from `README.md`.
@@ -49,6 +55,17 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
 - Render baseline update (only when intended):
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode update-baseline -Suite all
+```
+
+- Rebuild OCR known-pairs fixture:
+```powershell
+node ./scripts/build-ocr-baseline-fixture.mjs
+```
+
+- OCR baseline (smoke/full):
+```powershell
+pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
+pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
 ```
 
 ## Numbering Semantic Cases
@@ -97,6 +114,8 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
   - `artifacts/render-regression/actual/<case>.png`
 - Diff images:
   - `artifacts/render-regression/diff/<case>.png`
+- OCR summary report:
+  - `artifacts/ocr-baseline/report.json`
 
 ## Pass Criteria
 - Numbering checks pass for count + row ownership + displayed tag text.
@@ -107,3 +126,4 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
 ## Notes
 - `multline` remains an expected-failure case under KaTeX `0.16.11`.
 - Update baselines only when KaTeX version or rendering strategy changes, and record the reason in commit notes.
+- OCR baseline requires local ONNX model files (`encoder_model.onnx`, `decoder_model_merged_quantized.onnx`, `tokenizer.json`).

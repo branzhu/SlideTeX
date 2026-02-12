@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "SlideTeX local test tooling",
   "scripts": {
+    "build:ocr-baseline-fixture": "node ./scripts/build-ocr-baseline-fixture.mjs",
     "test:render-known-good": "node ./scripts/render-known-good.mjs --mode verify --suite all",
     "test:render-known-good:smoke": "node ./scripts/render-known-good.mjs --mode verify --suite smoke",
     "test:render-known-good:full": "node ./scripts/render-known-good.mjs --mode verify --suite full",
