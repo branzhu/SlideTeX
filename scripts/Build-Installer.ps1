@@ -5,7 +5,7 @@ param(
     [string]$Platform = "x64",
     [string]$ProductVersion = "1.0.0",
     [string[]]$Cultures = @("zh-CN", "en-US"),
-    [string]$BuildOutputDir = "src/SlideTeX.Addin/bin/Release/net8.0-windows",
+    [string]$BuildOutputDir = "",
     [string]$StagingBuildOutputDir = "",
     [string]$VstoBuildOutputDir = "",
     [string]$AddinProgId = "SlideTeX",
@@ -14,9 +14,14 @@ param(
     [string]$AddinDescription = "",
     [string]$AddinManifestFileName = "SlideTeX.VstoAddin.vsto",
     [string]$AddinApplicationManifestFileName = "SlideTeX.VstoAddin.dll.manifest",
+    [string]$BundleName = "SlideTeX Installer",
+    [string]$BundleManufacturer = "SlideTeX Team",
+    [string]$BundleOutputName = "",
+    [string]$VstoManifestCertificateThumbprint = "",
     [switch]$SkipBuild,
     [switch]$SkipGenerateFragment,
     [switch]$SkipVstoSync,
+    [switch]$SkipBundle,
     [switch]$AllowMissingManifest,
     [switch]$VerifyOfficeRegistration
 )
@@ -57,6 +62,68 @@ function Resolve-MsBuildExe {
     return $null
 }
 
+# Ensures the WiX bootstrapper extension is available for bundle builds and returns extension dll path.
+function Resolve-WixBootstrapperExtensionPath {
+    param(
+        [string]$ExtensionRef = "WixToolset.BootstrapperApplications.wixext/6.0.2"
+    )
+
+    $extensionId = $ExtensionRef.Split('/')[0]
+    $extensionSearchRoot = Join-Path $env:USERPROFILE ".wix\extensions\$extensionId"
+    $extensionPattern = "$extensionId.dll"
+
+    if (Test-Path $extensionSearchRoot) {
+        $existing = Get-ChildItem -Path $extensionSearchRoot -Recurse -File -Filter $extensionPattern -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($null -ne $existing) {
+            return $existing.FullName
+        }
+    }
+
+    Write-Warning "WiX extension '$extensionId' is not installed. Trying to install it now..."
+
+    & wix extension add -g $ExtensionRef | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        & wix extension add $ExtensionRef | Out-Host
+    }
+
+    if (Test-Path $extensionSearchRoot) {
+        $installed = Get-ChildItem -Path $extensionSearchRoot -Recurse -File -Filter $extensionPattern -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($null -ne $installed) {
+            return $installed.FullName
+        }
+    }
+
+    return $null
+}
+
+# Tries to infer Visual Studio installation root from selected MSBuild path.
+function Resolve-VsInstallDirFromMsBuild {
+    param(
+        [string]$MsBuildExe
+    )
+
+    if ([string]::IsNullOrWhiteSpace($MsBuildExe)) {
+        return $null
+    }
+
+    $current = [System.IO.Path]::GetDirectoryName($MsBuildExe)
+    while (-not [string]::IsNullOrWhiteSpace($current)) {
+        $msbuildMarker = Join-Path $current "MSBuild\Current\Bin\MSBuild.exe"
+        if (Test-Path $msbuildMarker) {
+            return $current
+        }
+
+        $parent = [System.IO.Directory]::GetParent($current)
+        if ($null -eq $parent) {
+            break
+        }
+
+        $current = $parent.FullName
+    }
+
+    return $null
+}
+
 # Regenerates inline i18n bundle consumed by WebUI before packaging.
 function Invoke-WebUiI18nBundleGeneration {
     param(
@@ -65,18 +132,18 @@ function Invoke-WebUiI18nBundleGeneration {
 
     $scriptPath = Join-Path $RepoRoot "scripts/generate-webui-i18n-bundle.mjs"
     if (!(Test-Path $scriptPath)) {
-        throw "未找到 WebUI i18n 生成脚本: $scriptPath"
+        throw "WebUI i18n generation script was not found: $scriptPath"
     }
 
     $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
     if ($null -eq $nodeCommand) {
-        throw "未检测到 node，无法生成 WebUI i18n 内联资源。请安装 Node.js。"
+        throw "The node command was not found. Install Node.js to generate the inline WebUI i18n bundle."
     }
 
     Write-Host "Generating inline i18n bundle for WebUI..."
     & $nodeCommand.Source $scriptPath | Out-Host
     if ($LASTEXITCODE -ne 0) {
-        throw "WebUI i18n bundle 生成失败。ExitCode=$LASTEXITCODE"
+        throw "Failed to generate the WebUI i18n bundle. ExitCode=$LASTEXITCODE"
     }
 }
 
@@ -138,11 +205,12 @@ function Resolve-AddinDescriptionForCulture {
 }
 
 if (-not (Get-Command wix -ErrorAction SilentlyContinue)) {
-    throw "未检测到 wix CLI。请先安装 WiX Toolset。"
+    throw "The wix CLI was not found. Install WiX Toolset first."
 }
 
 $root = Split-Path -Parent $PSScriptRoot
 $product = Join-Path $root "src/SlideTeX.Installer/wix/Product.wxs"
+$bundle = Join-Path $root "src/SlideTeX.Installer/wix/Bundle.wxs"
 $staticFiles = Join-Path $root "src/SlideTeX.Installer/wix/Fragments/Files.wxs"
 $generatedFiles = Join-Path $root "src/SlideTeX.Installer/wix/Fragments/GeneratedFiles.wxs"
 $officeRegistration = Join-Path $root "src/SlideTeX.Installer/wix/Fragments/OfficeRegistration.wxs"
@@ -159,7 +227,7 @@ foreach ($cultureValue in $Cultures) {
     foreach ($culture in $segments) {
         $normalized = Normalize-CultureName -CultureName $culture
         if ([string]::IsNullOrWhiteSpace($normalized)) {
-            throw "不支持的 Culture: $culture。当前仅支持 zh-CN / en-US。"
+            throw "Unsupported culture: $culture. Only zh-CN and en-US are currently supported."
         }
 
         if ($normalizedCultures -notcontains $normalized) {
@@ -169,30 +237,47 @@ foreach ($cultureValue in $Cultures) {
 }
 
 if ($normalizedCultures.Count -eq 0) {
-    throw "未提供可用的 Culture。请至少指定 zh-CN 或 en-US。"
+    throw "No valid culture was provided. Specify at least zh-CN or en-US."
 }
 
 if (-not $SkipBuild) {
     Invoke-WebUiI18nBundleGeneration -RepoRoot $root
 
-    Write-Host "Building SlideTeX.Addin ($Configuration)..."
-    dotnet build (Join-Path $root "src/SlideTeX.Addin/SlideTeX.Addin.csproj") -c $Configuration -m:1 | Out-Host
-
     $msbuildExe = Resolve-MsBuildExe
     if ([string]::IsNullOrWhiteSpace($msbuildExe)) {
-        throw "未检测到 MSBuild.exe，无法构建 VSTO 清单。请安装 Visual Studio Build Tools 或使用 -SkipBuild 并手动准备 VSTO 产物。"
+        throw "MSBuild.exe was not found. Install Visual Studio Build Tools, or use -SkipBuild and prepare VSTO outputs manually."
     }
 
+    $vsInstallDir = Resolve-VsInstallDirFromMsBuild -MsBuildExe $msbuildExe
     Write-Host "Building SlideTeX.VstoAddin with MSBuild ($Configuration)..."
-    & $msbuildExe (Join-Path $root "src/SlideTeX.VstoAddin/SlideTeX.VstoAddin.csproj") /p:Configuration=$Configuration /p:Platform=AnyCPU /m:1 | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw "VSTO 构建失败，无法继续打包。"
+    $msbuildArgs = @(
+        (Join-Path $root "src/SlideTeX.VstoAddin/SlideTeX.VstoAddin.csproj"),
+        "/p:Configuration=$Configuration",
+        "/p:Platform=AnyCPU",
+        "/m:1"
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($vsInstallDir)) {
+        $msbuildArgs += "/p:VsInstallDir=$vsInstallDir"
     }
+
+    if (-not [string]::IsNullOrWhiteSpace($VstoManifestCertificateThumbprint)) {
+        $msbuildArgs += "/p:ManifestCertificateThumbprint=$VstoManifestCertificateThumbprint"
+    }
+
+    & $msbuildExe @msbuildArgs | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw "VSTO build failed; packaging cannot continue."
+    }
+}
+
+if ([string]::IsNullOrWhiteSpace($BuildOutputDir)) {
+    $BuildOutputDir = "src/SlideTeX.VstoAddin/bin/$Configuration"
 }
 
 $buildOutputFull = Resolve-PathFromRoot -Root $root -PathValue $BuildOutputDir
 if (!(Test-Path $buildOutputFull)) {
-    throw "BuildOutputDir 不存在: $buildOutputFull"
+    throw "BuildOutputDir does not exist: $buildOutputFull"
 }
 
 $stagingBuildOutputRelative = if ([string]::IsNullOrWhiteSpace($StagingBuildOutputDir)) {
@@ -205,7 +290,7 @@ else {
 $stagingBuildOutputFull = Resolve-PathFromRoot -Root $root -PathValue $stagingBuildOutputRelative
 
 if ($buildOutputFull.TrimEnd('\') -ieq $stagingBuildOutputFull.TrimEnd('\')) {
-    throw "StagingBuildOutputDir 不能与 BuildOutputDir 相同。"
+    throw "StagingBuildOutputDir must be different from BuildOutputDir."
 }
 
 if ([string]::IsNullOrWhiteSpace($VstoBuildOutputDir)) {
@@ -219,7 +304,7 @@ if ([string]::IsNullOrWhiteSpace($VstoBuildOutputDir)) {
     }
     elseif (Test-Path $vstoDebugFull) {
         $VstoBuildOutputDir = $vstoDebugRelative
-        Write-Warning "未找到配置匹配的 VSTO 输出目录，已回退到 Debug: $vstoDebugFull"
+        Write-Warning "No VSTO output directory was found for the selected configuration. Falling back to Debug: $vstoDebugFull"
     }
     else {
         $VstoBuildOutputDir = $vstoConfigRelative
@@ -241,10 +326,10 @@ if (-not $SkipVstoSync) {
     $vstoBuildOutputFull = Resolve-PathFromRoot -Root $root -PathValue $VstoBuildOutputDir
     if (!(Test-Path $vstoBuildOutputFull)) {
         if ($AllowMissingManifest) {
-            Write-Warning "VSTO 输出目录不存在，跳过同步: $vstoBuildOutputFull"
+            Write-Warning "VSTO output directory does not exist; skipping sync: $vstoBuildOutputFull"
         }
         else {
-            throw "VSTO 输出目录不存在: $vstoBuildOutputFull。请先生成 VSTO 清单，或使用 -AllowMissingManifest 继续。"
+            throw "VSTO output directory does not exist: $vstoBuildOutputFull. Generate VSTO manifests first, or continue with -AllowMissingManifest."
         }
     }
     else {
@@ -261,20 +346,20 @@ if (-not $SkipVstoSync) {
 $manifestPath = Join-Path $stagingBuildOutputFull $AddinManifestFileName
 if (!(Test-Path $manifestPath)) {
     if ($AllowMissingManifest) {
-        Write-Warning "未在打包目录找到 VSTO 清单: $manifestPath。PowerPoint 可能因 Manifest 缺失而无法加载加载项。"
+        Write-Warning "VSTO manifest was not found in the packaging directory: $manifestPath. PowerPoint may fail to load the add-in when manifest files are missing."
     }
     else {
-        throw "未在打包目录找到 VSTO 清单: $manifestPath。请先生成并同步 `.vsto/.manifest`，或使用 -AllowMissingManifest 继续。"
+        throw "VSTO manifest was not found in the packaging directory: $manifestPath. Generate and sync `.vsto/.manifest` first, or continue with -AllowMissingManifest."
     }
 }
 
 $applicationManifestPath = Join-Path $stagingBuildOutputFull $AddinApplicationManifestFileName
 if (!(Test-Path $applicationManifestPath)) {
     if ($AllowMissingManifest) {
-        Write-Warning "未在打包目录找到应用清单: $applicationManifestPath。PowerPoint 可能因 Manifest 缺失而无法加载加载项。"
+        Write-Warning "Application manifest was not found in the packaging directory: $applicationManifestPath. PowerPoint may fail to load the add-in when manifest files are missing."
     }
     else {
-        throw "未在打包目录找到应用清单: $applicationManifestPath。请先生成并同步 `.vsto/.manifest`，或使用 -AllowMissingManifest 继续。"
+        throw "Application manifest was not found in the packaging directory: $applicationManifestPath. Generate and sync `.vsto/.manifest` first, or continue with -AllowMissingManifest."
     }
 }
 
@@ -295,21 +380,17 @@ if (-not $SkipGenerateFragment) {
 
 New-Item -ItemType Directory -Path $outDir -Force | Out-Null
 
+$builtMsiByCulture = @{}
 foreach ($culture in $normalizedCultures) {
     $locFile = Join-Path $localizationDir "$culture.wxl"
     if (!(Test-Path $locFile)) {
-        throw "未找到本地化资源文件: $locFile"
+        throw "Localization resource file was not found: $locFile"
     }
 
     $friendlyName = Resolve-AddinFriendlyNameForCulture -Culture $culture -OverrideValue $AddinFriendlyName
     $description = Resolve-AddinDescriptionForCulture -Culture $culture -OverrideValue $AddinDescription
 
-    $outputName = if ($normalizedCultures.Count -eq 1) {
-        "SlideTeX-$ProductVersion-$Configuration-$Platform.msi"
-    }
-    else {
-        "SlideTeX-$ProductVersion-$Configuration-$Platform-$culture.msi"
-    }
+    $outputName = "SlideTeX-$ProductVersion-$Configuration-$Platform-$culture.msi"
     $outputMsi = Join-Path $outDir $outputName
 
     Write-Host "Building installer for culture: $culture"
@@ -330,10 +411,52 @@ foreach ($culture in $normalizedCultures) {
       -o $outputMsi
 
     if ($LASTEXITCODE -ne 0) {
-        throw "wix build 失败。Culture=$culture, ExitCode=$LASTEXITCODE"
+        throw "wix build failed. Culture=$culture, ExitCode=$LASTEXITCODE"
     }
 
+    $builtMsiByCulture[$culture] = $outputMsi
     Write-Host "Installer generated [$culture]: $outputMsi"
+}
+
+$shouldBuildBundle = (-not $SkipBundle) -and ($builtMsiByCulture.ContainsKey("zh-CN")) -and ($builtMsiByCulture.ContainsKey("en-US"))
+if ($shouldBuildBundle) {
+    if (!(Test-Path $bundle)) {
+        throw "Bundle definition file was not found: $bundle"
+    }
+
+    $bundleExtPath = Resolve-WixBootstrapperExtensionPath
+    if ([string]::IsNullOrWhiteSpace($bundleExtPath)) {
+        throw "wix bundle build prerequisites are missing. Install extension 'WixToolset.BootstrapperApplications.wixext/6.0.2' first (command: `wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2`), or rerun with -SkipBundle to generate MSI files only."
+    }
+
+    $bundleOutputFileName = if ([string]::IsNullOrWhiteSpace($BundleOutputName)) {
+        "SlideTeX-$ProductVersion-$Configuration-$Platform.exe"
+    }
+    else {
+        $BundleOutputName
+    }
+
+    $bundleOutput = Join-Path $outDir $bundleOutputFileName
+    Write-Host "Building unified multilingual installer bundle..."
+    wix build `
+      $bundle `
+      -ext $bundleExtPath `
+      -d ProductVersion=$ProductVersion `
+      -d BundleName="$BundleName" `
+      -d BundleManufacturer="$BundleManufacturer" `
+      -d MsiEnUsPath="$($builtMsiByCulture["en-US"])" `
+      -d MsiZhCnPath="$($builtMsiByCulture["zh-CN"])" `
+      -culture en-US `
+      -culture zh-CN `
+      -arch $Platform `
+      -o $bundleOutput
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "wix bundle build failed. Ensure WiX extension 'WixToolset.BootstrapperApplications.wixext' is available."
+    }
+
+    Write-Host "Unified installer bundle generated: $bundleOutput"
+    Write-Host "Language override example: SlideTeX-*.exe SlideTeXInstallerCulture=en-US"
 }
 
 if ($VerifyOfficeRegistration) {
@@ -346,4 +469,3 @@ if ($VerifyOfficeRegistration) {
         throw "Office add-in registry verification failed. ExitCode=$LASTEXITCODE"
     }
 }
-

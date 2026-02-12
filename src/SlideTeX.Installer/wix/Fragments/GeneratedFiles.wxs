@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
+    <DirectoryRef Id="ADDINFOLDER">
+      <Directory Id="DIR_ADDINFOLDER_zh_CN_638C79DB26" Name="zh-CN" />
+    </DirectoryRef>
     <DirectoryRef Id="WEBUIFOLDER">
       <Directory Id="DIR_WEBUIFOLDER_assets_1062A76636" Name="assets" />
       <Directory Id="DIR_WEBUIFOLDER_vendor_50BE207E94" Name="vendor" />
@@ -8,6 +11,7 @@
     <DirectoryRef Id="DIR_WEBUIFOLDER_assets_1062A76636">
       <Directory Id="DIR_WEBUIFOLDER_assets_css_A7B43F1F6D" Name="css" />
       <Directory Id="DIR_WEBUIFOLDER_assets_data_F45427FD49" Name="data" />
+      <Directory Id="DIR_WEBUIFOLDER_assets_i18n_8BB8B417FC" Name="i18n" />
       <Directory Id="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Name="js" />
     </DirectoryRef>
     <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_50BE207E94">
@@ -31,17 +35,32 @@
       <Component Id="CMP_SlideTeX_VstoAddin_dll_C3833C96E5" Directory="ADDINFOLDER" Guid="{963C83C3-8FE5-FDA6-DC62-D09EB01F34B0}">
         <File Id="FIL_SlideTeX_VstoAddin_dll_C3833C96E5" Source="$(var.BuildOutputDir)\SlideTeX.VstoAddin.dll" KeyPath="yes" />
       </Component>
+      <Component Id="CMP_SlideTeX_VstoAddin_dll_m_21181B69A1" Directory="ADDINFOLDER" Guid="{691B1821-D5A1-CF21-174F-4FB7EA01D123}">
+        <File Id="FIL_SlideTeX_VstoAddin_dll_m_21181B69A1" Source="$(var.BuildOutputDir)\SlideTeX.VstoAddin.dll.manifest" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_SlideTeX_VstoAddin_vsto_773136CF24" Directory="ADDINFOLDER" Guid="{CF363177-2624-D4C5-16D0-8B0C59C22137}">
+        <File Id="FIL_SlideTeX_VstoAddin_vsto_773136CF24" Source="$(var.BuildOutputDir)\SlideTeX.VstoAddin.vsto" KeyPath="yes" />
+      </Component>
       <Component Id="CMP_WebUI_assets_css_app_css_51E8A410A2" Directory="DIR_WEBUIFOLDER_assets_css_A7B43F1F6D" Guid="{10A4E851-2DA2-1C4B-D62A-3DB642A99296}">
         <File Id="FIL_WebUI_assets_css_app_css_51E8A410A2" Source="$(var.BuildOutputDir)\WebUI\assets\css\app.css" KeyPath="yes" />
       </Component>
       <Component Id="CMP_WebUI_assets_data_katex__2F3FDA632A" Directory="DIR_WEBUIFOLDER_assets_data_F45427FD49" Guid="{63DA3F2F-792A-D69E-D7D7-3851915899F0}">
         <File Id="FIL_WebUI_assets_data_katex__2F3FDA632A" Source="$(var.BuildOutputDir)\WebUI\assets\data\katex-commands.js" KeyPath="yes" />
       </Component>
+      <Component Id="CMP_WebUI_assets_i18n_en_US__413BC9A25D" Directory="DIR_WEBUIFOLDER_assets_i18n_8BB8B417FC" Guid="{A2C93B41-EF5D-80B8-53D4-8F80BD187FBF}">
+        <File Id="FIL_WebUI_assets_i18n_en_US__413BC9A25D" Source="$(var.BuildOutputDir)\WebUI\assets\i18n\en-US.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_i18n_zh_CN__4C463621C5" Directory="DIR_WEBUIFOLDER_assets_i18n_8BB8B417FC" Guid="{2136464C-4AC5-D6C8-D08A-251956F52AF8}">
+        <File Id="FIL_WebUI_assets_i18n_zh_CN__4C463621C5" Source="$(var.BuildOutputDir)\WebUI\assets\i18n\zh-CN.json" KeyPath="yes" />
+      </Component>
       <Component Id="CMP_WebUI_assets_js_app_js_A7B1F92672" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{26F9B1A7-9B72-4B0C-3F45-0BFAE4132317}">
         <File Id="FIL_WebUI_assets_js_app_js_A7B1F92672" Source="$(var.BuildOutputDir)\WebUI\assets\js\app.js" KeyPath="yes" />
       </Component>
       <Component Id="CMP_WebUI_assets_js_editor_a_357C8510F5" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{10857C35-45F5-451A-B6F4-3B6A571C862E}">
         <File Id="FIL_WebUI_assets_js_editor_a_357C8510F5" Source="$(var.BuildOutputDir)\WebUI\assets\js\editor-adapter.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_js_i18n_js_DE3A446E38" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{6E443ADE-6B38-2FC4-65DD-5EFC3E2FB66F}">
+        <File Id="FIL_WebUI_assets_js_i18n_js_DE3A446E38" Source="$(var.BuildOutputDir)\WebUI\assets\js\i18n.js" KeyPath="yes" />
       </Component>
       <Component Id="CMP_WebUI_index_html_F13E75ED66" Directory="WEBUIFOLDER" Guid="{ED753EF1-5B66-1EEF-B8F9-F316C9B6B9AC}">
         <File Id="FIL_WebUI_index_html_F13E75ED66" Source="$(var.BuildOutputDir)\WebUI\index.html" KeyPath="yes" />
@@ -237,6 +256,9 @@
       </Component>
       <Component Id="CMP_WebUI_vendor_katex_READM_6BD80A8FEC" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{8F0AD86B-CFEC-4071-F462-E578F25A4C9E}">
         <File Id="FIL_WebUI_vendor_katex_READM_6BD80A8FEC" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\README.md" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_zh_CN_SlideTeX_VstoAddin_AC5F118284" Directory="DIR_ADDINFOLDER_zh_CN_638C79DB26" Guid="{82115FAC-D484-C73D-B098-3008804CF1C5}">
+        <File Id="FIL_zh_CN_SlideTeX_VstoAddin_AC5F118284" Source="$(var.BuildOutputDir)\zh-CN\SlideTeX.VstoAddin.resources.dll" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>

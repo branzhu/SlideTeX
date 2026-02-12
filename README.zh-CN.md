@@ -42,6 +42,11 @@
 - .NET Framework `4.8` Developer Pack
 - Visual Studio 2022（或随附 MSBuild）
 - WiX Toolset `6.0.2`
+- WiX 扩展 `WixToolset.BootstrapperApplications.wixext`（用于统一多语言 `.exe` 安装包）
+
+```powershell
+wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
+```
 
 ## 快速开始
 
@@ -78,6 +83,24 @@ node ./scripts/generate-webui-i18n-bundle.mjs
 pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64
 ```
 
+当同时构建 `zh-CN` 与 `en-US` 时，脚本会生成：
+
+- 语言拆分的 MSI（内部产物）；
+- 一个统一对外发布的 `.exe` 安装包，默认按系统语言选择。
+
+安装时可通过参数覆盖语言：
+
+```powershell
+.\SlideTeX-<version>-Release-x64.exe SlideTeXInstallerCulture=en-US
+.\SlideTeX-<version>-Release-x64.exe SlideTeXInstallerCulture=zh-CN
+```
+
+- 构建安装产物，并覆盖 VSTO 清单签名证书指纹（用于 CI 临时证书场景）：
+
+```powershell
+pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoManifestCertificateThumbprint "<THUMBPRINT>"
+```
+
 - PowerPoint 烟雾测试：
 
 ```powershell
@@ -103,6 +126,14 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
 ```
 
+## CI/CD
+
+仓库目前内置一个 GitHub Actions 工作流：
+
+- `.github/workflows/ci-build.yml`：在 push/PR 时构建安装产物并上传为 CI artifact。
+
+该工作流会自动生成临时代码签名证书，并把指纹传入 `Build-Installer.ps1` 生成 VSTO 清单。
+
 ## 部署与文档
 
 - 调试指南：`docs/DEBUG_GUIDE.md`
@@ -113,7 +144,7 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
 
 - 仅支持 Windows PowerPoint。
 - 仅保证 KaTeX 子集，不覆盖完整 TeX/LaTeX 生态。
-- 仓库不包含完整生产证书签名链路。
+- 仓库不包含完整的生产签名与发布流程。
 
 ## 第三方组件说明
 

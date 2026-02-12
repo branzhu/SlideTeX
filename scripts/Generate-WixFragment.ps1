@@ -1,7 +1,7 @@
 # SlideTeX Note: Generates WiX fragments from staged file outputs.
 
 param(
-    [string]$BuildOutputDir = "src/SlideTeX.Addin/bin/Release/net8.0-windows",
+    [string]$BuildOutputDir = "src/SlideTeX.VstoAddin/bin/Release",
     [string]$OutputFile = "src/SlideTeX.Installer/wix/Fragments/GeneratedFiles.wxs"
 )
 
@@ -199,5 +199,4 @@ $sb.ToString() | Set-Content -Path $outputPath -Encoding utf8
 
 Write-Host "Generated WiX fragment: $outputPath"
 Write-Host "File count: $($fileEntries.Count)"
-
 

@@ -44,6 +44,11 @@ English WebUI preview:
 - .NET Framework `4.8` Developer Pack
 - Visual Studio 2022 (or MSBuild from VS installation)
 - WiX Toolset `6.0.2`
+- WiX extension `WixToolset.BootstrapperApplications.wixext` (for unified multilingual `.exe` bundle)
+
+```powershell
+wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
+```
 
 ## Quick Start
 
@@ -80,6 +85,24 @@ node ./scripts/generate-webui-i18n-bundle.mjs
 pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64
 ```
 
+When both `zh-CN` and `en-US` cultures are built, the script generates:
+
+- language-specific MSI payloads (internal use);
+- one unified installer bundle `.exe` that selects default language from system locale.
+
+Language override at install time:
+
+```powershell
+.\SlideTeX-<version>-Release-x64.exe SlideTeXInstallerCulture=en-US
+.\SlideTeX-<version>-Release-x64.exe SlideTeXInstallerCulture=zh-CN
+```
+
+- Build installer and override VSTO manifest certificate thumbprint (for CI pipelines that generate temporary certificates):
+
+```powershell
+pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoManifestCertificateThumbprint "<THUMBPRINT>"
+```
+
 - PowerPoint smoke test:
 
 ```powershell
@@ -105,6 +128,14 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
 ```
 
+## CI/CD
+
+This repository includes one GitHub Actions workflow:
+
+- `.github/workflows/ci-build.yml`: builds installer artifacts on push/PR and uploads them as CI artifacts.
+
+The workflow generates a temporary code-signing certificate and passes its thumbprint to `Build-Installer.ps1` for VSTO manifest generation.
+
 ## Deployment and Docs
 
 - Debug guide: `docs/DEBUG_GUIDE.md`
@@ -115,7 +146,7 @@ powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode 
 
 - Windows-only (PowerPoint desktop).
 - KaTeX subset support (not full TeX/LaTeX ecosystem).
-- This repository does not include full production signing/certificate workflow.
+- Production signing and release process is not included in this repository.
 
 ## Third-Party Components
 

@@ -8,7 +8,18 @@
 
 ## 2. Silent Install
 ```powershell
-msiexec /i SlideTeX-Release-x64.msi /qn /l*v C:\Temp\SlideTeX-install.log
+.\SlideTeX-1.0.0-Release-x64.exe /quiet /norestart /log C:\Temp\SlideTeX-install.log
+```
+
+Force installer language (optional):
+```powershell
+.\SlideTeX-1.0.0-Release-x64.exe SlideTeXInstallerCulture=en-US /quiet /norestart
+.\SlideTeX-1.0.0-Release-x64.exe SlideTeXInstallerCulture=zh-CN /quiet /norestart
+```
+
+Install a specific language MSI directly (optional):
+```powershell
+msiexec /i SlideTeX-1.0.0-Release-x64-en-US.msi /qn /l*v C:\Temp\SlideTeX-install.log
 ```
 
 Recommended MSI build command:
@@ -51,8 +62,8 @@ msiexec /x {PRODUCT-CODE} /qn /l*v C:\Temp\SlideTeX-uninstall.log
 ## 5.1 Upgrade Path Validation Script
 ```powershell
 pwsh ./scripts/Test-MsiLifecycle.ps1 `
-  -OldMsi .\artifacts\installer\SlideTeX-1.0.0-Release-x64.msi `
-  -NewMsi .\artifacts\installer\SlideTeX-1.0.1-Release-x64.msi
+  -OldMsi .\artifacts\installer\SlideTeX-1.0.0-Release-x64-en-US.msi `
+  -NewMsi .\artifacts\installer\SlideTeX-1.0.1-Release-x64-en-US.msi
 ```
 
 ## 6. Troubleshooting

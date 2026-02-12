@@ -1,0 +1,62 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - main
+      - github-main-clean
+  pull_request:
+
+jobs:
+  build-installer:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install WiX CLI
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 6.0.2
+          & "$env:USERPROFILE\.dotnet\tools\wix.exe" extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
+          "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Create temporary VSTO manifest signing certificate
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate `
+            -Subject "CN=SlideTeX CI Temporary Manifest Signer" `
+            -Type CodeSigningCert `
+            -CertStoreLocation "Cert:\CurrentUser\My" `
+            -NotAfter (Get-Date).AddDays(7)
+          "VSTO_MANIFEST_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build installer artifacts
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-Installer.ps1 `
+            -Configuration Release `
+            -Platform x64 `
+            -Cultures zh-CN,en-US `
+            -VstoManifestCertificateThumbprint $env:VSTO_MANIFEST_THUMBPRINT
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: slidetex-installer-ci
+          if-no-files-found: error
+          path: |
+            artifacts/installer/*.exe
+            artifacts/installer/*.msi
+            artifacts/installer/payload/**
