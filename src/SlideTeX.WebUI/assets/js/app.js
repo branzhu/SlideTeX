@@ -272,6 +272,11 @@
   }
 
   function sanitizeOcrLatex(source) {
+    const sanitizer = window.SlideTeXOcrPostprocess;
+    if (sanitizer && typeof sanitizer.sanitizeOcrLatex === "function") {
+      return sanitizer.sanitizeOcrLatex(source);
+    }
+
     let result = String(source || "").trim();
     if (!result) {
       return "";
