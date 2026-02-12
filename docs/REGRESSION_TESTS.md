@@ -126,4 +126,4 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 ## Notes
 - `multline` remains an expected-failure case under KaTeX `0.16.11`.
 - Update baselines only when KaTeX version or rendering strategy changes, and record the reason in commit notes.
-- OCR baseline requires local ONNX model files (`encoder_model.onnx`, `decoder_model_merged_quantized.onnx`, `tokenizer.json`).
+- OCR baseline requires local ONNX model files (`encoder_model.onnx`, `decoder_model.onnx`, `tokenizer.json`), and still accepts legacy decoder file name `decoder_model_merged_quantized.onnx`.

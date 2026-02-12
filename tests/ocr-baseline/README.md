@@ -30,5 +30,5 @@ Set model directory by one of the following:
 Model directory must contain:
 
 - `encoder_model.onnx`
-- `decoder_model_merged_quantized.onnx`
+- `decoder_model.onnx` (or legacy `decoder_model_merged_quantized.onnx`)
 - `tokenizer.json`

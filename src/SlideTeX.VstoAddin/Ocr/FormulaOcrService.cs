@@ -111,11 +111,10 @@ namespace SlideTeX.VstoAddin.Ocr
                     _manifest = LoadManifest(modelDirectory);
 
                     var encoderPath = Path.Combine(modelDirectory, _manifest.EncoderFile);
-                    var decoderPath = Path.Combine(modelDirectory, _manifest.DecoderFile);
+                    var decoderPath = ResolveDecoderModelPath(modelDirectory, _manifest.DecoderFile);
                     var tokenizerPath = Path.Combine(modelDirectory, _manifest.TokenizerFile);
 
                     EnsureFileExists(encoderPath, "encoder");
-                    EnsureFileExists(decoderPath, "decoder");
                     EnsureFileExists(tokenizerPath, "tokenizer");
 
                     var sessionOptions = new SessionOptions();
@@ -153,6 +152,49 @@ namespace SlideTeX.VstoAddin.Ocr
                     OcrErrorCode.ModelNotFound,
                     "Formula OCR " + role + " model file was not found: " + path);
             }
+        }
+
+        private static string ResolveDecoderModelPath(string modelDirectory, string configuredDecoderFile)
+        {
+            var decoderCandidates = new List<string>();
+            if (!string.IsNullOrWhiteSpace(configuredDecoderFile))
+            {
+                decoderCandidates.Add(configuredDecoderFile);
+            }
+
+            AddFileCandidateIfMissing(decoderCandidates, "decoder_model.onnx");
+            AddFileCandidateIfMissing(decoderCandidates, "decoder_model_merged_quantized.onnx");
+
+            for (var i = 0; i < decoderCandidates.Count; i++)
+            {
+                var candidatePath = Path.Combine(modelDirectory, decoderCandidates[i]);
+                if (File.Exists(candidatePath))
+                {
+                    return candidatePath;
+                }
+            }
+
+            throw new FormulaOcrException(
+                OcrErrorCode.ModelNotFound,
+                "Formula OCR decoder model file was not found. Tried: " + string.Join(", ", decoderCandidates.ToArray()));
+        }
+
+        private static void AddFileCandidateIfMissing(ICollection<string> candidates, string fileName)
+        {
+            if (candidates == null || string.IsNullOrWhiteSpace(fileName))
+            {
+                return;
+            }
+
+            foreach (var existing in candidates)
+            {
+                if (string.Equals(existing, fileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+
+            candidates.Add(fileName);
         }
 
         private static string ResolveModelDirectory()
@@ -885,7 +927,7 @@ namespace SlideTeX.VstoAddin.Ocr
                 return new ModelManifest
                 {
                     EncoderFile = "encoder_model.onnx",
-                    DecoderFile = "decoder_model_merged_quantized.onnx",
+                    DecoderFile = "decoder_model.onnx",
                     TokenizerFile = "tokenizer.json",
                     GenerationConfigFile = "generation_config.json",
                     ImageSize = 384,

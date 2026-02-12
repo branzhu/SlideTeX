@@ -279,7 +279,6 @@ if (-not (Test-Path $resolvedModelDir)) {
 
 $requiredModelFiles = @(
     'encoder_model.onnx',
-    'decoder_model_merged_quantized.onnx',
     'tokenizer.json'
 )
 foreach ($file in $requiredModelFiles) {
@@ -287,6 +286,22 @@ foreach ($file in $requiredModelFiles) {
     if (-not (Test-Path $candidate)) {
         throw "Missing OCR model file: $candidate"
     }
+}
+
+$decoderCandidates = @(
+    'decoder_model.onnx',
+    'decoder_model_merged_quantized.onnx'
+)
+$decoderFound = $false
+foreach ($decoderFile in $decoderCandidates) {
+    $decoderCandidate = Join-Path $resolvedModelDir $decoderFile
+    if (Test-Path $decoderCandidate) {
+        $decoderFound = $true
+        break
+    }
+}
+if (-not $decoderFound) {
+    throw ("Missing OCR decoder model file. Tried: " + (($decoderCandidates | ForEach-Object { Join-Path $resolvedModelDir $_ }) -join '; '))
 }
 
 $env:SLIDETEX_OCR_MODEL_DIR = $resolvedModelDir

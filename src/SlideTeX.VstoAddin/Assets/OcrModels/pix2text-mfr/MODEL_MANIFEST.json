@@ -2,7 +2,7 @@
   "modelName": "pix2text-mfr",
   "modelVersion": "mfr-1.5",
   "encoderFile": "encoder_model.onnx",
-  "decoderFile": "decoder_model_merged_quantized.onnx",
+  "decoderFile": "decoder_model.onnx",
   "tokenizerFile": "tokenizer.json",
   "generationConfigFile": "generation_config.json",
   "imageSize": 384,

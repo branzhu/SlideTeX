@@ -30,7 +30,7 @@
 - 可用环境变量覆盖模型目录：`SLIDETEX_OCR_MODEL_DIR`。
 - 需至少包含：
   - `encoder_model.onnx`
-  - `decoder_model_merged_quantized.onnx`
+  - `decoder_model.onnx`（兼容旧文件名 `decoder_model_merged_quantized.onnx`）
   - `tokenizer.json`
   - `generation_config.json`
   - `MODEL_MANIFEST.json`（可选，未提供时采用内置默认配置）
