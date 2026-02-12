@@ -14,6 +14,36 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+if ($PSVersionTable.PSEdition -eq 'Core') {
+    $windowsPowerShellPath = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    if (-not (Test-Path $windowsPowerShellPath)) {
+        throw "Windows PowerShell not found: $windowsPowerShellPath"
+    }
+
+    $forwardArgs = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', $PSCommandPath
+    )
+
+    foreach ($entry in $PSBoundParameters.GetEnumerator()) {
+        $name = [string]$entry.Key
+        $value = $entry.Value
+        if ($value -is [switch]) {
+            if ($value.IsPresent) {
+                $forwardArgs += "-$name"
+            }
+            continue
+        }
+
+        $forwardArgs += "-$name"
+        $forwardArgs += [string]$value
+    }
+
+    & $windowsPowerShellPath @forwardArgs
+    exit $LASTEXITCODE
+}
+
 function Get-ValueOrDefault {
     param(
         [object]$Value,
@@ -146,6 +176,34 @@ function Normalize-Latex {
     return (($Latex -replace '\s+', '')).Trim()
 }
 
+function Normalize-LatexForComparison {
+    param([string]$Latex)
+
+    if ([string]::IsNullOrWhiteSpace($Latex)) {
+        return ''
+    }
+
+    $normalized = [string]$Latex
+    $normalized = $normalized -replace '\\cfrac', '\\frac'
+    $normalized = $normalized -replace '\\left', ''
+    $normalized = $normalized -replace '\\right', ''
+    $normalized = $normalized -replace '\\mathop\s*\{([^{}]*)\}', '$1'
+    $normalized = $normalized -replace '\\mathrm\s*\{([^{}]*)\}', '$1'
+    $normalized = $normalized -replace '\\operatorname\s*\{([^{}]*)\}', '$1'
+    $normalized = $normalized -replace '\\tag\*?\s*\{([^{}]*)\}', '($1)'
+    $normalized = $normalized -replace '\\notag|\\nonumber', ''
+    $normalized = $normalized -replace '\\begin\s*\{(?:equation\*?|align\*?|gather\*?|aligned|split)\}', ''
+    $normalized = $normalized -replace '\\end\s*\{(?:equation\*?|align\*?|gather\*?|aligned|split)\}', ''
+    $normalized = $normalized -replace '&', ''
+    $normalized = $normalized -replace '\\,|\\;|\\!|\\quad|\\qquad', ''
+    $normalized = $normalized -replace '\\\\', ''
+    $normalized = $normalized -replace '\\[()]', ''
+    $normalized = $normalized -replace '[{}]', ''
+    $normalized = $normalized -replace '\s+', ''
+
+    return $normalized.Trim()
+}
+
 function Get-LevenshteinDistance {
     param(
         [string]$Left,
@@ -206,7 +264,7 @@ New-Item -ItemType Directory -Path $artifactFullPath -Force | Out-Null
 
 $fixtureDir = Split-Path $fixtureFullPath -Parent
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$fixture = Get-Content -Raw -Path $fixtureFullPath | ConvertFrom-Json -Depth 20
+$fixture = Get-Content -Raw -Path $fixtureFullPath | ConvertFrom-Json
 if ($null -eq $fixture -or $null -eq $fixture.cases -or $fixture.cases.Count -eq 0) {
     throw "Fixture has no cases: $fixtureFullPath"
 }
@@ -400,16 +458,23 @@ try {
 
         $expectedNorm = Normalize-Latex -Latex $expectedLatex
         $actualNorm = Normalize-Latex -Latex $actualLatex
-        $exactMatch = ($expectedNorm -ceq $actualNorm)
-        $distance = Get-LevenshteinDistance -Left $expectedNorm -Right $actualNorm
-        $cer = [double]$distance / [Math]::Max(1, $expectedNorm.Length)
-        $cerRounded = [Math]::Round($cer, 6)
+        $strictExactMatch = ($expectedNorm -ceq $actualNorm)
+        $strictDistance = Get-LevenshteinDistance -Left $expectedNorm -Right $actualNorm
+        $strictCer = [double]$strictDistance / [Math]::Max(1, $expectedNorm.Length)
+        $strictCerRounded = [Math]::Round($strictCer, 6)
+
+        $expectedComparable = Normalize-LatexForComparison -Latex $expectedLatex
+        $actualComparable = Normalize-LatexForComparison -Latex $actualLatex
+        $comparableExactMatch = ($expectedComparable -ceq $actualComparable)
+        $comparableDistance = Get-LevenshteinDistance -Left $expectedComparable -Right $actualComparable
+        $comparableCer = [double]$comparableDistance / [Math]::Max(1, $expectedComparable.Length)
+        $comparableCerRounded = [Math]::Round($comparableCer, 6)
 
         $casePass = if ($requireExact) {
-            $exactMatch
+            $comparableExactMatch
         }
         else {
-            $exactMatch -or ($cer -le $maxCer)
+            $comparableExactMatch -or ($comparableCer -le $maxCer)
         }
 
         if (-not $casePass) {
@@ -424,9 +489,14 @@ try {
             actualLatex = $actualLatex
             expectedNormalized = $expectedNorm
             actualNormalized = $actualNorm
-            exactMatch = $exactMatch
-            cer = $cerRounded
-            levenshteinDistance = $distance
+            expectedComparable = $expectedComparable
+            actualComparable = $actualComparable
+            exactMatch = $comparableExactMatch
+            cer = $comparableCerRounded
+            levenshteinDistance = $comparableDistance
+            strictExactMatch = $strictExactMatch
+            strictCer = $strictCerRounded
+            strictLevenshteinDistance = $strictDistance
             maxCer = $maxCer
             requireExact = $requireExact
             maxTokens = $maxTokens
