@@ -427,9 +427,9 @@
 
   async function renderMathJaxToPreview(latex, displayMode) {
     const mj = await ensureMathJaxReady();
-    const math = typeof mj.tex2svg === "function"
-      ? mj.tex2svg(latex, { display: Boolean(displayMode) })
-      : await mj.tex2svgPromise(latex, { display: Boolean(displayMode) });
+    const math = typeof mj.tex2svgPromise === "function"
+      ? await mj.tex2svgPromise(latex, { display: Boolean(displayMode) })
+      : mj.tex2svg(latex, { display: Boolean(displayMode) });
     const svg = math?.querySelector ? math.querySelector("svg") : null;
     if (!svg) {
       throw new Error(t("webui.error.mathjax_render_failed"));
