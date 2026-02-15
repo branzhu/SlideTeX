@@ -76,7 +76,7 @@
 
     if (window.SlideTeXEditor && elements.latexInput) {
       editor = window.SlideTeXEditor.create(elements.latexInput, {
-        commandData: window.KATEX_COMMANDS
+        commandData: window.LATEX_COMMANDS
       });
     }
 
@@ -337,7 +337,7 @@
       .replace(/\\end\{(equation|align|gather)\}/g, '\\end{$1*}');
   }
 
-  // Runs KaTeX render, layout post-processing, PNG export, and host notification.
+  // Runs MathJax render, SVG->PNG export, and host notification.
   async function render(latexFromHost, optionsFromHost, renderLatexOverride) {
     if (typeof latexFromHost === "string") {
       if (editor) {
@@ -377,34 +377,22 @@
     elements.previewContent.style.whiteSpace = effectiveDisplayMode === "inline" ? "nowrap" : "normal";
     elements.previewContent.style.alignItems = "";
     elements.previewContent.style.columnGap = "";
+    elements.previewContent.dataset.displayMode = effectiveDisplayMode;
+    elements.previewContent.dataset.tagTokens = JSON.stringify(extractTagTokensFromLatex(latexForRender));
 
     try {
-      if (!window.katex) {
-        throw new Error(t("webui.error.katex_missing"));
-      }
+      await ensureMathJaxReady();
 
-      const katexWarnings = [];
-      window.katex.render(stripAutoNumbering(latexForRender), elements.previewContent, {
-        displayMode: effectiveDisplayMode === "display",
-        throwOnError: false,
-        strict: (errorCode, errorMessage, token) => {
-          const warning = formatKatexWarning(errorCode, errorMessage, token);
-          if (warning) {
-            katexWarnings.push(warning);
-          }
-          return "warn";
-        },
-        trust: false
-      });
+      const normalizedLatex = stripAutoNumbering(latexForRender);
+      await renderMathJaxToPreview(normalizedLatex, effectiveDisplayMode === "display");
 
-      const severeError = extractKatexSevereError(elements.previewContent);
+      const severeError = extractMathJaxSevereError(elements.previewContent);
       if (severeError) {
         disableActions();
         showError(severeError);
         return;
       }
 
-      reserveTagSpace(elements.previewContent);
       fitPreview();
 
       const payload = await exportPreviewAsPng(options);
@@ -420,13 +408,10 @@
 
       hideError();
       enableActions();
-      const warningSuffix = katexWarnings.length > 0
-        ? t("webui.status.warning_suffix", { count: katexWarnings.length })
-        : "";
       setStatusByKey(
         "webui.status.render_success",
         {
-          warningSuffix,
+          warningSuffix: "",
           width: payload.width,
           height: payload.height,
           dpi: options.dpi,
@@ -440,6 +425,19 @@
     }
   }
 
+  async function renderMathJaxToPreview(latex, displayMode) {
+    const mj = await ensureMathJaxReady();
+    const math = typeof mj.tex2svg === "function"
+      ? mj.tex2svg(latex, { display: Boolean(displayMode) })
+      : await mj.tex2svgPromise(latex, { display: Boolean(displayMode) });
+    const svg = math?.querySelector ? math.querySelector("svg") : null;
+    if (!svg) {
+      throw new Error(t("webui.error.mathjax_render_failed"));
+    }
+
+    elements.previewContent.replaceChildren(svg);
+  }
+
   // Scales preview content down to fit container width while preserving readability.
   function fitPreview() {
     const content = elements.previewContent;
@@ -450,9 +448,7 @@
     requestAnimationFrame(() => {
       if (previewBoxWidth <= 0 || !content.firstChild) return;
 
-      // Measure the inline-block container's actual width, which reliably
-      // reflects content size regardless of whether the child is inline
-      // (.katex in inline mode) or block (.katex-display).
+      // Measure inline-block container width from rendered MathJax SVG.
       const contentWidth = content.scrollWidth;
       const availableWidth = previewBoxWidth - 20; // subtract box padding
 
@@ -463,12 +459,15 @@
     });
   }
 
-  // Captures rendered formula DOM into PNG and returns base64 plus pixel dimensions.
+  // Captures rendered MathJax SVG to PNG and returns base64 plus pixel dimensions.
   async function exportPreviewAsPng(options) {
     const scale = Math.max(1, options.dpi / 96);
     const contentEl = elements.previewContent;
+    const sourceSvg = contentEl.querySelector("svg");
+    if (!sourceSvg) {
+      throw new Error(t("webui.error.mathjax_render_failed"));
+    }
 
-    // Create a temporary wrapper for precise capture
     const wrapper = document.createElement("div");
     wrapper.style.cssText = `
       position: absolute;
@@ -476,35 +475,57 @@
       top: 0;
       display: inline-block;
       padding: 2px;
-      background: ${options.isTransparent ? "transparent" : "#ffffff"};
-      font-size: ${options.fontPt}pt;
       color: ${options.colorHex};
+      background: transparent;
+      line-height: 1;
     `;
 
-    // Clone the content
-    const clone = contentEl.cloneNode(true);
-
-    // Remove display mode margins from KaTeX
-    const katexDisplay = clone.querySelector(".katex-display");
-    if (katexDisplay) {
-      katexDisplay.style.margin = "0";
-      katexDisplay.style.padding = "0";
-    }
-
+    const clone = sourceSvg.cloneNode(true);
     wrapper.appendChild(clone);
-    reserveTagSpace(wrapper);
-
     document.body.appendChild(wrapper);
 
     try {
-      // Use html2canvas for reliable HTML to canvas rendering
-      const canvas = await html2canvas(wrapper, {
-        scale: scale,
-        backgroundColor: options.isTransparent ? null : "#ffffff",
-        logging: false,
-        useCORS: true,
-        allowTaint: true
-      });
+      await waitForDoubleFrame();
+      const measured = clone.getBoundingClientRect();
+      const logicalWidth = Math.max(1, Math.ceil(measured.width || contentEl.scrollWidth || 1));
+      const logicalHeight = Math.max(1, Math.ceil(measured.height || contentEl.scrollHeight || 1));
+
+      const exportSvg = clone.cloneNode(true);
+      exportSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      exportSvg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+      exportSvg.setAttribute("width", String(logicalWidth));
+      exportSvg.setAttribute("height", String(logicalHeight));
+      if (!exportSvg.getAttribute("viewBox")) {
+        exportSvg.setAttribute("viewBox", `0 0 ${logicalWidth} ${logicalHeight}`);
+      }
+      exportSvg.style.color = options.colorHex;
+
+      const serialized = new XMLSerializer().serializeToString(exportSvg);
+      const blob = new Blob([serialized], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      let image = null;
+      try {
+        image = await loadImageFromUrl(url);
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(logicalWidth * scale));
+      canvas.height = Math.max(1, Math.round(logicalHeight * scale));
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Canvas 2D context is unavailable.");
+      }
+
+      if (!options.isTransparent) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      ctx.drawImage(image, 0, 0, logicalWidth, logicalHeight);
 
       const dataUrl = canvas.toDataURL("image/png");
       return {
@@ -517,24 +538,65 @@
     }
   }
 
-  // Reflows KaTeX tag nodes to avoid overlap with formula body during capture.
-  function reserveTagSpace(root) {
-    if (!root) {
-      return;
-    }
+  function waitForDoubleFrame() {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  }
 
-    const displays = root.querySelectorAll(".katex-display");
-    for (const display of displays) {
-      const tags = display.querySelectorAll(".tag");
-      for (const tag of tags) {
-        // Keep KaTeX's tag DOM, but switch to normal flow to avoid absolute-position overlap.
-        tag.style.position = "static";
-        tag.style.display = "inline-block";
-        tag.style.marginLeft = "0.8em";
-        tag.style.verticalAlign = "top";
-        tag.style.whiteSpace = "nowrap";
+  function loadImageFromUrl(url) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("Failed to decode rendered SVG."));
+      image.src = url;
+    });
+  }
+
+  function extractTagTokensFromLatex(latex) {
+    const tags = [];
+    const pattern = /\\tag\*?\s*\{([^{}]*)\}/g;
+    let match = null;
+    while ((match = pattern.exec(String(latex ?? ""))) !== null) {
+      const token = normalizeTagToken(match[1]);
+      if (token.length > 0) {
+        tags.push(token);
       }
     }
+    return tags;
+  }
+
+  async function ensureMathJaxReady(timeoutMs = 15000) {
+    const hasRenderApi = () => {
+      const mj = window.MathJax;
+      return Boolean(mj && (typeof mj.tex2svg === "function" || typeof mj.tex2svgPromise === "function"));
+    };
+
+    if (hasRenderApi()) {
+      return window.MathJax;
+    }
+
+    const startAt = Date.now();
+    while (Date.now() - startAt < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      if (hasRenderApi()) {
+        return window.MathJax;
+      }
+    }
+
+    throw new Error(t("webui.error.mathjax_missing"));
+  }
+
+  function normalizeTagToken(raw) {
+    const text = String(raw ?? "").trim();
+    if (!text) {
+      return "";
+    }
+    if (text.startsWith("(") && text.endsWith(")")) {
+      return text;
+    }
+    return `(${text})`;
   }
 
   function getOptions() {
@@ -682,45 +744,26 @@
     return key;
   }
 
-  function formatKatexWarning(errorCode, errorMessage, token) {
-    const code = String(errorCode ?? "").trim();
-    const message = String(errorMessage ?? "").trim();
-    const tokenText = token && typeof token.text === "string" ? token.text.trim() : "";
-
-    const parts = [];
-    if (code.length > 0) {
-      parts.push(code);
-    }
-    if (message.length > 0) {
-      parts.push(message);
-    }
-    if (tokenText.length > 0) {
-      parts.push(`token=${tokenText}`);
-    }
-
-    return parts.join(" | ");
-  }
-
-  function extractKatexSevereError(container) {
+  function extractMathJaxSevereError(container) {
     if (!container) {
       return "";
     }
 
-    const errorElement = container.querySelector(".katex-error");
+    const errorElement = container.querySelector("mjx-merror, [data-mjx-error]");
     if (!errorElement) {
       return "";
     }
 
-    const rawMessage = sanitizeKatexErrorMessage(
+    const rawMessage = sanitizeMathJaxErrorMessage(
       errorElement.getAttribute("title") || errorElement.textContent || "");
     if (!rawMessage) {
-      return t("webui.error.katex_render_failed");
+      return t("webui.error.mathjax_render_failed");
     }
 
-    return t("webui.error.katex_render_failed_with_detail", { detail: rawMessage });
+    return t("webui.error.mathjax_render_failed_with_detail", { detail: rawMessage });
   }
 
-  function sanitizeKatexErrorMessage(raw) {
+  function sanitizeMathJaxErrorMessage(raw) {
     return String(raw ?? "").replace(/\s+/g, " ").trim();
   }
 

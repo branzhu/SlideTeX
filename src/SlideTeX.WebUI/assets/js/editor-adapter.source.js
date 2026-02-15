@@ -304,7 +304,7 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
     }
 
     options = options || {};
-    var data = options.commandData || window.KATEX_COMMANDS || {};
+    var data = options.commandData || window.LATEX_COMMANDS || {};
     var commands = data.commands || [];
     var environments = data.environments || [];
 
@@ -503,4 +503,5 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
     create: create
   };
 })();
+
 

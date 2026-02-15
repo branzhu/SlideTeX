@@ -69,7 +69,7 @@ pwsh ./scripts/Test-MsiLifecycle.ps1 `
 ## 6. Troubleshooting
 - Missing WebView2: verify `edgewebview2` installation.
 - No PowerPoint entry point: check whether the add-in is disabled in Office.
-- Render failures: verify KaTeX resources are present under `vendor/katex`.
+- Render failures: verify MathJax resources are present under `vendor/mathjax`.
 - Duplicate SlideTeX ribbon items: usually caused by legacy ProgId (`SlideTeX.VstoAddin`) leftovers. New MSI upgrades should remove them automatically. Manual cleanup keys:
   - `HKLM\SOFTWARE\Microsoft\Office\PowerPoint\Addins\SlideTeX.VstoAddin`
   - `HKLM\SOFTWARE\WOW6432Node\Microsoft\Office\PowerPoint\Addins\SlideTeX.VstoAddin`

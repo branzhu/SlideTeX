@@ -2,9 +2,9 @@
   "meta": {
     "name": "OCR baseline known pairs",
     "version": 1,
-    "generatedAt": "2026-02-12T05:29:35.337Z",
-    "sourceFixture": "tests/render-regression/render-visual-katex-v1.json",
-    "katexVersion": "0.16.11"
+    "generatedAt": "2026-02-15T13:22:24.749Z",
+    "sourceFixture": "tests/render-regression/render-visual-mathjax-v1.json",
+    "mathjaxVersion": "4.1.0"
   },
   "defaults": {
     "ocrOptions": {

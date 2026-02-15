@@ -34,9 +34,9 @@
       "ocr_host_unavailable": "Host OCR bridge is unavailable.",
       "ocr_empty_result": "OCR returned an empty formula.",
       "ocr_failed": "Formula OCR failed.",
-      "katex_missing": "KaTeX assets are missing. Please sync vendor/katex first.",
-      "katex_render_failed": "KaTeX render failed. Please check formula syntax.",
-      "katex_render_failed_with_detail": "KaTeX render failed: {detail}"
+      "mathjax_missing": "MathJax assets are missing. Please sync vendor/mathjax first.",
+      "mathjax_render_failed": "MathJax render failed. Please check formula syntax.",
+      "mathjax_render_failed_with_detail": "MathJax render failed: {detail}"
     }
   }
 }

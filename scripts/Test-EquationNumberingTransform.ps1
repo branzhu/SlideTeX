@@ -106,7 +106,7 @@ Assert-True ($case7.Latex.Contains('\tag{20}')) 'case7 should contain \\tag{20}'
 Assert-True ($case7.Latex.Contains('\tag{22}')) 'case7 should contain \\tag{22}'
 $results.Add([pscustomobject]@{ case = 'gather_multi'; consumed = $case7.Consumed; output = $case7.Latex }) | Out-Null
 
-# case 8: multline is unsupported by current KaTeX, no auto-number rewrite should happen
+# case 8: multline is not auto-rewritten by current numbering transform logic
 $case8Latex = '\begin{multline} a+b+c \\ d+e \\ f+g \end{multline}'
 $case8 = Invoke-BuildNumberedLatex -Method $buildMethod -Latex $case8Latex -StartNumber 30
 Assert-True ($case8.Consumed -eq 0) 'case8 should consume 0 auto numbers for unsupported multline'
@@ -117,5 +117,4 @@ $results.Add([pscustomobject]@{ case = 'multline_unsupported'; consumed = $case8
 
 Write-Host "Equation numbering transform tests passed. Cases: $($results.Count)."
 $results | ConvertTo-Json -Depth 4
-
 

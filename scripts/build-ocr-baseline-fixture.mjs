@@ -10,7 +10,7 @@ const repoRoot = path.resolve(__dirname, '..');
 
 function parseArgs(argv) {
   const args = {
-    sourceFixture: path.join(repoRoot, 'tests', 'render-regression', 'render-visual-katex-v1.json'),
+    sourceFixture: path.join(repoRoot, 'tests', 'render-regression', 'render-visual-mathjax-v1.json'),
     outputFixture: path.join(repoRoot, 'tests', 'ocr-baseline', 'ocr-baseline-v1.json')
   };
 
@@ -119,7 +119,7 @@ function run() {
       version: 1,
       generatedAt: new Date().toISOString(),
       sourceFixture: toPosix(path.relative(repoRoot, args.sourceFixture)),
-      katexVersion: sourceFixture?.meta?.katexVersion || ''
+      mathjaxVersion: sourceFixture?.meta?.mathjaxVersion || ''
     },
     defaults: {
       ocrOptions: {

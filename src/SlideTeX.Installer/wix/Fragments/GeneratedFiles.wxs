@@ -2,7 +2,11 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
     <DirectoryRef Id="ADDINFOLDER">
+      <Directory Id="DIR_ADDINFOLDER_OcrModels_D2097D3EA6" Name="OcrModels" />
       <Directory Id="DIR_ADDINFOLDER_zh_CN_638C79DB26" Name="zh-CN" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_ADDINFOLDER_OcrModels_D2097D3EA6">
+      <Directory Id="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Name="pix2text-mfr" />
     </DirectoryRef>
     <DirectoryRef Id="WEBUIFOLDER">
       <Directory Id="DIR_WEBUIFOLDER_assets_1062A76636" Name="assets" />
@@ -15,14 +19,36 @@
       <Directory Id="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Name="js" />
     </DirectoryRef>
     <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_50BE207E94">
-      <Directory Id="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Name="katex" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_codem_CCE1A49B85" Name="codemirror" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Name="mathjax" />
     </DirectoryRef>
-    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7">
-      <Directory Id="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Name="fonts" />
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Name="a11y" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_6A0096FAFA" Name="adaptors" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_0126DA2586" Name="input" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_8EBEB347F7" Name="output" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_B80FEF8C84" Name="sre" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_E899D55B08" Name="ui" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_mathj_0126DA2586">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_AF14B479DA" Name="mml" />
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_E5157E592C" Name="tex" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_mathj_AF14B479DA">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_B50DEEFB0A" Name="extensions" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_mathj_E5157E592C">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Name="extensions" />
+    </DirectoryRef>
+    <DirectoryRef Id="DIR_WEBUIFOLDER_vendor_mathj_B80FEF8C84">
+      <Directory Id="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Name="mathmaps" />
     </DirectoryRef>
   </Fragment>
   <Fragment>
     <ComponentGroup Id="SlideTeXProductComponents">
+      <Component Id="CMP_Microsoft_ML_OnnxRuntime_4709B7ABFD" Directory="ADDINFOLDER" Guid="{ABB70947-7FFD-C3BC-1D05-E1C48A21257B}">
+        <File Id="FIL_Microsoft_ML_OnnxRuntime_4709B7ABFD" Source="$(var.BuildOutputDir)\Microsoft.ML.OnnxRuntime.dll" KeyPath="yes" />
+      </Component>
       <Component Id="CMP_Microsoft_Office_Tools_C_2984A6D143" Directory="ADDINFOLDER" Guid="{D1A68429-4343-6649-6CD4-4FB02C0BF0DA}">
         <File Id="FIL_Microsoft_Office_Tools_C_2984A6D143" Source="$(var.BuildOutputDir)\Microsoft.Office.Tools.Common.v4.0.Utilities.dll" KeyPath="yes" />
       </Component>
@@ -31,6 +57,33 @@
       </Component>
       <Component Id="CMP_Microsoft_Web_WebView2_W_2AF8A7A430" Directory="ADDINFOLDER" Guid="{A4A7F82A-FF30-AFA9-9C73-3FAF0867893A}">
         <File Id="FIL_Microsoft_Web_WebView2_W_2AF8A7A430" Source="$(var.BuildOutputDir)\Microsoft.Web.WebView2.WinForms.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_d_F065BB69E4" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{69BB65F0-D3E4-399B-84FF-FD14D4AB7DC4}">
+        <File Id="FIL_OcrModels_pix2text_mfr_d_F065BB69E4" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\decoder_model.onnx" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_e_991AFCDC7B" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{DCFC1A99-F87B-0AE2-9379-A12685ACCBC2}">
+        <File Id="FIL_OcrModels_pix2text_mfr_e_991AFCDC7B" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\encoder_model.onnx" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_g_A46039C4EA" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{C43960A4-A4EA-E5B4-538F-1F73A8F56916}">
+        <File Id="FIL_OcrModels_pix2text_mfr_g_A46039C4EA" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\generation_config.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_M_CB3989542C" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{548939CB-842C-31E0-C400-83A739D820A8}">
+        <File Id="FIL_OcrModels_pix2text_mfr_M_CB3989542C" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\MODEL_MANIFEST.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_p_50A811B8F2" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{B811A850-6BF2-33DA-D850-4F5A188597B0}">
+        <File Id="FIL_OcrModels_pix2text_mfr_p_50A811B8F2" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\preprocessor_config.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_R_1FAC1251B2" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{5112AC1F-8CB2-D10A-BD39-9CA6233416E3}">
+        <File Id="FIL_OcrModels_pix2text_mfr_R_1FAC1251B2" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\README.md" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_s_B3832C2403" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{242C83B3-5103-BC19-9066-373C07D488AC}">
+        <File Id="FIL_OcrModels_pix2text_mfr_s_B3832C2403" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\special_tokens_map.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_t_35EDF842A4" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{42F8ED35-DCA4-156D-1651-D9D3CD5F1871}">
+        <File Id="FIL_OcrModels_pix2text_mfr_t_35EDF842A4" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\tokenizer_config.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_OcrModels_pix2text_mfr_t_A2386D528D" Directory="DIR_ADDINFOLDER_OcrModels_pi_37CE9727F8" Guid="{526D38A2-918D-D703-1D68-E70FE4DCD9A3}">
+        <File Id="FIL_OcrModels_pix2text_mfr_t_A2386D528D" Source="$(var.BuildOutputDir)\OcrModels\pix2text-mfr\tokenizer.json" KeyPath="yes" />
       </Component>
       <Component Id="CMP_SlideTeX_VstoAddin_dll_C3833C96E5" Directory="ADDINFOLDER" Guid="{963C83C3-8FE5-FDA6-DC62-D09EB01F34B0}">
         <File Id="FIL_SlideTeX_VstoAddin_dll_C3833C96E5" Source="$(var.BuildOutputDir)\SlideTeX.VstoAddin.dll" KeyPath="yes" />
@@ -41,11 +94,23 @@
       <Component Id="CMP_SlideTeX_VstoAddin_vsto_773136CF24" Directory="ADDINFOLDER" Guid="{CF363177-2624-D4C5-16D0-8B0C59C22137}">
         <File Id="FIL_SlideTeX_VstoAddin_vsto_773136CF24" Source="$(var.BuildOutputDir)\SlideTeX.VstoAddin.vsto" KeyPath="yes" />
       </Component>
+      <Component Id="CMP_System_Buffers_dll_FEF3707077" Directory="ADDINFOLDER" Guid="{7070F3FE-E077-3921-DD30-2D150B586F4C}">
+        <File Id="FIL_System_Buffers_dll_FEF3707077" Source="$(var.BuildOutputDir)\System.Buffers.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_System_Memory_dll_413B04CCE3" Directory="ADDINFOLDER" Guid="{CC043B41-34E3-1A6B-96BF-7F2471D900BF}">
+        <File Id="FIL_System_Memory_dll_413B04CCE3" Source="$(var.BuildOutputDir)\System.Memory.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_System_Numerics_Vectors__DF054063B1" Directory="ADDINFOLDER" Guid="{634005DF-86B1-5359-3EBD-7B3991FE4B9D}">
+        <File Id="FIL_System_Numerics_Vectors__DF054063B1" Source="$(var.BuildOutputDir)\System.Numerics.Vectors.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_System_Runtime_CompilerS_B372F95337" Directory="ADDINFOLDER" Guid="{53F972B3-4C37-E592-1B77-E43DE3A20A36}">
+        <File Id="FIL_System_Runtime_CompilerS_B372F95337" Source="$(var.BuildOutputDir)\System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" />
+      </Component>
       <Component Id="CMP_WebUI_assets_css_app_css_51E8A410A2" Directory="DIR_WEBUIFOLDER_assets_css_A7B43F1F6D" Guid="{10A4E851-2DA2-1C4B-D62A-3DB642A99296}">
         <File Id="FIL_WebUI_assets_css_app_css_51E8A410A2" Source="$(var.BuildOutputDir)\WebUI\assets\css\app.css" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_assets_data_katex__2F3FDA632A" Directory="DIR_WEBUIFOLDER_assets_data_F45427FD49" Guid="{63DA3F2F-792A-D69E-D7D7-3851915899F0}">
-        <File Id="FIL_WebUI_assets_data_katex__2F3FDA632A" Source="$(var.BuildOutputDir)\WebUI\assets\data\katex-commands.js" KeyPath="yes" />
+      <Component Id="CMP_WebUI_assets_data_latex__263564ECBF" Directory="DIR_WEBUIFOLDER_assets_data_F45427FD49" Guid="{EC643526-ABBF-A59A-7DE1-F43F98BE8F24}">
+        <File Id="FIL_WebUI_assets_data_latex__263564ECBF" Source="$(var.BuildOutputDir)\WebUI\assets\data\latex-commands.js" KeyPath="yes" />
       </Component>
       <Component Id="CMP_WebUI_assets_i18n_en_US__413BC9A25D" Directory="DIR_WEBUIFOLDER_assets_i18n_8BB8B417FC" Guid="{A2C93B41-EF5D-80B8-53D4-8F80BD187FBF}">
         <File Id="FIL_WebUI_assets_i18n_en_US__413BC9A25D" Source="$(var.BuildOutputDir)\WebUI\assets\i18n\en-US.json" KeyPath="yes" />
@@ -59,203 +124,332 @@
       <Component Id="CMP_WebUI_assets_js_editor_a_357C8510F5" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{10857C35-45F5-451A-B6F4-3B6A571C862E}">
         <File Id="FIL_WebUI_assets_js_editor_a_357C8510F5" Source="$(var.BuildOutputDir)\WebUI\assets\js\editor-adapter.js" KeyPath="yes" />
       </Component>
+      <Component Id="CMP_WebUI_assets_js_editor_a_89DB504AC7" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{4A50DB89-10C7-C5C8-DDD0-3BC9966C0284}">
+        <File Id="FIL_WebUI_assets_js_editor_a_89DB504AC7" Source="$(var.BuildOutputDir)\WebUI\assets\js\editor-adapter.source.js" KeyPath="yes" />
+      </Component>
       <Component Id="CMP_WebUI_assets_js_i18n_js_DE3A446E38" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{6E443ADE-6B38-2FC4-65DD-5EFC3E2FB66F}">
         <File Id="FIL_WebUI_assets_js_i18n_js_DE3A446E38" Source="$(var.BuildOutputDir)\WebUI\assets\js\i18n.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_assets_js_ocr_late_84025DBEF7" Directory="DIR_WEBUIFOLDER_assets_js_B2EB3E29A9" Guid="{BE5D0284-2CF7-7C92-CC0A-01107D843ABB}">
+        <File Id="FIL_WebUI_assets_js_ocr_late_84025DBEF7" Source="$(var.BuildOutputDir)\WebUI\assets\js\ocr-latex-postprocess.js" KeyPath="yes" />
       </Component>
       <Component Id="CMP_WebUI_index_html_F13E75ED66" Directory="WEBUIFOLDER" Guid="{ED753EF1-5B66-1EEF-B8F9-F316C9B6B9AC}">
         <File Id="FIL_WebUI_index_html_F13E75ED66" Source="$(var.BuildOutputDir)\WebUI\index.html" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_html2canvas_EE7E30A121" Directory="DIR_WEBUIFOLDER_vendor_50BE207E94" Guid="{A1307EEE-5621-7050-87C7-34CA31D57257}">
-        <File Id="FIL_WebUI_vendor_html2canvas_EE7E30A121" Source="$(var.BuildOutputDir)\WebUI\vendor\html2canvas.min.js" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_codemirror__742EA030F2" Directory="DIR_WEBUIFOLDER_vendor_codem_CCE1A49B85" Guid="{30A02E74-D9F2-A9DB-657A-A83087DE722F}">
+        <File Id="FIL_WebUI_vendor_codemirror__742EA030F2" Source="$(var.BuildOutputDir)\WebUI\vendor\codemirror\VERSIONS.md" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_D43CE38AE2" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{8AE33CD4-0BE2-92CC-44A8-736E95D4B203}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_D43CE38AE2" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_AMS-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_a11_026218EDAC" Directory="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Guid="{ED186202-7DAC-6D8A-029B-1907980B4F3F}">
+        <File Id="FIL_WebUI_vendor_mathjax_a11_026218EDAC" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\a11y\assistive-mml.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_A74A25BE98" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{BE254AA7-1D98-6FC5-305B-BC6BE35186AA}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_A74A25BE98" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_AMS-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_a11_DF620CE4B9" Directory="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Guid="{E40C62DF-D6B9-44F1-CE35-027C7BEC2E9C}">
+        <File Id="FIL_WebUI_vendor_mathjax_a11_DF620CE4B9" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\a11y\complexity.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_158B87D3F6" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{D3878B15-B4F6-E597-FC78-ACC2168AECE8}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_158B87D3F6" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_AMS-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_a11_3C0A674F82" Directory="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Guid="{4F670A3C-5082-7D59-E96C-0A377F83ABC1}">
+        <File Id="FIL_WebUI_vendor_mathjax_a11_3C0A674F82" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\a11y\explorer.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_74764BBA15" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{BA4B7674-5D15-AD9A-14A1-49AFCA325174}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_74764BBA15" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Bold.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_a11_45C5FE3CE2" Directory="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Guid="{3CFEC545-E3E2-BDB7-618A-9C4046537734}">
+        <File Id="FIL_WebUI_vendor_mathjax_a11_45C5FE3CE2" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\a11y\semantic-enrich.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_81CB3E0474" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{043ECB81-1E74-F052-7C0F-8266C50B91FF}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_81CB3E0474" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Bold.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_a11_6DD3EB5787" Directory="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Guid="{57EBD36D-B787-E8C7-8876-D8F1FEEC00CB}">
+        <File Id="FIL_WebUI_vendor_mathjax_a11_6DD3EB5787" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\a11y\speech.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_A38FCDDA5B" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{DACD8FA3-9F5B-338C-D6BA-2784623E9DCD}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_A38FCDDA5B" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Bold.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_a11_697706FDBA" Directory="DIR_WEBUIFOLDER_vendor_mathj_1FAA6383B4" Guid="{FD067769-13BA-A314-D7C5-E59450C910D5}">
+        <File Id="FIL_WebUI_vendor_mathjax_a11_697706FDBA" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\a11y\sre.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_DA3DA24C21" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{4CA23DDA-4A21-8136-A8DE-62B643D28D51}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_DA3DA24C21" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_ada_AEC777F693" Directory="DIR_WEBUIFOLDER_vendor_mathj_6A0096FAFA" Guid="{F677C7AE-AA93-93F9-12FF-51FE72E6E13E}">
+        <File Id="FIL_WebUI_vendor_mathjax_ada_AEC777F693" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\adaptors\jsdom.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_4E02476607" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{6647024E-2607-1B4C-FF78-03DC4095534B}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_4E02476607" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_ada_F01AC5AD30" Directory="DIR_WEBUIFOLDER_vendor_mathj_6A0096FAFA" Guid="{ADC51AF0-2430-8D80-48DE-3B85C6955811}">
+        <File Id="FIL_WebUI_vendor_mathjax_ada_F01AC5AD30" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\adaptors\linkedom.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_52D1E121CA" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{21E1D152-2ACA-ADC0-1B7C-9A252176B5A5}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_52D1E121CA" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Caligraphic-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_ada_98A2AF3B30" Directory="DIR_WEBUIFOLDER_vendor_mathj_6A0096FAFA" Guid="{3BAFA298-2630-EBBD-9749-611035DEF3B9}">
+        <File Id="FIL_WebUI_vendor_mathjax_ada_98A2AF3B30" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\adaptors\liteDOM.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_9D0A0ED152" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{D10E0A9D-D052-86BD-15AA-48083156A4A4}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_9D0A0ED152" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Bold.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_CON_579C726E41" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{6E729C57-8B41-015F-EB75-560FE3445842}">
+        <File Id="FIL_WebUI_vendor_mathjax_CON_579C726E41" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\CONTRIBUTING.md" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_098DE138F4" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{38E18D09-99F4-5EB2-4103-CA0E23223C01}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_098DE138F4" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Bold.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_cor_203573C39C" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{C3733520-9B9C-CFAF-0F2D-595BD3EDFA8D}">
+        <File Id="FIL_WebUI_vendor_mathjax_cor_203573C39C" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\core.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_A0E58560B6" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{6085E5A0-2BB6-3602-58E6-429525C7A083}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_A0E58560B6" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Bold.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_B772BCD3C7" Directory="DIR_WEBUIFOLDER_vendor_mathj_0126DA2586" Guid="{D3BC72B7-77C7-5E6E-6112-8CFC3B6E7694}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_B772BCD3C7" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\asciimath.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_248AF6BD01" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{BDF68A24-4D01-AA23-766A-91B7283F527D}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_248AF6BD01" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_4C00011717" Directory="DIR_WEBUIFOLDER_vendor_mathj_0126DA2586" Guid="{1701004C-1217-2C59-9B1E-FF463422EC44}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_4C00011717" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\mml.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_4E6744CB78" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{CB44674E-D878-75B0-1279-94BF49C15DBC}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_4E6744CB78" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_870EDFB708" Directory="DIR_WEBUIFOLDER_vendor_mathj_AF14B479DA" Guid="{B7DF0E87-1D08-81A3-9820-841D56415F72}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_870EDFB708" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\mml\entities.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_CFCCDDA110" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{A1DDCCCF-F510-E56A-8213-C1AF071EAEC8}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_CFCCDDA110" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Fraktur-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_1F96085F4B" Directory="DIR_WEBUIFOLDER_vendor_mathj_B50DEEFB0A" Guid="{5F08961F-E24B-29A2-2242-403B7BDC40F7}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_1F96085F4B" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\mml\extensions\mml3.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_E0FA71AE95" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{AE71FAE0-AD95-2FD7-D623-37D7B72FC6D4}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_E0FA71AE95" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Bold.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_03150B1505" Directory="DIR_WEBUIFOLDER_vendor_mathj_B50DEEFB0A" Guid="{150B1503-E805-AEF7-2D72-0B50799D5A92}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_03150B1505" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\mml\extensions\mml3.sef.json" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_58971ACF17" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{CF1A9758-0517-ADCA-531F-B65CB161FE09}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_58971ACF17" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Bold.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_86BF84D632" Directory="DIR_WEBUIFOLDER_vendor_mathj_0126DA2586" Guid="{D684BF86-CA32-F1B7-2DD0-BBF9F37F3103}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_86BF84D632" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex-base.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_E92A3CF4AB" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{F43C2AE9-5AAB-C6CB-4A23-B2FE1E1C8FDF}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_E92A3CF4AB" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Bold.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_FFA6328935" Directory="DIR_WEBUIFOLDER_vendor_mathj_0126DA2586" Guid="{8932A6FF-CA35-3DD6-A7F7-457F4BA9C54D}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_FFA6328935" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_E4716208FA" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{086271E4-42FA-1C6D-2BE8-7780750E11FE}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_E4716208FA" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-BoldItalic.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_8FEC008756" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{8700EC8F-5F56-0774-54E8-D769E5FF7895}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_8FEC008756" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\action.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_5DF0CFA751" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{A7CFF05D-C351-BBD3-256E-07911D00D641}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_5DF0CFA751" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-BoldItalic.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_DDFA573832" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{3857FADD-2332-C1B9-B306-90B33D2B038D}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_DDFA573832" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\ams.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_841BFCA138" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{A1FC1B84-DD38-996C-97DC-83912735ACCB}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_841BFCA138" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-BoldItalic.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_3ECA772CFB" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{2C77CA3E-E2FB-0825-BC6E-5974B44DDDF7}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_3ECA772CFB" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\amscd.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_3328BA04A0" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{04BA2833-4DA0-0282-2A02-C3EA21F031C5}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_3328BA04A0" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Italic.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_D6407327F3" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{277340D6-48F3-B0F1-257E-8513E1E42CDB}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_D6407327F3" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\autoload.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_EB6CD82075" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{20D86CEB-3675-AFEA-A238-3727D889964E}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_EB6CD82075" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Italic.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_98A71CE507" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{E51CA798-D407-3E13-F117-3CAF3E647333}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_98A71CE507" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\bbm.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_5097BDC234" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{C2BD9750-B434-631C-8710-B74128B27713}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_5097BDC234" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Italic.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_B94ABC7726" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{77BC4AB9-BB26-C8C8-C8AD-D56DF1D6F23B}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_B94ABC7726" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\bboldx.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_702BBE14A4" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{14BE2B70-11A4-EBD2-D24C-98B4F79F5835}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_702BBE14A4" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_E9DBDBD528" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{D5DBDBE9-0D28-7B07-C736-F51DFAEA7CE6}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_E9DBDBD528" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\bbox.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_F22FAB4878" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{48AB2FF2-A078-911C-31CC-68B49FCC2A11}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_F22FAB4878" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_C04B35EEE8" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{EE354BC0-82E8-3C0D-031B-D7A91B4ED82E}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_C04B35EEE8" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\begingroup.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_03351B02C2" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{021B3503-37C2-673B-0D50-731CD08F7AFE}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_03351B02C2" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Main-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_596E866041" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{60866E59-C941-B795-EEDA-A227F8445A66}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_596E866041" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\boldsymbol.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_CB2AD733C3" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{33D72ACB-1CC3-C26F-5DB4-17923FB2D519}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_CB2AD733C3" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-BoldItalic.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_CD0613F292" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{F21306CD-AD92-FB56-E365-0617C462701F}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_CD0613F292" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\braket.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_2BA3E547E3" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{47E5A32B-E0E3-F1E9-5C45-8177E2FD15AB}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_2BA3E547E3" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-BoldItalic.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_8280D64F23" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{4FD68082-8A23-CA71-1D01-BA2589183DE4}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_8280D64F23" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\bussproofs.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_84A89753BC" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{5397A884-19BC-4C25-D74B-A1B61F7379AC}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_84A89753BC" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-BoldItalic.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_5F6840885C" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{8840685F-685C-824B-0100-CFE59A610992}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_5F6840885C" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\cancel.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_D787517C83" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{7C5187D7-2783-D32F-8BE0-0530E08E00AA}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_D787517C83" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-Italic.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_A37D5E7168" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{715E7DA3-F168-DDB6-F792-F6720B002D5F}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_A37D5E7168" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\cases.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_53EED9EC98" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{ECD9EE53-6B98-5A1A-184C-F9E0E0FB9713}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_53EED9EC98" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-Italic.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_DFF77344B0" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{4473F7DF-B7B0-F030-C0BA-658D383087EC}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_DFF77344B0" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\centernot.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_A49FF0FCD2" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{FCF09FA4-56D2-6056-C63A-A54B69B6CE7E}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_A49FF0FCD2" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Math-Italic.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_3903E2DF82" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{DFE20339-9882-8A45-77DA-1638BEDDBC41}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_3903E2DF82" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\color.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_15FC9C81A0" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{819CFC15-5BA0-DFB2-5EFF-B119BB7602C2}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_15FC9C81A0" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Bold.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_7E3BF4FACE" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{FAF43B7E-0DCE-4AC5-4048-432507B9538D}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_7E3BF4FACE" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\colortbl.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_A80B4EF20A" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{F24E0BA8-AF0A-0A4A-4A18-35F386C55631}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_A80B4EF20A" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Bold.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_251B61CFB8" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{CF611B25-ABB8-9F99-275A-5A7FB626D2CD}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_251B61CFB8" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\colorv2.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_55CA9593F7" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{9395CA55-E6F7-12E3-6B1C-9A7BCD71D056}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_55CA9593F7" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Bold.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_0EDCA1C84D" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{C8A1DC0E-4C4D-F3A0-89B8-99D8C16F06FB}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_0EDCA1C84D" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\configmacros.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_4158AAE0DB" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{E0AA5841-15DB-7DF6-D528-6F27B64465F6}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_4158AAE0DB" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Italic.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_71E9673CB6" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{3C67E971-A1B6-405A-B63E-C36C5D9B077B}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_71E9673CB6" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\dsfont.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_B9B063C88B" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{C863B0B9-A48B-971B-7196-033AAE3D2FDF}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_B9B063C88B" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Italic.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_817D3C2900" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{293C7D81-AF00-0473-5297-0878665EBF3C}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_817D3C2900" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\empheq.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_08FB0C367E" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{360CFB08-567E-DA4D-2947-A22D1865F6D4}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_08FB0C367E" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Italic.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_952B73FEF0" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{FE732B95-B2F0-61D7-FD03-1B91EA2DF09F}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_952B73FEF0" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\enclose.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_E02AC3EA5D" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{EAC32AE0-7C5D-287D-AB9C-B7783F99DF9F}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_E02AC3EA5D" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_8750EE8D49" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{8DEE5087-9549-A547-CF31-8E115D189B82}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_8750EE8D49" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\extpfeil.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_B04511C677" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{C61145B0-C677-55D9-61F1-F7B240B3898F}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_B04511C677" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_2E34BEA052" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{A0BE342E-9852-0F1E-79B1-6A06CC778DF5}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_2E34BEA052" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\gensymb.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_B108EB212C" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{21EB08B1-FA2C-41C1-D3E3-3A97656A1ECE}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_B108EB212C" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_SansSerif-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_B9DC0D9E88" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{9E0DDCB9-4188-85C2-A6B9-DF736E387835}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_B9DC0D9E88" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\html.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_2BD09C1574" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{159CD02B-EF74-6057-8DE3-5F0D0504305D}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_2BD09C1574" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Script-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_A2BCEADBF9" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{DBEABCA2-7EF9-68AB-0CF8-F5402C3E46D7}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_A2BCEADBF9" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\mathtools.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_C0622B1901" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{192B62C0-EA01-3452-047F-642DE779F7AC}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_C0622B1901" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Script-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_D6E19565E2" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{6595E1D6-44E2-1678-7E87-53DFA5D27B5A}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_D6E19565E2" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\mhchem.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_60812289DB" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{89228160-A3DB-9D0C-9DA1-0795044F21BB}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_60812289DB" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Script-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_F3D953F140" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{F153D9F3-0C40-8863-F96A-F5F451987175}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_F3D953F140" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\newcommand.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_DD0111979F" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{971101DD-5B9F-D84E-926B-D3DE2A31C8D5}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_DD0111979F" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size1-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_4E3BDFA8C0" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{A8DF3B4E-E8C0-CDAE-1114-DBF3CD47BFBA}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_4E3BDFA8C0" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\noerrors.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_B76A260B52" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{0B266AB7-7B52-0AEE-6DAF-971111E64789}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_B76A260B52" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size1-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_2DE2AA5909" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{59AAE22D-3809-C0C2-4912-564A59070361}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_2DE2AA5909" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\noundefined.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_F39755D040" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{D05597F3-9C40-EC09-A378-EA23EAE07F97}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_F39755D040" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size1-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_5CB067C355" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{C367B05C-4255-82CA-03C3-7F5E9B5FB75B}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_5CB067C355" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\physics.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_12805B6ECF" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{6E5B8012-99CF-AEAF-70E9-6091A309FA01}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_12805B6ECF" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size2-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_35ACECDFDA" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{DFECAC35-63DA-804A-B36D-4636649CFC03}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_35ACECDFDA" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\require.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_CFC968E16C" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{E168C9CF-B06C-7A5E-2236-CA96F5E5034F}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_CFC968E16C" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size2-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_84984F3476" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{344F9884-BC76-06B0-47C5-6DA5ED9FC4E9}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_84984F3476" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\setoptions.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_3A1B4CFA21" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{FA4C1B3A-5721-C8CA-CD62-DF315F8F64ED}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_3A1B4CFA21" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size2-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_1EA5E47832" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{78E4A51E-6632-CC78-2BCD-E4EB4ACBC570}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_1EA5E47832" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\tagformat.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_97211C8C54" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{8C1C2197-6854-BC1D-98B4-87730AB37886}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_97211C8C54" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size3-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_E0F425C044" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{C025F4E0-9644-C5D6-17AA-82F60946CB0A}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_E0F425C044" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\texhtml.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_32C0D376DE" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{76D3C032-55DE-5CE0-F6E9-8AFB22EAF471}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_32C0D376DE" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size3-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_74BA6CC5D8" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{C56CBA74-28D8-59E4-440F-6CBDE6298355}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_74BA6CC5D8" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\textcomp.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_A70C6459D9" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{59640CA7-58D9-0A48-87E9-89CA948CDBED}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_A70C6459D9" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size3-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_186F7B86C2" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{867B6F18-ACC2-1C93-B9B9-571727921F0B}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_186F7B86C2" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\textmacros.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_53E1F3512C" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{51F3E153-AE2C-38A7-9534-0C579BF7F1FA}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_53E1F3512C" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size4-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_803CC20D9C" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{0DC23C80-5E9C-10A7-AB94-297090849B76}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_803CC20D9C" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\unicode.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_605E82E204" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{E2825E60-2804-3655-AC3B-07214AE4B50A}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_605E82E204" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size4-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_EC03F9AF57" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{AFF903EC-1157-1E62-3EC2-269713FF692C}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_EC03F9AF57" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\units.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_6E154B8C28" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{8C4B156E-A228-E1D2-1ED1-8ACE28EBB602}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_6E154B8C28" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Size4-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_AD0D7CA877" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{A87C0DAD-6877-D9B7-38A8-2C34137B98D0}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_AD0D7CA877" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\upgreek.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_0E05C7035B" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{03C7050E-765B-DF8B-BA98-8EF9BF623732}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_0E05C7035B" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Typewriter-Regular.ttf" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_inp_6DCAC2A4C1" Directory="DIR_WEBUIFOLDER_vendor_mathj_B163486B6C" Guid="{A4C2CA6D-CEC1-820B-9EA5-61505A43E281}">
+        <File Id="FIL_WebUI_vendor_mathjax_inp_6DCAC2A4C1" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\input\tex\extensions\verb.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_1A9C185291" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{52189C1A-9E91-53EF-F575-5B0423841AAB}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_1A9C185291" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Typewriter-Regular.woff" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_LIC_E8368FB03A" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{B08F36E8-B13A-3881-E009-FB61FF04EDF5}">
+        <File Id="FIL_WebUI_vendor_mathjax_LIC_E8368FB03A" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\LICENSE" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_fonts_34ADB39F10" Directory="DIR_WEBUIFOLDER_vendor_katex_1A1C41AC4F" Guid="{9FB3AD34-5C10-77A7-BA09-4442E51159CB}">
-        <File Id="FIL_WebUI_vendor_katex_fonts_34ADB39F10" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\fonts\KaTeX_Typewriter-Regular.woff2" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_loa_B14AF6727A" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{72F64AB1-207A-F845-4023-A6A04E4DCE22}">
+        <File Id="FIL_WebUI_vendor_mathjax_loa_B14AF6727A" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\loader.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_katex_318D7CA2BF" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{A27C8D31-F8BF-7E73-FF18-132C15A19603}">
-        <File Id="FIL_WebUI_vendor_katex_katex_318D7CA2BF" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\katex.min.css" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_mml_2B68BBA93A" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{A9BB682B-073A-2BFA-B483-FA54DA71E502}">
+        <File Id="FIL_WebUI_vendor_mathjax_mml_2B68BBA93A" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\mml-chtml-nofont.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_katex_A2BB201405" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{1420BBA2-A405-B0D6-E985-8EC3AEA04692}">
-        <File Id="FIL_WebUI_vendor_katex_katex_A2BB201405" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\katex.min.js" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_mml_AE2E6CA4E9" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{A46C2EAE-7FE9-3037-608B-CCD8F48BC4E1}">
+        <File Id="FIL_WebUI_vendor_mathjax_mml_AE2E6CA4E9" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\mml-chtml.js" KeyPath="yes" />
       </Component>
-      <Component Id="CMP_WebUI_vendor_katex_READM_6BD80A8FEC" Directory="DIR_WEBUIFOLDER_vendor_katex_7A6450E6E7" Guid="{8F0AD86B-CFEC-4071-F462-E578F25A4C9E}">
-        <File Id="FIL_WebUI_vendor_katex_READM_6BD80A8FEC" Source="$(var.BuildOutputDir)\WebUI\vendor\katex\README.md" KeyPath="yes" />
+      <Component Id="CMP_WebUI_vendor_mathjax_mml_1C2D650BB8" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{0B652D1C-8AB8-9651-6D40-4BED5408FE7D}">
+        <File Id="FIL_WebUI_vendor_mathjax_mml_1C2D650BB8" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\mml-svg-nofont.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_mml_98AF87FAAF" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{FA87AF98-BFAF-AA11-7EC3-3F11233D28B9}">
+        <File Id="FIL_WebUI_vendor_mathjax_mml_98AF87FAAF" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\mml-svg.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_nod_253840AA58" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{AA403825-7558-3AFD-DD2C-50FA6E9CD0E2}">
+        <File Id="FIL_WebUI_vendor_mathjax_nod_253840AA58" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\node-main-setup.cjs" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_nod_D109A1DC34" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{DCA109D1-A534-510C-CAA5-F4E4F0CE4C7D}">
+        <File Id="FIL_WebUI_vendor_mathjax_nod_D109A1DC34" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\node-main.cjs" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_nod_DAA2308A79" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{8A30A2DA-C179-0444-B887-02C674692B7B}">
+        <File Id="FIL_WebUI_vendor_mathjax_nod_DAA2308A79" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\node-main.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_nod_2F63187A14" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{7A18632F-7014-9AEB-7C67-E4C1B6972108}">
+        <File Id="FIL_WebUI_vendor_mathjax_nod_2F63187A14" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\node-main.mjs" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_out_420A91F989" Directory="DIR_WEBUIFOLDER_vendor_mathj_8EBEB347F7" Guid="{F9910A42-4989-EDBB-34DA-E222771CAD97}">
+        <File Id="FIL_WebUI_vendor_mathjax_out_420A91F989" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\output\chtml.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_out_58E46ABAEA" Directory="DIR_WEBUIFOLDER_vendor_mathj_8EBEB347F7" Guid="{BA6AE458-BFEA-9C29-D9B1-2908D6C5B79B}">
+        <File Id="FIL_WebUI_vendor_mathjax_out_58E46ABAEA" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\output\svg.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_pac_769FB62797" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{27B69F76-1397-BF53-5CE3-603F649A432C}">
+        <File Id="FIL_WebUI_vendor_mathjax_pac_769FB62797" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\package.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_REA_BA4E57525D" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{52574EBA-115D-6D0F-9B6F-421240B6C998}">
+        <File Id="FIL_WebUI_vendor_mathjax_REA_BA4E57525D" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\README.md" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_req_D025C0F251" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{F2C025D0-8551-6EB9-24C8-A659FDFAD723}">
+        <File Id="FIL_WebUI_vendor_mathjax_req_D025C0F251" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\require.mjs" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_BE46CFD6F9" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{D6CF46BE-08F9-1496-DBB5-A781DFA3475D}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_BE46CFD6F9" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\af.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_13A1104EBB" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{4E10A113-C6BB-264C-591D-BB7228CD2A19}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_13A1104EBB" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\base.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_12047210DC" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{10720412-9EDC-4BDA-B396-636C925EAAD6}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_12047210DC" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\ca.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_06CF16427F" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{4216CF06-0D7F-AD55-608F-B35CFA28E9E1}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_06CF16427F" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\da.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_68FE9AF5C3" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{F59AFE68-19C3-999D-78D8-550408252E5F}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_68FE9AF5C3" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\de.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_B19D8B5656" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{568B9DB1-B256-D00E-3032-F8D5A5676F51}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_B19D8B5656" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\en.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_28D670859E" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{8570D628-849E-308D-32EE-642940E0FC64}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_28D670859E" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\es.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_D01CCC9573" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{95CC1CD0-7F73-1507-8A2E-85CA4B09BB84}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_D01CCC9573" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\euro.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_5C46D91B78" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{1BD9465C-EB78-30C1-28E7-7A4BEC0BBC44}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_5C46D91B78" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\fr.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_F8485C9AF4" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{9A5C48F8-D5F4-8638-C86F-C7A607B431B1}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_F8485C9AF4" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\hi.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_D13DEFED10" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{EDEF3DD1-6310-1BF3-60C2-2FCC72BAEDB4}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_D13DEFED10" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\it.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_881CE4E21A" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{E2E41C88-2A1A-268C-FBCE-A43256D2E469}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_881CE4E21A" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\ko.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_F4BDC5C50F" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{C5C5BDF4-F50F-0BB3-655A-EE9D7132E7E4}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_F4BDC5C50F" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\nb.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_CB6F2847E0" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{47286FCB-C7E0-803B-318B-3EF04B6B9EFB}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_CB6F2847E0" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\nemeth.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_4ABB8AC725" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{C78ABB4A-2825-242C-5FD0-AECFFD720984}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_4ABB8AC725" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\nn.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_B98312FC88" Directory="DIR_WEBUIFOLDER_vendor_mathj_37D794D9E4" Guid="{FC1283B9-AF88-AE49-825C-AC10DB479AB5}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_B98312FC88" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\mathmaps\sv.json" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_F6CF5E735F" Directory="DIR_WEBUIFOLDER_vendor_mathj_B80FEF8C84" Guid="{735ECFF6-635F-84C2-B585-5A0E324B3BE6}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_F6CF5E735F" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\require.d.mts" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_E06BDFF459" Directory="DIR_WEBUIFOLDER_vendor_mathj_B80FEF8C84" Guid="{F4DF6BE0-C859-8E06-2593-EB4CB4F41D70}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_E06BDFF459" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\require.mjs" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sre_122173F233" Directory="DIR_WEBUIFOLDER_vendor_mathj_B80FEF8C84" Guid="{F2732112-BC33-6E09-ED9C-30B6BA1C2A4B}">
+        <File Id="FIL_WebUI_vendor_mathjax_sre_122173F233" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\sre\speech-worker.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_sta_8D25BBA473" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{A4BB258D-F073-1942-70C2-0A5F4E723F18}">
+        <File Id="FIL_WebUI_vendor_mathjax_sta_8D25BBA473" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\startup.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_9770C6ED3A" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{EDC67097-723A-4501-DD3C-315C415667C8}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_9770C6ED3A" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-chtml-nofont.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_AA49487FD6" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{7F4849AA-52D6-85C6-2F31-B245890208DE}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_AA49487FD6" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-chtml.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_324C261771" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{17264C32-5B71-403A-D0D8-4DC9C682531B}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_324C261771" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-mml-chtml-nofont.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_E760CB1A71" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{1ACB60E7-3171-901A-FAFF-118DF135E536}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_E760CB1A71" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-mml-chtml.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_1D87288A7F" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{8A28871D-347F-50A0-0F44-B95E8EEAAC57}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_1D87288A7F" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-mml-svg-nofont.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_5BEEEDCFFE" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{CFEDEE5B-67FE-8AC3-FA30-EF0819B374D2}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_5BEEEDCFFE" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-mml-svg.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_64B9F78EBA" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{8EF7B964-19BA-DA49-3DA3-30D57B774910}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_64B9F78EBA" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-svg-nofont.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_tex_CD15693186" Directory="DIR_WEBUIFOLDER_vendor_mathj_C7A1EBD446" Guid="{316915CD-3486-80E0-BEBB-A7E88ADE4265}">
+        <File Id="FIL_WebUI_vendor_mathjax_tex_CD15693186" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\tex-svg.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_ui__EF2BEE724B" Directory="DIR_WEBUIFOLDER_vendor_mathj_E899D55B08" Guid="{72EE2BEF-DF4B-DD6B-01ED-78343625602C}">
+        <File Id="FIL_WebUI_vendor_mathjax_ui__EF2BEE724B" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\ui\lazy.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_ui__1FC0394944" Directory="DIR_WEBUIFOLDER_vendor_mathj_E899D55B08" Guid="{4939C01F-D244-5500-AF2E-86A3A7C69B52}">
+        <File Id="FIL_WebUI_vendor_mathjax_ui__1FC0394944" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\ui\menu.js" KeyPath="yes" />
+      </Component>
+      <Component Id="CMP_WebUI_vendor_mathjax_ui__EC54D51865" Directory="DIR_WEBUIFOLDER_vendor_mathj_E899D55B08" Guid="{18D554EC-6365-A11C-BE07-0376801EA119}">
+        <File Id="FIL_WebUI_vendor_mathjax_ui__EC54D51865" Source="$(var.BuildOutputDir)\WebUI\vendor\mathjax\ui\safe.js" KeyPath="yes" />
       </Component>
       <Component Id="CMP_zh_CN_SlideTeX_VstoAddin_AC5F118284" Directory="DIR_ADDINFOLDER_zh_CN_638C79DB26" Guid="{82115FAC-D484-C73D-B098-3008804CF1C5}">
         <File Id="FIL_zh_CN_SlideTeX_VstoAddin_AC5F118284" Source="$(var.BuildOutputDir)\zh-CN\SlideTeX.VstoAddin.resources.dll" KeyPath="yes" />

@@ -1,17 +1,8 @@
 {
   "tags": [],
   "displayCount": 0,
-  "hasKatexError": true,
-  "fontChecks": [
-    {
-      "font": "KaTeX_Main",
-      "ok": true
-    },
-    {
-      "font": "KaTeX_Math",
-      "ok": true
-    }
-  ],
+  "hasRenderError": true,
+  "fontChecks": [],
   "overlapCount": 0,
   "gapViolations": 0,
   "isClipped": false

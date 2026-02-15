@@ -35,7 +35,7 @@ namespace SlideTeX.VstoAddin.Metadata
         public string DisplayMode { get; set; } = "auto";
 
         /// <summary>
-        /// Compatibility mode for KaTeX strict handling.
+        /// Compatibility mode for strict handling behavior.
         /// </summary>
         public string ToleranceMode { get; set; } = "strict";
 
@@ -66,5 +66,4 @@ namespace SlideTeX.VstoAddin.Metadata
         }
     }
 }
-
 

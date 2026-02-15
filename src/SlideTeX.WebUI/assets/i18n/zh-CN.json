@@ -34,9 +34,9 @@
       "ocr_host_unavailable": "宿主 OCR 桥接不可用。",
       "ocr_empty_result": "OCR 未识别到公式内容。",
       "ocr_failed": "公式 OCR 失败。",
-      "katex_missing": "KaTeX 资源不存在，请先同步 vendor/katex 目录。",
-      "katex_render_failed": "KaTeX 渲染失败，请检查公式语法。",
-      "katex_render_failed_with_detail": "KaTeX 渲染失败：{detail}"
+      "mathjax_missing": "MathJax 资源不存在，请先同步 vendor/mathjax 目录。",
+      "mathjax_render_failed": "MathJax 渲染失败，请检查公式语法。",
+      "mathjax_render_failed_with_detail": "MathJax 渲染失败：{detail}"
     }
   }
 }

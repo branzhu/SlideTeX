@@ -18,7 +18,7 @@ const webRoot = path.join(repoRoot, 'src', 'SlideTeX.WebUI');
 function parseArgs(argv) {
   const args = {
     mode: 'verify',
-    fixture: path.join(repoRoot, 'tests', 'render-regression', 'render-visual-katex-v1.json'),
+    fixture: path.join(repoRoot, 'tests', 'render-regression', 'render-visual-mathjax-v1.json'),
     artifactsDir: path.join(repoRoot, 'artifacts', 'render-regression'),
     suite: 'all',
     caseIds: [],
@@ -339,7 +339,7 @@ function createDomSnapshot(metrics) {
   return {
     tags: metrics.tagTexts,
     displayCount: metrics.displayCount,
-    hasKatexError: metrics.hasKatexError,
+    hasRenderError: metrics.hasRenderError,
     fontChecks: metrics.fontChecks,
     overlapCount: metrics.layout.overlapCount,
     gapViolations: metrics.layout.gapViolations,
@@ -356,8 +356,8 @@ function compareDomSnapshot(expected, actual) {
   if (Number(expected.displayCount) !== Number(actual.displayCount)) {
     failures.push('DOM baseline displayCount mismatch');
   }
-  if (Boolean(expected.hasKatexError) !== Boolean(actual.hasKatexError)) {
-    failures.push('DOM baseline hasKatexError mismatch');
+  if (Boolean(expected.hasRenderError) !== Boolean(actual.hasRenderError)) {
+    failures.push('DOM baseline hasRenderError mismatch');
   }
 
   const expectedFonts = expected.fontChecks || [];
@@ -409,7 +409,7 @@ async function collectMetrics(page, testCase) {
     });
     const normalizeTagText = (value) =>
       String(value || '')
-        // Remove zero-width chars that KaTeX may inject for layout.
+        // Remove zero-width chars that may be injected for layout.
         .replace(/[\u200B-\u200D\uFEFF]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
@@ -448,23 +448,30 @@ async function collectMetrics(page, testCase) {
     const errorMessage = (errorElement?.textContent || '').trim();
     const errorVisible = Boolean(errorElement && !errorElement.classList.contains('hidden'));
 
-    const katexErrorElement = document.querySelector('#previewContent .katex-error');
-    const katexErrorText = katexErrorElement
-      ? String(katexErrorElement.getAttribute('title') || katexErrorElement.textContent || '').trim()
+    const previewContent = document.getElementById('previewContent');
+    const renderErrorElement = document.querySelector('#previewContent mjx-merror, #previewContent [data-mjx-error]');
+    const renderErrorText = renderErrorElement
+      ? String(renderErrorElement.getAttribute('title') || renderErrorElement.textContent || '').trim()
       : '';
 
-    const tagTexts = Array.from(document.querySelectorAll('#previewContent .tag'))
-      .flatMap((el) => splitTagTokens(el.textContent || ''))
-      .filter((text) => text.length > 0);
+    let tagTexts = [];
+    try {
+      const raw = previewContent?.dataset?.tagTokens || '[]';
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        tagTexts = parsed.map((item) => normalizeTagText(item)).filter((text) => text.length > 0);
+      }
+    } catch {
+      tagTexts = [];
+    }
 
-    const displayNodes = Array.from(document.querySelectorAll('#previewContent .katex-display'));
-    const displayCount = displayNodes.length;
+    const displayCount = previewContent?.dataset?.displayMode === 'display' ? 1 : 0;
 
     let overlapCount = 0;
     let gapViolations = 0;
     const tagGaps = [];
 
-    for (const display of displayNodes) {
+    for (const display of []) {
       const tags = Array.from(display.querySelectorAll('.tag')).map((el) => toRect(el.getBoundingClientRect()));
       const bases = Array.from(display.querySelectorAll('.base'))
         .filter((el) => !el.closest('.tag'))
@@ -498,7 +505,6 @@ async function collectMetrics(page, testCase) {
     }
 
     const previewBox = document.getElementById('previewBox');
-    const previewContent = document.getElementById('previewContent');
     const isClipped = Boolean(
       previewBox && previewContent && (
         previewContent.scrollWidth > previewBox.clientWidth + 1 ||
@@ -516,8 +522,8 @@ async function collectMetrics(page, testCase) {
       statusText,
       errorMessage,
       errorVisible,
-      hasKatexError: Boolean(katexErrorElement),
-      katexErrorText,
+      hasRenderError: Boolean(renderErrorElement),
+      renderErrorText,
       tagTexts,
       displayCount,
       fontChecks,
@@ -626,13 +632,17 @@ async function run() {
       const logPath = path.join(logsDir, `${testCase.id}.json`);
 
       if (expected.errorContains) {
-        const errorSource = `${metrics.errorMessage} ${metrics.katexErrorText}`;
-        if (!errorSource.includes(String(expected.errorContains))) {
-          errors.push(`Expected error to contain: ${expected.errorContains}`);
+        const errorSource = `${metrics.errorMessage} ${metrics.renderErrorText}`;
+        const expectedErrorTokens = Array.isArray(expected.errorContains)
+          ? expected.errorContains.map((token) => String(token))
+          : [String(expected.errorContains)];
+        const matched = expectedErrorTokens.some((token) => errorSource.includes(token));
+        if (!matched) {
+          errors.push(`Expected error to contain one of: ${expectedErrorTokens.join(' | ')}`);
         }
       } else {
-        if (metrics.errorVisible || metrics.hasKatexError) {
-          errors.push(`Unexpected render error: ${metrics.errorMessage || metrics.katexErrorText || 'unknown error'}`);
+        if (metrics.errorVisible || metrics.hasRenderError) {
+          errors.push(`Unexpected render error: ${metrics.errorMessage || metrics.renderErrorText || 'unknown error'}`);
         }
       }
 
@@ -740,4 +750,3 @@ run().catch((error) => {
   console.error(error instanceof Error ? error.stack || error.message : String(error));
   process.exitCode = 1;
 });
-

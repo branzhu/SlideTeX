@@ -1,6 +1,6 @@
 # SlideTeX
 
-An offline PowerPoint add-in prototype for rendering LaTeX (KaTeX subset) to PNG, inserting equations into slides, and supporting re-edit via metadata.
+An offline PowerPoint add-in prototype for rendering LaTeX to PNG, inserting equations into slides, and supporting re-edit via metadata.
 
 `Status`: prototype / work in progress (not production-ready)
 
@@ -11,7 +11,7 @@ Language: **English** | [简体中文](README.zh-CN.md)
 - PowerPoint task pane for LaTeX input, preview, insert, and update.
 - Equation insertion as embedded PNG, so decks remain viewable on machines without the add-in.
 - Shape metadata persistence for round-trip edit/update workflows.
-- KaTeX-based rendering engine (fast, no local LaTeX installation), limited to the KaTeX-supported LaTeX subset.
+- MathJax-based rendering engine (no local LaTeX installation), exported through SVG-to-PNG.
 - CodeMirror 6-based editor with syntax highlighting and completion.
 
 ## Screenshot
@@ -56,19 +56,19 @@ wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
 1. Sync third-party assets:
 
 ```powershell
-pwsh ./scripts/Sync-KaTeX.ps1 -Version 0.16.11
+pwsh ./scripts/Sync-MathJax.ps1 -Version 4.1.0
 ```
 
 Sync pix2text-mfr OCR model files (download from Hugging Face):
 
 ```powershell
-pwsh ./scripts/Sync-KaTeX.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
+pwsh ./scripts/Sync-MathJax.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
 ```
 
 Sync all supported third-party assets:
 
 ```powershell
-pwsh ./scripts/Sync-KaTeX.ps1 -Component all
+pwsh ./scripts/Sync-MathJax.ps1 -Component all
 ```
 
 2. Generate inline i18n bundle after `src/SlideTeX.WebUI/assets/i18n/*.json` changes:
@@ -171,7 +171,7 @@ The workflow generates a temporary code-signing certificate and passes its thumb
 ## Limitations
 
 - Windows-only (PowerPoint desktop).
-- KaTeX subset support (not full TeX/LaTeX ecosystem).
+- Math formula support is scoped to the current rendering pipeline (not full TeX/LaTeX ecosystem).
 - Production signing and release process is not included in this repository.
 
 ## Third-Party Components
@@ -180,8 +180,7 @@ The table below lists the main third-party components used in this project:
 
 | Component | Version | License | Usage |
 | --- | --- | --- | --- |
-| KaTeX | `0.16.11` | MIT | Equation rendering (runtime, vendored in `src/SlideTeX.WebUI/vendor/katex`) |
-| html2canvas | `1.4.1` | MIT | DOM-to-image rendering (runtime, vendored in `src/SlideTeX.WebUI/vendor/html2canvas.min.js`) |
+| MathJax | `4.1.0` | Apache-2.0 | Equation rendering and SVG output (runtime, vendored in `src/SlideTeX.WebUI/vendor/mathjax`) |
 | CodeMirror | `6.0.2` | MIT | Editor core (runtime bundle in `src/SlideTeX.WebUI/assets/js/editor-adapter.js`) |
 | @codemirror/legacy-modes | `6.5.2` | MIT | Editor language modes (bundled at build time) |
 | pixelmatch | `7.1.0` | ISC | Render regression image diffing (test tooling) |
@@ -193,7 +192,7 @@ The table below lists the main third-party components used in this project:
 Notes:
 - Versions are pinned in repository configs/scripts (`package.json`, `src/SlideTeX.WebUI/vendor/codemirror/VERSIONS.md`).
 - License identifiers are based on upstream package metadata. Refer to upstream repositories/distributions for full license texts.
-- OCR model binaries under `src/SlideTeX.VstoAddin/Assets/OcrModels` are ignored by git and should be synced via `scripts/Sync-KaTeX.ps1`.
+- OCR model binaries under `src/SlideTeX.VstoAddin/Assets/OcrModels` are ignored by git and should be synced via `scripts/Sync-MathJax.ps1`.
 
 ## License
 

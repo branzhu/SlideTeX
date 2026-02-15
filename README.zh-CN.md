@@ -11,7 +11,7 @@
 - 在PowerPoint任务窗格中输入 LaTeX、预览、插入、更新。
 - 公式以 PNG 形式嵌入到 PPT，在未安装插件的电脑上也可以显示。
 - 通过Shape元数据保存公式信息，支持回填编辑与更新。
-- 采用 KaTeX 作为渲染核心，速度快，不需要本地安装 LaTeX；同时只支持 KaTeX 支持的 LaTeX 子集。
+- 采用 MathJax 作为渲染核心，不需要本地安装 LaTeX；图片导出链路为 MathJax -> SVG -> PNG。
 - 采用CodeMirror 6作为编辑器，支持语法高亮和补全。
 
 ## 截图
@@ -54,19 +54,19 @@ wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
 1. 同步第三方资源：
 
 ```powershell
-pwsh ./scripts/Sync-KaTeX.ps1 -Version 0.16.11
+pwsh ./scripts/Sync-MathJax.ps1 -Version 4.1.0
 ```
 
 同步 pix2text-mfr OCR 模型文件（从 Hugging Face 下载）：
 
 ```powershell
-pwsh ./scripts/Sync-KaTeX.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
+pwsh ./scripts/Sync-MathJax.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
 ```
 
 一次同步全部已支持第三方资源：
 
 ```powershell
-pwsh ./scripts/Sync-KaTeX.ps1 -Component all
+pwsh ./scripts/Sync-MathJax.ps1 -Component all
 ```
 
 2. 当 `src/SlideTeX.WebUI/assets/i18n/*.json` 变更后，生成 i18n 内联资源：
@@ -169,7 +169,7 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 ## 当前限制
 
 - 仅支持 Windows PowerPoint。
-- 仅保证 KaTeX 子集，不覆盖完整 TeX/LaTeX 生态。
+- 仅保证当前渲染链路覆盖的公式能力，不覆盖完整 TeX/LaTeX 生态。
 - 仓库不包含完整的生产签名与发布流程。
 
 ## 第三方组件说明
@@ -178,8 +178,7 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 
 | 组件 | 版本 | 协议 | 用途 |
 | --- | --- | --- | --- |
-| KaTeX | `0.16.11` | MIT | 公式渲染（运行时，vendored 到 `src/SlideTeX.WebUI/vendor/katex`） |
-| html2canvas | `1.4.1` | MIT | DOM 转图像（运行时，vendored 到 `src/SlideTeX.WebUI/vendor/html2canvas.min.js`） |
+| MathJax | `4.1.0` | Apache-2.0 | 公式渲染与 SVG 输出（运行时，vendored 到 `src/SlideTeX.WebUI/vendor/mathjax`） |
 | CodeMirror | `6.0.2` | MIT | 编辑器核心（运行时，打包到 `src/SlideTeX.WebUI/assets/js/editor-adapter.js`） |
 | @codemirror/legacy-modes | `6.5.2` | MIT | 编辑器语法模式（构建时打包） |
 | pixelmatch | `7.1.0` | ISC | 渲染回归图像 diff（测试） |
@@ -191,7 +190,7 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 说明：
 - 以上版本来自仓库固定脚本/配置（`package.json`、`src/SlideTeX.WebUI/vendor/codemirror/VERSIONS.md`）。
 - 以上协议信息来自对应上游包元数据；完整法律文本请以各组件官方仓库与发行包为准。
-- `src/SlideTeX.VstoAddin/Assets/OcrModels` 下 OCR 模型二进制默认不提交 git，建议通过 `scripts/Sync-KaTeX.ps1` 同步。
+- `src/SlideTeX.VstoAddin/Assets/OcrModels` 下 OCR 模型二进制默认不提交 git，建议通过 `scripts/Sync-MathJax.ps1` 同步。
 
 ## 开源协议
 

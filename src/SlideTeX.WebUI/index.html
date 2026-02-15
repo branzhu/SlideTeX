@@ -5,7 +5,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SlideTeX</title>
-  <link rel="stylesheet" href="./vendor/katex/katex.min.css" />
   <link rel="stylesheet" href="./assets/css/app.css" />
 </head>
 <body>
@@ -63,9 +62,25 @@
     </section>
   </main>
 
-  <script src="./vendor/katex/katex.min.js"></script>
-  <script src="./vendor/html2canvas.min.js"></script>
-  <script src="./assets/data/katex-commands.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        tags: "ams"
+      },
+      svg: {
+        fontCache: "none"
+      },
+      options: {
+        enableMenu: false,
+        enableExplorer: false,
+        renderActions: {
+          assistiveMml: []
+        }
+      }
+    };
+  </script>
+  <script src="./vendor/mathjax/tex-svg-nofont.js"></script>
+  <script src="./assets/data/latex-commands.js"></script>
   <script src="./assets/js/editor-adapter.js"></script>
   <!-- SLIDETEX_I18N_BUNDLE_START -->
 <script id="slidetex-i18n-bundle">
@@ -109,9 +124,9 @@ window.__SLIDETEX_I18N_BUNDLE__ = {
           "ocr_host_unavailable": "Host OCR bridge is unavailable.",
           "ocr_empty_result": "OCR returned an empty formula.",
           "ocr_failed": "Formula OCR failed.",
-          "katex_missing": "KaTeX assets are missing. Please sync vendor/katex first.",
-          "katex_render_failed": "KaTeX render failed. Please check formula syntax.",
-          "katex_render_failed_with_detail": "KaTeX render failed: {detail}"
+          "mathjax_missing": "MathJax assets are missing. Please sync vendor/mathjax first.",
+          "mathjax_render_failed": "MathJax render failed. Please check formula syntax.",
+          "mathjax_render_failed_with_detail": "MathJax render failed: {detail}"
         }
       }
     },
@@ -151,9 +166,9 @@ window.__SLIDETEX_I18N_BUNDLE__ = {
           "ocr_host_unavailable": "宿主 OCR 桥接不可用。",
           "ocr_empty_result": "OCR 未识别到公式内容。",
           "ocr_failed": "公式 OCR 失败。",
-          "katex_missing": "KaTeX 资源不存在，请先同步 vendor/katex 目录。",
-          "katex_render_failed": "KaTeX 渲染失败，请检查公式语法。",
-          "katex_render_failed_with_detail": "KaTeX 渲染失败：{detail}"
+          "mathjax_missing": "MathJax 资源不存在，请先同步 vendor/mathjax 目录。",
+          "mathjax_render_failed": "MathJax 渲染失败，请检查公式语法。",
+          "mathjax_render_failed_with_detail": "MathJax 渲染失败：{detail}"
         }
       }
     }

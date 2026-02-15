@@ -15,7 +15,7 @@ This document consolidates regression testing for:
 - Numbering known-good baseline:
   - `tests/equation-numbering/numbering-mathjax-v3.json`
 - Rendering fixture:
-  - `tests/render-regression/render-visual-katex-v1.json`
+  - `tests/render-regression/render-visual-mathjax-v1.json`
 - Rendering baselines:
   - `tests/render-regression/baseline-images/*.png`
   - `tests/render-regression/baseline-dom/*.json`
@@ -81,17 +81,17 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
    - Only custom tag is displayed.
 6. Multi-line `gather`:
    - Number per row, with `\notag` support.
-7. `multline` (KaTeX `0.16.11` unsupported):
-   - Explicit unsupported error; numbering rewrite must not run.
+7. `multline`:
+   - Current numbering transformer does not auto-rewrite this environment.
 8. Mixed-document renumbering:
    - Continuous sequence in reading order across objects, respecting environment semantics.
 
 ## Rendering Verification Rules
-- Engine: KaTeX `0.16.11` (locked baseline).
+- Engine: MathJax `4.1.0` (locked baseline).
 - Loading model: local static server (`http://127.0.0.1:<port>`) to avoid `file://` limits.
 - Structural checks include:
-  - Expected `.tag` sequence.
-  - Required fonts via `document.fonts.check()`.
+  - Expected tag token sequence.
+  - Optional font checks via `document.fonts.check()`.
   - No overlap between tag and formula.
   - Right-side spacing within thresholds.
   - No preview clipping.
@@ -101,7 +101,7 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 
 ## Optional Render Script Parameters
 - `-CaseId align_single_tag`
-- `-FixturePath tests/render-regression/render-visual-katex-v1.json`
+- `-FixturePath tests/render-regression/render-visual-mathjax-v1.json`
 - `-ChromePath "C:\Program Files\Google\Chrome\Application\chrome.exe"`
 - `-Suite all|smoke|full`
 
@@ -124,6 +124,5 @@ pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "
 - Rendering checks pass both structural and pixel thresholds.
 
 ## Notes
-- `multline` remains an expected-failure case under KaTeX `0.16.11`.
-- Update baselines only when KaTeX version or rendering strategy changes, and record the reason in commit notes.
+- Update baselines only when MathJax version or rendering strategy changes, and record the reason in commit notes.
 - OCR baseline requires local ONNX model files (`encoder_model.onnx`, `decoder_model.onnx`, `tokenizer.json`), and still accepts legacy decoder file name `decoder_model_merged_quantized.onnx`.

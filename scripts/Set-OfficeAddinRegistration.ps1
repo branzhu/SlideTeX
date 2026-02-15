@@ -5,7 +5,7 @@ param(
     [string]$Mode = "Install",
     [string]$ProgId = "SlideTeX",
     [string]$FriendlyName = "SlideTeX 公式插件",
-    [string]$Description = "SlideTeX KaTeX 公式插件",
+    [string]$Description = "SlideTeX MathJax 公式插件",
     [string]$ManifestPath = "",
     [string]$ReportPath = "artifacts/installer/office-addin-report.json",
     [switch]$RegisterWow6432Node
@@ -157,4 +157,3 @@ foreach ($path in $paths) {
 
 Write-Host "Office add-in registry removed for $ProgId"
 exit 0
-

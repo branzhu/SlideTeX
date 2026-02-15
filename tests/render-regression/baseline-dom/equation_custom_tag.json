@@ -3,17 +3,8 @@
     "(X)"
   ],
   "displayCount": 1,
-  "hasKatexError": false,
-  "fontChecks": [
-    {
-      "font": "KaTeX_Main",
-      "ok": true
-    },
-    {
-      "font": "KaTeX_Math",
-      "ok": true
-    }
-  ],
+  "hasRenderError": false,
+  "fontChecks": [],
   "overlapCount": 0,
   "gapViolations": 0,
   "isClipped": false

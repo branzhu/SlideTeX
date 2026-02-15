@@ -198,10 +198,10 @@ function Resolve-AddinDescriptionForCulture {
     }
 
     if ($Culture -eq "zh-CN") {
-        return "SlideTeX KaTeX 公式插件"
+        return "SlideTeX MathJax 公式插件"
     }
 
-    return "SlideTeX KaTeX Formula Add-in"
+    return "SlideTeX MathJax Formula Add-in"
 }
 
 if (-not (Get-Command wix -ErrorAction SilentlyContinue)) {
