@@ -12,6 +12,27 @@
   const toBoolean = logic.toBoolean;
   const stripAutoNumbering = logic.stripAutoNumbering;
 
+  const DEBOUNCE_MS = 150;
+  const MATHJAX_TIMEOUT_MS = 15000;
+  const MATHJAX_POLL_MS = 50;
+  const SCREEN_DPI = 96;
+  const MIN_PREVIEW_SCALE = 0.3;
+  const PREVIEW_BOX_PADDING = 20;
+  const WRAP_THRESHOLD_PX = 12;
+
+  function errorMessage(error) {
+    return error instanceof Error ? error.message : String(error);
+  }
+
+  function setEditorValue(value) {
+    if (editor) {
+      suppressEditorRender = true;
+      try { editor.setValue(value); } finally { suppressEditorRender = false; }
+    } else {
+      elements.latexInput.value = value;
+    }
+  }
+
   // localStorage persistence constants
   const STORAGE_KEY = "slidetex:user-settings";
   const STORAGE_VERSION = 1;
@@ -54,7 +75,7 @@
   const i18n = window.SlideTeXI18n;
 
   initialize().catch((error) => {
-    showError(error instanceof Error ? error.message : String(error));
+    showError(errorMessage(error));
   });
 
   window.slideTex = {
@@ -113,24 +134,19 @@
 
   // Wires editor/input changes and host command buttons into the render workflow.
   function wireActions() {
+    const triggerDebouncedRender = () => {
+      clearTimeout(debounceHandle);
+      debounceHandle = setTimeout(() => {
+        render().catch((err) => showError(errorMessage(err)));
+      }, DEBOUNCE_MS);
+    };
+
     if (editor) {
       editor.onChange(() => {
-        if (suppressEditorRender) {
-          return;
-        }
-
-        clearTimeout(debounceHandle);
-        debounceHandle = setTimeout(() => {
-          render().catch((error) => showError(error.message));
-        }, 150);
+        if (!suppressEditorRender) triggerDebouncedRender();
       });
     } else {
-      elements.latexInput.addEventListener("input", () => {
-        clearTimeout(debounceHandle);
-        debounceHandle = setTimeout(() => {
-          render().catch((error) => showError(error.message));
-        }, 150);
-      });
+      elements.latexInput.addEventListener("input", triggerDebouncedRender);
     }
 
     for (const id of [
@@ -142,7 +158,7 @@
     ]) {
       elements[id].addEventListener("change", () => {
         saveSettings(getOptions());
-        render().catch((error) => showError(error.message));
+        render().catch((error) => showError(errorMessage(error)));
       });
     }
 
@@ -202,7 +218,7 @@
       host.requestFormulaOcr(dataUrl, JSON.stringify(options));
     } catch (error) {
       setOcrBusy(false);
-      const message = error instanceof Error ? error.message : String(error);
+      const message = errorMessage(error);
       showError(message, false);
     }
   }
@@ -220,19 +236,10 @@
     const cleanedLatex = sanitizeOcrLatex(latex);
     const outputLatex = cleanedLatex.length > 0 ? cleanedLatex : latex;
 
-    if (editor) {
-      suppressEditorRender = true;
-      try {
-        editor.setValue(outputLatex);
-      } finally {
-        suppressEditorRender = false;
-      }
-    } else {
-      elements.latexInput.value = outputLatex;
-    }
+    setEditorValue(outputLatex);
 
     render().catch((error) => {
-      showError(error instanceof Error ? error.message : String(error), false);
+      showError(errorMessage(error), false);
     });
   }
 
@@ -330,26 +337,31 @@
     // Treat as wrapped only when transparent moved to a clearly lower row,
     // not when there is a tiny baseline offset across controls.
     const baselineTop = Math.min(...primaryFields.map((el) => el.offsetTop));
-    const wrapped = transparentField.offsetTop - baselineTop > 12;
+    const wrapped = transparentField.offsetTop - baselineTop > WRAP_THRESHOLD_PX;
     row.classList.toggle("settings-row-wrapped", wrapped);
   }
-
 
   // Runs MathJax render, SVG->PNG export, and host notification.
   async function render(latexFromHost, optionsFromHost, renderLatexOverride) {
     if (typeof latexFromHost === "string") {
-      if (editor) {
-        suppressEditorRender = true;
-        try {
-          editor.setValue(latexFromHost);
-        } finally {
-          suppressEditorRender = false;
-        }
-      } else {
-        elements.latexInput.value = latexFromHost;
-      }
+      setEditorValue(latexFromHost);
     }
 
+    const inputs = prepareRenderInputs(optionsFromHost, renderLatexOverride);
+    if (!inputs) {
+      return;
+    }
+
+    try {
+      const payload = await performRender(inputs.latexForRender, inputs.effectiveDisplayMode, inputs.options);
+      handleRenderResult(payload, inputs.latex, inputs.options, inputs.effectiveDisplayMode);
+    } catch (error) {
+      disableActions();
+      showError(errorMessage(error));
+    }
+  }
+
+  function prepareRenderInputs(optionsFromHost, renderLatexOverride) {
     const latex = (editor ? editor.getValue() : elements.latexInput.value).trim();
     const latexForRender = (typeof renderLatexOverride === "string"
       ? renderLatexOverride
@@ -358,7 +370,7 @@
     if (latex.length === 0 || latexForRender.length === 0) {
       disableActions();
       showError(t("webui.error.empty_latex"), false);
-      return;
+      return null;
     }
 
     const options = normalizeOptions(optionsFromHost ?? getOptions());
@@ -367,7 +379,10 @@
     }
 
     const effectiveDisplayMode = resolveDisplayMode(latexForRender, options.displayMode);
+    return { latex, latexForRender, options, effectiveDisplayMode };
+  }
 
+  async function performRender(latexForRender, effectiveDisplayMode, options) {
     elements.previewContent.style.fontSize = `${options.fontPt}pt`;
     elements.previewContent.style.color = options.colorHex;
     elements.previewContent.style.background = options.isTransparent ? "transparent" : "#ffffff";
@@ -378,49 +393,49 @@
     elements.previewContent.dataset.displayMode = effectiveDisplayMode;
     elements.previewContent.dataset.tagTokens = JSON.stringify(extractTagTokensFromLatex(latexForRender));
 
-    try {
-      await ensureMathJaxReady();
+    await ensureMathJaxReady();
 
-      const normalizedLatex = stripAutoNumbering(latexForRender);
-      await renderMathJaxToPreview(normalizedLatex, effectiveDisplayMode === "display");
+    const normalizedLatex = stripAutoNumbering(latexForRender);
+    await renderMathJaxToPreview(normalizedLatex, effectiveDisplayMode === "display");
 
-      const severeError = extractMathJaxSevereError(elements.previewContent);
-      if (severeError) {
-        disableActions();
-        showError(severeError);
-        return;
-      }
-
-      fitPreview();
-
-      const payload = await exportPreviewAsPng(options);
-      const result = {
-        isSuccess: true,
-        errorMessage: null,
-        pngBase64: payload.base64,
-        pixelWidth: payload.width,
-        pixelHeight: payload.height,
-        latex,
-        options
-      };
-
-      hideError();
-      enableActions();
-      setStatusByKey(
-        "webui.status.render_success",
-        {
-          warningSuffix: "",
-          width: payload.width,
-          height: payload.height,
-          dpi: options.dpi,
-          mode: effectiveDisplayMode
-        });
-      notifyRenderSuccess(result);
-    } catch (error) {
+    const severeError = extractMathJaxSevereError(elements.previewContent);
+    if (severeError) {
       disableActions();
-      const message = error instanceof Error ? error.message : String(error);
-      showError(message);
+      showError(severeError);
+      return null;
     }
+
+    fitPreview();
+    return await exportPreviewAsPng(options);
+  }
+
+  function handleRenderResult(payload, latex, options, effectiveDisplayMode) {
+    if (!payload) {
+      return;
+    }
+
+    const result = {
+      isSuccess: true,
+      errorMessage: null,
+      pngBase64: payload.base64,
+      pixelWidth: payload.width,
+      pixelHeight: payload.height,
+      latex,
+      options
+    };
+
+    hideError();
+    enableActions();
+    setStatusByKey(
+      "webui.status.render_success",
+      {
+        warningSuffix: "",
+        width: payload.width,
+        height: payload.height,
+        dpi: options.dpi,
+        mode: effectiveDisplayMode
+      });
+    notifyRenderSuccess(result);
   }
 
   async function renderMathJaxToPreview(latex, displayMode) {
@@ -448,10 +463,10 @@
 
       // Measure inline-block container width from rendered MathJax SVG.
       const contentWidth = content.scrollWidth;
-      const availableWidth = previewBoxWidth - 20; // subtract box padding
+      const availableWidth = previewBoxWidth - PREVIEW_BOX_PADDING; // subtract box padding
 
       if (contentWidth > availableWidth && contentWidth > 0) {
-        const scale = Math.max(0.3, availableWidth / contentWidth);
+        const scale = Math.max(MIN_PREVIEW_SCALE, availableWidth / contentWidth);
         content.style.zoom = String(scale);
       }
     });
@@ -459,7 +474,7 @@
 
   // Captures rendered MathJax SVG to PNG and returns base64 plus pixel dimensions.
   async function exportPreviewAsPng(options) {
-    const scale = Math.max(1, options.dpi / 96);
+    const scale = Math.max(1, options.dpi / SCREEN_DPI);
     const contentEl = elements.previewContent;
     const sourceSvg = contentEl.querySelector("svg");
     if (!sourceSvg) {
@@ -552,8 +567,7 @@
     });
   }
 
-
-  async function ensureMathJaxReady(timeoutMs = 15000) {
+  async function ensureMathJaxReady(timeoutMs = MATHJAX_TIMEOUT_MS) {
     const hasRenderApi = () => {
       const mj = window.MathJax;
       return Boolean(mj && (typeof mj.tex2svg === "function" || typeof mj.tex2svgPromise === "function"));
@@ -565,7 +579,7 @@
 
     const startAt = Date.now();
     while (Date.now() - startAt < timeoutMs) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, MATHJAX_POLL_MS));
       if (hasRenderApi()) {
         return window.MathJax;
       }
@@ -573,7 +587,6 @@
 
     throw new Error(t("webui.error.mathjax_missing"));
   }
-
 
   function getOptions() {
     return normalizeOptions({
@@ -585,7 +598,6 @@
     });
   }
 
-
   function applyOptionsToInputs(options) {
     elements.fontPtInput.value = String(options.fontPt);
     elements.dpiSelect.value = String(options.dpi);
@@ -593,9 +605,6 @@
     elements.displayModeSelect.value = options.displayMode;
     elements.transparentCheckbox.checked = Boolean(options.isTransparent);
   }
-
-
-
 
 
   function notifyRenderSuccess(result) {

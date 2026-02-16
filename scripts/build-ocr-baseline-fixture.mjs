@@ -3,10 +3,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolvePath as resolvePathBase, readJson, writeJson } from './lib/test-infra.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
+
+function resolvePath(input) {
+  return resolvePathBase(input, repoRoot);
+}
 
 function parseArgs(argv) {
   const args = {
@@ -29,23 +34,6 @@ function parseArgs(argv) {
   }
 
   return args;
-}
-
-function resolvePath(input) {
-  if (!input) {
-    return '';
-  }
-  return path.isAbsolute(input) ? input : path.resolve(repoRoot, input);
-}
-
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-function writeJson(filePath, data) {
-  const dir = path.dirname(filePath);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
 }
 
 function normalizeSuite(value) {

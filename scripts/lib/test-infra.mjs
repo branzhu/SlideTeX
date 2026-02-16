@@ -4,6 +4,23 @@ import path from 'node:path';
 import os from 'node:os';
 import http from 'node:http';
 
+export function resolvePath(input, baseDir) {
+  if (!input) {
+    return '';
+  }
+  return path.isAbsolute(input) ? input : path.resolve(baseDir, input);
+}
+
+export function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+export function writeJson(filePath, data) {
+  const dir = path.dirname(filePath);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+}
+
 export function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }

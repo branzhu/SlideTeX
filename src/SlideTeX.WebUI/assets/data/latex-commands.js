@@ -6,2179 +6,2176 @@ window.LATEX_COMMANDS = {
     {
       "cmd": "\\frac",
       "snippet": "\\frac{$1}{$2}",
-      "desc": "分数",
+      "desc": "latex.cmd.frac",
       "priority": 1
     },
     {
       "cmd": "\\sqrt",
       "snippet": "\\sqrt{$1}",
-      "desc": "平方根",
+      "desc": "latex.cmd.sqrt",
       "priority": 2
     },
     {
       "cmd": "\\sum",
       "snippet": "\\sum_{$1}^{$2}",
-      "desc": "求和 ∑",
+      "desc": "latex.cmd.sum",
       "priority": 3
     },
     {
       "cmd": "\\int",
       "snippet": "\\int_{$1}^{$2}",
-      "desc": "积分 ∫",
+      "desc": "latex.cmd.int",
       "priority": 4
     },
     {
       "cmd": "\\lim",
       "snippet": "\\lim_{$1}",
-      "desc": "极限",
+      "desc": "latex.cmd.lim",
       "priority": 5
     },
     {
       "cmd": "\\infty",
       "snippet": "\\infty",
-      "desc": "∞",
+      "desc": "latex.cmd.infty",
       "priority": 6
     },
     {
       "cmd": "\\partial",
       "snippet": "\\partial",
-      "desc": "偏导 ∂",
+      "desc": "latex.cmd.partial",
       "priority": 7
     },
     {
       "cmd": "\\prod",
       "snippet": "\\prod_{$1}^{$2}",
-      "desc": "连乘 ∏",
+      "desc": "latex.cmd.prod",
       "priority": 8
     },
     {
       "cmd": "\\text",
       "snippet": "\\text{$1}",
-      "desc": "文本",
+      "desc": "latex.cmd.text",
       "priority": 9
     },
     {
       "cmd": "\\mathbb",
       "snippet": "\\mathbb{$1}",
-      "desc": "黑板粗体",
+      "desc": "latex.cmd.mathbb",
       "priority": 10
     },
     {
       "cmd": "\\mathbf",
       "snippet": "\\mathbf{$1}",
-      "desc": "粗体",
+      "desc": "latex.cmd.mathbf",
       "priority": 11
     },
     {
       "cmd": "\\mathrm",
       "snippet": "\\mathrm{$1}",
-      "desc": "罗马体",
+      "desc": "latex.cmd.mathrm",
       "priority": 12
     },
     {
       "cmd": "\\overline",
       "snippet": "\\overline{$1}",
-      "desc": "上划线",
+      "desc": "latex.cmd.overline",
       "priority": 13
     },
     {
       "cmd": "\\underline",
       "snippet": "\\underline{$1}",
-      "desc": "下划线",
+      "desc": "latex.cmd.underline",
       "priority": 14
     },
     {
       "cmd": "\\hat",
       "snippet": "\\hat{$1}",
-      "desc": "帽子 â",
+      "desc": "latex.cmd.hat",
       "priority": 15
     },
     {
       "cmd": "\\vec",
       "snippet": "\\vec{$1}",
-      "desc": "向量箭头",
+      "desc": "latex.cmd.vec",
       "priority": 16
     },
     {
       "cmd": "\\dot",
       "snippet": "\\dot{$1}",
-      "desc": "点 ȧ",
+      "desc": "latex.cmd.dot",
       "priority": 17
     },
     {
       "cmd": "\\ddot",
       "snippet": "\\ddot{$1}",
-      "desc": "双点 ä",
+      "desc": "latex.cmd.ddot",
       "priority": 18
     },
     {
       "cmd": "\\left",
       "snippet": "\\left$1 \\right$2",
-      "desc": "自适应左括号",
+      "desc": "latex.cmd.left",
       "priority": 19
     },
     {
       "cmd": "\\right",
       "snippet": "\\right$1",
-      "desc": "自适应右括号",
+      "desc": "latex.cmd.right",
       "priority": 20
     },
     {
       "cmd": "\\begin",
       "snippet": "\\begin{$1}\n$2\n\\end{$1}",
-      "desc": "环境",
+      "desc": "latex.cmd.begin",
       "priority": 21
     },
     {
       "cmd": "\\end",
       "snippet": "\\end{$1}",
-      "desc": "结束环境",
+      "desc": "latex.cmd.end",
       "priority": 22
     },
     {
       "cmd": "\\binom",
       "snippet": "\\binom{$1}{$2}",
-      "desc": "二项式",
+      "desc": "latex.cmd.binom",
       "priority": 23
     },
     {
       "cmd": "\\boxed",
       "snippet": "\\boxed{$1}",
-      "desc": "方框",
+      "desc": "latex.cmd.boxed",
       "priority": 24
     },
     {
       "cmd": "\\cancel",
       "snippet": "\\cancel{$1}",
-      "desc": "删除线",
+      "desc": "latex.cmd.cancel",
       "priority": 25
     },
     {
       "cmd": "\\color",
       "snippet": "\\color{$1}{$2}",
-      "desc": "颜色",
+      "desc": "latex.cmd.color",
       "priority": 26
     },
     {
       "cmd": "\\displaystyle",
       "snippet": "\\displaystyle",
-      "desc": "行间样式",
+      "desc": "latex.cmd.displaystyle",
       "priority": 27
     },
     {
       "cmd": "\\textstyle",
       "snippet": "\\textstyle",
-      "desc": "行内样式",
+      "desc": "latex.cmd.textstyle",
       "priority": 28
     },
     {
       "cmd": "\\underbrace",
       "snippet": "\\underbrace{$1}_{$2}",
-      "desc": "下花括号",
+      "desc": "latex.cmd.underbrace",
       "priority": 29
     },
     {
       "cmd": "\\overbrace",
       "snippet": "\\overbrace{$1}^{$2}",
-      "desc": "上花括号",
+      "desc": "latex.cmd.overbrace",
       "priority": 30
     },
     {
       "cmd": "\\alpha",
       "snippet": "\\alpha",
-      "desc": "α",
+      "desc": "latex.cmd.alpha",
       "priority": 100
     },
     {
       "cmd": "\\beta",
       "snippet": "\\beta",
-      "desc": "β",
+      "desc": "latex.cmd.beta",
       "priority": 101
     },
     {
       "cmd": "\\gamma",
       "snippet": "\\gamma",
-      "desc": "γ",
+      "desc": "latex.cmd.gamma",
       "priority": 102
     },
     {
       "cmd": "\\delta",
       "snippet": "\\delta",
-      "desc": "δ",
+      "desc": "latex.cmd.delta",
       "priority": 103
     },
     {
       "cmd": "\\epsilon",
       "snippet": "\\epsilon",
-      "desc": "ϵ",
+      "desc": "latex.cmd.epsilon",
       "priority": 104
     },
     {
       "cmd": "\\varepsilon",
       "snippet": "\\varepsilon",
-      "desc": "ε",
+      "desc": "latex.cmd.varepsilon",
       "priority": 105
     },
     {
       "cmd": "\\zeta",
       "snippet": "\\zeta",
-      "desc": "ζ",
+      "desc": "latex.cmd.zeta",
       "priority": 106
     },
     {
       "cmd": "\\eta",
       "snippet": "\\eta",
-      "desc": "η",
+      "desc": "latex.cmd.eta",
       "priority": 107
     },
     {
       "cmd": "\\theta",
       "snippet": "\\theta",
-      "desc": "θ",
+      "desc": "latex.cmd.theta",
       "priority": 108
     },
     {
       "cmd": "\\vartheta",
       "snippet": "\\vartheta",
-      "desc": "ϑ",
+      "desc": "latex.cmd.vartheta",
       "priority": 109
     },
     {
       "cmd": "\\iota",
       "snippet": "\\iota",
-      "desc": "ι",
+      "desc": "latex.cmd.iota",
       "priority": 110
     },
     {
       "cmd": "\\kappa",
       "snippet": "\\kappa",
-      "desc": "κ",
+      "desc": "latex.cmd.kappa",
       "priority": 111
     },
     {
       "cmd": "\\lambda",
       "snippet": "\\lambda",
-      "desc": "λ",
+      "desc": "latex.cmd.lambda",
       "priority": 112
     },
     {
       "cmd": "\\mu",
       "snippet": "\\mu",
-      "desc": "μ",
+      "desc": "latex.cmd.mu",
       "priority": 113
     },
     {
       "cmd": "\\nu",
       "snippet": "\\nu",
-      "desc": "ν",
+      "desc": "latex.cmd.nu",
       "priority": 114
     },
     {
       "cmd": "\\xi",
       "snippet": "\\xi",
-      "desc": "ξ",
+      "desc": "latex.cmd.xi",
       "priority": 115
     },
     {
       "cmd": "\\pi",
       "snippet": "\\pi",
-      "desc": "π",
+      "desc": "latex.cmd.pi",
       "priority": 116
     },
     {
       "cmd": "\\rho",
       "snippet": "\\rho",
-      "desc": "ρ",
+      "desc": "latex.cmd.rho",
       "priority": 117
     },
     {
       "cmd": "\\varrho",
       "snippet": "\\varrho",
-      "desc": "ϱ",
+      "desc": "latex.cmd.varrho",
       "priority": 118
     },
     {
       "cmd": "\\sigma",
       "snippet": "\\sigma",
-      "desc": "σ",
+      "desc": "latex.cmd.sigma",
       "priority": 119
     },
     {
       "cmd": "\\varsigma",
       "snippet": "\\varsigma",
-      "desc": "ς",
+      "desc": "latex.cmd.varsigma",
       "priority": 120
     },
     {
       "cmd": "\\tau",
       "snippet": "\\tau",
-      "desc": "τ",
+      "desc": "latex.cmd.tau",
       "priority": 121
     },
     {
       "cmd": "\\upsilon",
       "snippet": "\\upsilon",
-      "desc": "υ",
+      "desc": "latex.cmd.upsilon",
       "priority": 122
     },
     {
       "cmd": "\\phi",
       "snippet": "\\phi",
-      "desc": "ϕ",
+      "desc": "latex.cmd.phi",
       "priority": 123
     },
     {
       "cmd": "\\varphi",
       "snippet": "\\varphi",
-      "desc": "φ",
+      "desc": "latex.cmd.varphi",
       "priority": 124
     },
     {
       "cmd": "\\chi",
       "snippet": "\\chi",
-      "desc": "χ",
+      "desc": "latex.cmd.chi",
       "priority": 125
     },
     {
       "cmd": "\\psi",
       "snippet": "\\psi",
-      "desc": "ψ",
+      "desc": "latex.cmd.psi",
       "priority": 126
     },
     {
       "cmd": "\\omega",
       "snippet": "\\omega",
-      "desc": "ω",
+      "desc": "latex.cmd.omega",
       "priority": 127
     },
     {
       "cmd": "\\Gamma",
       "snippet": "\\Gamma",
-      "desc": "Γ",
+      "desc": "latex.cmd.Gamma",
       "priority": 130
     },
     {
       "cmd": "\\Delta",
       "snippet": "\\Delta",
-      "desc": "Δ",
+      "desc": "latex.cmd.Delta",
       "priority": 131
     },
     {
       "cmd": "\\Theta",
       "snippet": "\\Theta",
-      "desc": "Θ",
+      "desc": "latex.cmd.Theta",
       "priority": 132
     },
     {
       "cmd": "\\Lambda",
       "snippet": "\\Lambda",
-      "desc": "Λ",
+      "desc": "latex.cmd.Lambda",
       "priority": 133
     },
     {
       "cmd": "\\Xi",
       "snippet": "\\Xi",
-      "desc": "Ξ",
+      "desc": "latex.cmd.Xi",
       "priority": 134
     },
     {
       "cmd": "\\Pi",
       "snippet": "\\Pi",
-      "desc": "Π",
+      "desc": "latex.cmd.Pi",
       "priority": 135
     },
     {
       "cmd": "\\Sigma",
       "snippet": "\\Sigma",
-      "desc": "Σ",
+      "desc": "latex.cmd.Sigma",
       "priority": 136
     },
     {
       "cmd": "\\Upsilon",
       "snippet": "\\Upsilon",
-      "desc": "Υ",
+      "desc": "latex.cmd.Upsilon",
       "priority": 137
     },
     {
       "cmd": "\\Phi",
       "snippet": "\\Phi",
-      "desc": "Φ",
+      "desc": "latex.cmd.Phi",
       "priority": 138
     },
     {
       "cmd": "\\Psi",
       "snippet": "\\Psi",
-      "desc": "Ψ",
+      "desc": "latex.cmd.Psi",
       "priority": 139
     },
     {
       "cmd": "\\Omega",
       "snippet": "\\Omega",
-      "desc": "Ω",
+      "desc": "latex.cmd.Omega",
       "priority": 140
     },
     {
       "cmd": "\\pm",
       "snippet": "\\pm",
-      "desc": "±",
+      "desc": "latex.cmd.pm",
       "priority": 200
     },
     {
       "cmd": "\\mp",
       "snippet": "\\mp",
-      "desc": "∓",
+      "desc": "latex.cmd.mp",
       "priority": 201
     },
     {
       "cmd": "\\times",
       "snippet": "\\times",
-      "desc": "×",
+      "desc": "latex.cmd.times",
       "priority": 202
     },
     {
       "cmd": "\\div",
       "snippet": "\\div",
-      "desc": "÷",
+      "desc": "latex.cmd.div",
       "priority": 203
     },
     {
       "cmd": "\\cdot",
       "snippet": "\\cdot",
-      "desc": "⋅",
+      "desc": "latex.cmd.cdot",
       "priority": 204
     },
     {
       "cmd": "\\ast",
       "snippet": "\\ast",
-      "desc": "∗",
+      "desc": "latex.cmd.ast",
       "priority": 205
     },
     {
       "cmd": "\\star",
       "snippet": "\\star",
-      "desc": "⋆",
+      "desc": "latex.cmd.star",
       "priority": 206
     },
     {
       "cmd": "\\circ",
       "snippet": "\\circ",
-      "desc": "∘",
+      "desc": "latex.cmd.circ",
       "priority": 207
     },
     {
       "cmd": "\\bullet",
       "snippet": "\\bullet",
-      "desc": "•",
+      "desc": "latex.cmd.bullet",
       "priority": 208
     },
     {
       "cmd": "\\oplus",
       "snippet": "\\oplus",
-      "desc": "⊕",
+      "desc": "latex.cmd.oplus",
       "priority": 209
     },
     {
       "cmd": "\\ominus",
       "snippet": "\\ominus",
-      "desc": "⊖",
+      "desc": "latex.cmd.ominus",
       "priority": 210
     },
     {
       "cmd": "\\otimes",
       "snippet": "\\otimes",
-      "desc": "⊗",
+      "desc": "latex.cmd.otimes",
       "priority": 211
     },
     {
       "cmd": "\\oslash",
       "snippet": "\\oslash",
-      "desc": "⊘",
+      "desc": "latex.cmd.oslash",
       "priority": 212
     },
     {
       "cmd": "\\odot",
       "snippet": "\\odot",
-      "desc": "⊙",
+      "desc": "latex.cmd.odot",
       "priority": 213
     },
     {
       "cmd": "\\cup",
       "snippet": "\\cup",
-      "desc": "∪",
+      "desc": "latex.cmd.cup",
       "priority": 214
     },
     {
       "cmd": "\\cap",
       "snippet": "\\cap",
-      "desc": "∩",
+      "desc": "latex.cmd.cap",
       "priority": 215
     },
     {
       "cmd": "\\sqcup",
       "snippet": "\\sqcup",
-      "desc": "⊔",
+      "desc": "latex.cmd.sqcup",
       "priority": 216
     },
     {
       "cmd": "\\sqcap",
       "snippet": "\\sqcap",
-      "desc": "⊓",
+      "desc": "latex.cmd.sqcap",
       "priority": 217
     },
     {
       "cmd": "\\vee",
       "snippet": "\\vee",
-      "desc": "∨",
+      "desc": "latex.cmd.vee",
       "priority": 218
     },
     {
       "cmd": "\\lor",
       "snippet": "\\lor",
-      "desc": "∨",
+      "desc": "latex.cmd.lor",
       "priority": 219
     },
     {
       "cmd": "\\wedge",
       "snippet": "\\wedge",
-      "desc": "∧",
+      "desc": "latex.cmd.wedge",
       "priority": 220
     },
     {
       "cmd": "\\land",
       "snippet": "\\land",
-      "desc": "∧",
+      "desc": "latex.cmd.land",
       "priority": 221
     },
     {
       "cmd": "\\setminus",
       "snippet": "\\setminus",
-      "desc": "∖",
+      "desc": "latex.cmd.setminus",
       "priority": 222
     },
     {
       "cmd": "\\wr",
       "snippet": "\\wr",
-      "desc": "≀",
+      "desc": "latex.cmd.wr",
       "priority": 223
     },
     {
       "cmd": "\\amalg",
       "snippet": "\\amalg",
-      "desc": "⨿",
+      "desc": "latex.cmd.amalg",
       "priority": 224
     },
     {
       "cmd": "\\bigcup",
       "snippet": "\\bigcup_{$1}^{$2}",
-      "desc": "⋃",
+      "desc": "latex.cmd.bigcup",
       "priority": 225
     },
     {
       "cmd": "\\bigcap",
       "snippet": "\\bigcap_{$1}^{$2}",
-      "desc": "⋂",
+      "desc": "latex.cmd.bigcap",
       "priority": 226
     },
     {
       "cmd": "\\bigvee",
       "snippet": "\\bigvee_{$1}^{$2}",
-      "desc": "⋁",
+      "desc": "latex.cmd.bigvee",
       "priority": 227
     },
     {
       "cmd": "\\bigwedge",
       "snippet": "\\bigwedge_{$1}^{$2}",
-      "desc": "⋀",
+      "desc": "latex.cmd.bigwedge",
       "priority": 228
     },
     {
       "cmd": "\\bigoplus",
       "snippet": "\\bigoplus_{$1}^{$2}",
-      "desc": "⨁",
+      "desc": "latex.cmd.bigoplus",
       "priority": 229
     },
     {
       "cmd": "\\bigotimes",
       "snippet": "\\bigotimes_{$1}^{$2}",
-      "desc": "⨂",
+      "desc": "latex.cmd.bigotimes",
       "priority": 230
     },
     {
       "cmd": "\\coprod",
       "snippet": "\\coprod_{$1}^{$2}",
-      "desc": "∐",
+      "desc": "latex.cmd.coprod",
       "priority": 231
     },
     {
       "cmd": "\\iint",
       "snippet": "\\iint_{$1}",
-      "desc": "∬",
+      "desc": "latex.cmd.iint",
       "priority": 232
     },
     {
       "cmd": "\\iiint",
       "snippet": "\\iiint_{$1}",
-      "desc": "∭",
+      "desc": "latex.cmd.iiint",
       "priority": 233
     },
     {
       "cmd": "\\oint",
       "snippet": "\\oint_{$1}",
-      "desc": "∮",
+      "desc": "latex.cmd.oint",
       "priority": 234
     },
     {
       "cmd": "\\leq",
       "snippet": "\\leq",
-      "desc": "≤",
+      "desc": "latex.cmd.leq",
       "priority": 250
     },
     {
       "cmd": "\\le",
       "snippet": "\\le",
-      "desc": "≤",
+      "desc": "latex.cmd.le",
       "priority": 251
     },
     {
       "cmd": "\\geq",
       "snippet": "\\geq",
-      "desc": "≥",
+      "desc": "latex.cmd.geq",
       "priority": 252
     },
     {
       "cmd": "\\ge",
       "snippet": "\\ge",
-      "desc": "≥",
+      "desc": "latex.cmd.ge",
       "priority": 253
     },
     {
       "cmd": "\\neq",
       "snippet": "\\neq",
-      "desc": "≠",
+      "desc": "latex.cmd.neq",
       "priority": 254
     },
     {
       "cmd": "\\ne",
       "snippet": "\\ne",
-      "desc": "≠",
+      "desc": "latex.cmd.ne",
       "priority": 255
     },
     {
       "cmd": "\\approx",
       "snippet": "\\approx",
-      "desc": "≈",
+      "desc": "latex.cmd.approx",
       "priority": 256
     },
     {
       "cmd": "\\sim",
       "snippet": "\\sim",
-      "desc": "∼",
+      "desc": "latex.cmd.sim",
       "priority": 257
     },
     {
       "cmd": "\\simeq",
       "snippet": "\\simeq",
-      "desc": "≃",
+      "desc": "latex.cmd.simeq",
       "priority": 258
     },
     {
       "cmd": "\\cong",
       "snippet": "\\cong",
-      "desc": "≅",
+      "desc": "latex.cmd.cong",
       "priority": 259
     },
     {
       "cmd": "\\equiv",
       "snippet": "\\equiv",
-      "desc": "≡",
+      "desc": "latex.cmd.equiv",
       "priority": 260
     },
     {
       "cmd": "\\prec",
       "snippet": "\\prec",
-      "desc": "≺",
+      "desc": "latex.cmd.prec",
       "priority": 261
     },
     {
       "cmd": "\\preceq",
       "snippet": "\\preceq",
-      "desc": "⪯",
+      "desc": "latex.cmd.preceq",
       "priority": 262
     },
     {
       "cmd": "\\succ",
       "snippet": "\\succ",
-      "desc": "≻",
+      "desc": "latex.cmd.succ",
       "priority": 263
     },
     {
       "cmd": "\\succeq",
       "snippet": "\\succeq",
-      "desc": "⪰",
+      "desc": "latex.cmd.succeq",
       "priority": 264
     },
     {
       "cmd": "\\subset",
       "snippet": "\\subset",
-      "desc": "⊂",
+      "desc": "latex.cmd.subset",
       "priority": 265
     },
     {
       "cmd": "\\supset",
       "snippet": "\\supset",
-      "desc": "⊃",
+      "desc": "latex.cmd.supset",
       "priority": 266
     },
     {
       "cmd": "\\subseteq",
       "snippet": "\\subseteq",
-      "desc": "⊆",
+      "desc": "latex.cmd.subseteq",
       "priority": 267
     },
     {
       "cmd": "\\supseteq",
       "snippet": "\\supseteq",
-      "desc": "⊇",
+      "desc": "latex.cmd.supseteq",
       "priority": 268
     },
     {
       "cmd": "\\in",
       "snippet": "\\in",
-      "desc": "∈",
+      "desc": "latex.cmd.in",
       "priority": 269
     },
     {
       "cmd": "\\ni",
       "snippet": "\\ni",
-      "desc": "∋",
+      "desc": "latex.cmd.ni",
       "priority": 270
     },
     {
       "cmd": "\\notin",
       "snippet": "\\notin",
-      "desc": "∉",
+      "desc": "latex.cmd.notin",
       "priority": 271
     },
     {
       "cmd": "\\propto",
       "snippet": "\\propto",
-      "desc": "∝",
+      "desc": "latex.cmd.propto",
       "priority": 272
     },
     {
       "cmd": "\\mid",
       "snippet": "\\mid",
-      "desc": "∣",
+      "desc": "latex.cmd.mid",
       "priority": 273
     },
     {
       "cmd": "\\parallel",
       "snippet": "\\parallel",
-      "desc": "∥",
+      "desc": "latex.cmd.parallel",
       "priority": 274
     },
     {
       "cmd": "\\perp",
       "snippet": "\\perp",
-      "desc": "⊥",
+      "desc": "latex.cmd.perp",
       "priority": 275
     },
     {
       "cmd": "\\models",
       "snippet": "\\models",
-      "desc": "⊨",
+      "desc": "latex.cmd.models",
       "priority": 276
     },
     {
       "cmd": "\\vdash",
       "snippet": "\\vdash",
-      "desc": "⊢",
+      "desc": "latex.cmd.vdash",
       "priority": 277
     },
     {
       "cmd": "\\dashv",
       "snippet": "\\dashv",
-      "desc": "⊣",
+      "desc": "latex.cmd.dashv",
       "priority": 278
     },
     {
       "cmd": "\\ll",
       "snippet": "\\ll",
-      "desc": "≪",
+      "desc": "latex.cmd.ll",
       "priority": 279
     },
     {
       "cmd": "\\gg",
       "snippet": "\\gg",
-      "desc": "≫",
+      "desc": "latex.cmd.gg",
       "priority": 280
     },
     {
       "cmd": "\\leftarrow",
       "snippet": "\\leftarrow",
-      "desc": "←",
+      "desc": "latex.cmd.leftarrow",
       "priority": 300
     },
     {
       "cmd": "\\rightarrow",
       "snippet": "\\rightarrow",
-      "desc": "→",
+      "desc": "latex.cmd.rightarrow",
       "priority": 301
     },
     {
       "cmd": "\\leftrightarrow",
       "snippet": "\\leftrightarrow",
-      "desc": "↔",
+      "desc": "latex.cmd.leftrightarrow",
       "priority": 302
     },
     {
       "cmd": "\\Leftarrow",
       "snippet": "\\Leftarrow",
-      "desc": "⇐",
+      "desc": "latex.cmd.Leftarrow",
       "priority": 303
     },
     {
       "cmd": "\\Rightarrow",
       "snippet": "\\Rightarrow",
-      "desc": "⇒",
+      "desc": "latex.cmd.Rightarrow",
       "priority": 304
     },
     {
       "cmd": "\\Leftrightarrow",
       "snippet": "\\Leftrightarrow",
-      "desc": "⇔",
+      "desc": "latex.cmd.Leftrightarrow",
       "priority": 305
     },
     {
       "cmd": "\\longleftarrow",
       "snippet": "\\longleftarrow",
-      "desc": "⟵",
+      "desc": "latex.cmd.longleftarrow",
       "priority": 306
     },
     {
       "cmd": "\\longrightarrow",
       "snippet": "\\longrightarrow",
-      "desc": "⟶",
+      "desc": "latex.cmd.longrightarrow",
       "priority": 307
     },
     {
       "cmd": "\\longleftrightarrow",
       "snippet": "\\longleftrightarrow",
-      "desc": "⟷",
+      "desc": "latex.cmd.longleftrightarrow",
       "priority": 308
     },
     {
       "cmd": "\\Longleftarrow",
       "snippet": "\\Longleftarrow",
-      "desc": "⟸",
+      "desc": "latex.cmd.Longleftarrow",
       "priority": 309
     },
     {
       "cmd": "\\Longrightarrow",
       "snippet": "\\Longrightarrow",
-      "desc": "⟹",
+      "desc": "latex.cmd.Longrightarrow",
       "priority": 310
     },
     {
       "cmd": "\\Longleftrightarrow",
       "snippet": "\\Longleftrightarrow",
-      "desc": "⟺",
+      "desc": "latex.cmd.Longleftrightarrow",
       "priority": 311
     },
     {
       "cmd": "\\uparrow",
       "snippet": "\\uparrow",
-      "desc": "↑",
+      "desc": "latex.cmd.uparrow",
       "priority": 312
     },
     {
       "cmd": "\\downarrow",
       "snippet": "\\downarrow",
-      "desc": "↓",
+      "desc": "latex.cmd.downarrow",
       "priority": 313
     },
     {
       "cmd": "\\updownarrow",
       "snippet": "\\updownarrow",
-      "desc": "↕",
+      "desc": "latex.cmd.updownarrow",
       "priority": 314
     },
     {
       "cmd": "\\Uparrow",
       "snippet": "\\Uparrow",
-      "desc": "⇑",
+      "desc": "latex.cmd.Uparrow",
       "priority": 315
     },
     {
       "cmd": "\\Downarrow",
       "snippet": "\\Downarrow",
-      "desc": "⇓",
+      "desc": "latex.cmd.Downarrow",
       "priority": 316
     },
     {
       "cmd": "\\nearrow",
       "snippet": "\\nearrow",
-      "desc": "↗",
+      "desc": "latex.cmd.nearrow",
       "priority": 317
     },
     {
       "cmd": "\\searrow",
       "snippet": "\\searrow",
-      "desc": "↘",
+      "desc": "latex.cmd.searrow",
       "priority": 318
     },
     {
       "cmd": "\\swarrow",
       "snippet": "\\swarrow",
-      "desc": "↙",
+      "desc": "latex.cmd.swarrow",
       "priority": 319
     },
     {
       "cmd": "\\nwarrow",
       "snippet": "\\nwarrow",
-      "desc": "↖",
+      "desc": "latex.cmd.nwarrow",
       "priority": 320
     },
     {
       "cmd": "\\mapsto",
       "snippet": "\\mapsto",
-      "desc": "↦",
+      "desc": "latex.cmd.mapsto",
       "priority": 321
     },
     {
       "cmd": "\\longmapsto",
       "snippet": "\\longmapsto",
-      "desc": "⟼",
+      "desc": "latex.cmd.longmapsto",
       "priority": 322
     },
     {
       "cmd": "\\hookrightarrow",
       "snippet": "\\hookrightarrow",
-      "desc": "↪",
+      "desc": "latex.cmd.hookrightarrow",
       "priority": 323
     },
     {
       "cmd": "\\hookleftarrow",
       "snippet": "\\hookleftarrow",
-      "desc": "↩",
+      "desc": "latex.cmd.hookleftarrow",
       "priority": 324
     },
     {
       "cmd": "\\to",
       "snippet": "\\to",
-      "desc": "→",
+      "desc": "latex.cmd.to",
       "priority": 325
     },
     {
       "cmd": "\\gets",
       "snippet": "\\gets",
-      "desc": "←",
+      "desc": "latex.cmd.gets",
       "priority": 326
     },
     {
       "cmd": "\\implies",
       "snippet": "\\implies",
-      "desc": "⟹",
+      "desc": "latex.cmd.implies",
       "priority": 327
     },
     {
       "cmd": "\\iff",
       "snippet": "\\iff",
-      "desc": "⟺",
+      "desc": "latex.cmd.iff",
       "priority": 328
     },
     {
       "cmd": "\\tilde",
       "snippet": "\\tilde{$1}",
-      "desc": "波浪号 ã",
+      "desc": "latex.cmd.tilde",
       "priority": 340
     },
     {
       "cmd": "\\bar",
       "snippet": "\\bar{$1}",
-      "desc": "横线",
+      "desc": "latex.cmd.bar",
       "priority": 341
     },
     {
       "cmd": "\\breve",
       "snippet": "\\breve{$1}",
-      "desc": "短音符",
+      "desc": "latex.cmd.breve",
       "priority": 342
     },
     {
       "cmd": "\\acute",
       "snippet": "\\acute{$1}",
-      "desc": "锐音符",
+      "desc": "latex.cmd.acute",
       "priority": 343
     },
     {
       "cmd": "\\grave",
       "snippet": "\\grave{$1}",
-      "desc": "抑音符",
+      "desc": "latex.cmd.grave",
       "priority": 344
     },
     {
       "cmd": "\\check",
       "snippet": "\\check{$1}",
-      "desc": "抑扬符",
+      "desc": "latex.cmd.check",
       "priority": 345
     },
     {
       "cmd": "\\widehat",
       "snippet": "\\widehat{$1}",
-      "desc": "宽帽子",
+      "desc": "latex.cmd.widehat",
       "priority": 346
     },
     {
       "cmd": "\\widetilde",
       "snippet": "\\widetilde{$1}",
-      "desc": "宽波浪号",
+      "desc": "latex.cmd.widetilde",
       "priority": 347
     },
     {
       "cmd": "\\overrightarrow",
       "snippet": "\\overrightarrow{$1}",
-      "desc": "上右箭头",
+      "desc": "latex.cmd.overrightarrow",
       "priority": 348
     },
     {
       "cmd": "\\overleftarrow",
       "snippet": "\\overleftarrow{$1}",
-      "desc": "上左箭头",
+      "desc": "latex.cmd.overleftarrow",
       "priority": 349
     },
     {
       "cmd": "\\overleftrightarrow",
       "snippet": "\\overleftrightarrow{$1}",
-      "desc": "上双向箭头",
+      "desc": "latex.cmd.overleftrightarrow",
       "priority": 350
     },
     {
       "cmd": "\\underrightarrow",
       "snippet": "\\underrightarrow{$1}",
-      "desc": "下右箭头",
+      "desc": "latex.cmd.underrightarrow",
       "priority": 351
     },
     {
       "cmd": "\\underleftarrow",
       "snippet": "\\underleftarrow{$1}",
-      "desc": "下左箭头",
+      "desc": "latex.cmd.underleftarrow",
       "priority": 352
     },
     {
       "cmd": "\\xleftarrow",
       "snippet": "\\xleftarrow{$1}",
-      "desc": "可拉伸左箭头",
+      "desc": "latex.cmd.xleftarrow",
       "priority": 353
     },
     {
       "cmd": "\\xrightarrow",
       "snippet": "\\xrightarrow{$1}",
-      "desc": "可拉伸右箭头",
+      "desc": "latex.cmd.xrightarrow",
       "priority": 354
     },
     {
       "cmd": "\\overset",
       "snippet": "\\overset{$1}{$2}",
-      "desc": "上方标注",
+      "desc": "latex.cmd.overset",
       "priority": 355
     },
     {
       "cmd": "\\underset",
       "snippet": "\\underset{$1}{$2}",
-      "desc": "下方标注",
+      "desc": "latex.cmd.underset",
       "priority": 356
     },
     {
       "cmd": "\\stackrel",
       "snippet": "\\stackrel{$1}{$2}",
-      "desc": "堆叠关系",
+      "desc": "latex.cmd.stackrel",
       "priority": 357
     },
     {
       "cmd": "\\phantom",
       "snippet": "\\phantom{$1}",
-      "desc": "占位符",
+      "desc": "latex.cmd.phantom",
       "priority": 358
     },
     {
       "cmd": "\\hphantom",
       "snippet": "\\hphantom{$1}",
-      "desc": "水平占位",
+      "desc": "latex.cmd.hphantom",
       "priority": 359
     },
     {
       "cmd": "\\vphantom",
       "snippet": "\\vphantom{$1}",
-      "desc": "垂直占位",
+      "desc": "latex.cmd.vphantom",
       "priority": 360
     },
     {
       "cmd": "\\langle",
       "snippet": "\\langle",
-      "desc": "⟨",
+      "desc": "latex.cmd.langle",
       "priority": 380
     },
     {
       "cmd": "\\rangle",
       "snippet": "\\rangle",
-      "desc": "⟩",
+      "desc": "latex.cmd.rangle",
       "priority": 381
     },
     {
       "cmd": "\\lfloor",
       "snippet": "\\lfloor",
-      "desc": "⌊",
+      "desc": "latex.cmd.lfloor",
       "priority": 382
     },
     {
       "cmd": "\\rfloor",
       "snippet": "\\rfloor",
-      "desc": "⌋",
+      "desc": "latex.cmd.rfloor",
       "priority": 383
     },
     {
       "cmd": "\\lceil",
       "snippet": "\\lceil",
-      "desc": "⌈",
+      "desc": "latex.cmd.lceil",
       "priority": 384
     },
     {
       "cmd": "\\rceil",
       "snippet": "\\rceil",
-      "desc": "⌉",
+      "desc": "latex.cmd.rceil",
       "priority": 385
     },
     {
       "cmd": "\\lbrace",
       "snippet": "\\lbrace",
-      "desc": "{",
+      "desc": "latex.cmd.lbrace",
       "priority": 386
     },
     {
       "cmd": "\\rbrace",
       "snippet": "\\rbrace",
-      "desc": "}",
+      "desc": "latex.cmd.rbrace",
       "priority": 387
     },
     {
       "cmd": "\\lvert",
       "snippet": "\\lvert",
-      "desc": "|",
+      "desc": "latex.cmd.lvert",
       "priority": 388
     },
     {
       "cmd": "\\rvert",
       "snippet": "\\rvert",
-      "desc": "|",
+      "desc": "latex.cmd.rvert",
       "priority": 389
     },
     {
       "cmd": "\\lVert",
       "snippet": "\\lVert",
-      "desc": "‖",
+      "desc": "latex.cmd.lVert",
       "priority": 390
     },
     {
       "cmd": "\\rVert",
       "snippet": "\\rVert",
-      "desc": "‖",
+      "desc": "latex.cmd.rVert",
       "priority": 391
     },
     {
       "cmd": "\\backslash",
       "snippet": "\\backslash",
-      "desc": "\\",
+      "desc": "latex.cmd.backslash",
       "priority": 392
     },
     {
       "cmd": "\\vert",
       "snippet": "\\vert",
-      "desc": "|",
+      "desc": "latex.cmd.vert",
       "priority": 393
     },
     {
       "cmd": "\\Vert",
       "snippet": "\\Vert",
-      "desc": "‖",
+      "desc": "latex.cmd.Vert",
       "priority": 394
     },
     {
       "cmd": "\\sin",
       "snippet": "\\sin",
-      "desc": "sin",
+      "desc": "latex.cmd.sin",
       "priority": 410
     },
     {
       "cmd": "\\cos",
       "snippet": "\\cos",
-      "desc": "cos",
+      "desc": "latex.cmd.cos",
       "priority": 411
     },
     {
       "cmd": "\\tan",
       "snippet": "\\tan",
-      "desc": "tan",
+      "desc": "latex.cmd.tan",
       "priority": 412
     },
     {
       "cmd": "\\cot",
       "snippet": "\\cot",
-      "desc": "cot",
+      "desc": "latex.cmd.cot",
       "priority": 413
     },
     {
       "cmd": "\\sec",
       "snippet": "\\sec",
-      "desc": "sec",
+      "desc": "latex.cmd.sec",
       "priority": 414
     },
     {
       "cmd": "\\csc",
       "snippet": "\\csc",
-      "desc": "csc",
+      "desc": "latex.cmd.csc",
       "priority": 415
     },
     {
       "cmd": "\\arcsin",
       "snippet": "\\arcsin",
-      "desc": "arcsin",
+      "desc": "latex.cmd.arcsin",
       "priority": 416
     },
     {
       "cmd": "\\arccos",
       "snippet": "\\arccos",
-      "desc": "arccos",
+      "desc": "latex.cmd.arccos",
       "priority": 417
     },
     {
       "cmd": "\\arctan",
       "snippet": "\\arctan",
-      "desc": "arctan",
+      "desc": "latex.cmd.arctan",
       "priority": 418
     },
     {
       "cmd": "\\sinh",
       "snippet": "\\sinh",
-      "desc": "sinh",
+      "desc": "latex.cmd.sinh",
       "priority": 419
     },
     {
       "cmd": "\\cosh",
       "snippet": "\\cosh",
-      "desc": "cosh",
+      "desc": "latex.cmd.cosh",
       "priority": 420
     },
     {
       "cmd": "\\tanh",
       "snippet": "\\tanh",
-      "desc": "tanh",
+      "desc": "latex.cmd.tanh",
       "priority": 421
     },
     {
       "cmd": "\\coth",
       "snippet": "\\coth",
-      "desc": "coth",
+      "desc": "latex.cmd.coth",
       "priority": 422
     },
     {
       "cmd": "\\log",
       "snippet": "\\log",
-      "desc": "log",
+      "desc": "latex.cmd.log",
       "priority": 423
     },
     {
       "cmd": "\\ln",
       "snippet": "\\ln",
-      "desc": "ln",
+      "desc": "latex.cmd.ln",
       "priority": 424
     },
     {
       "cmd": "\\exp",
       "snippet": "\\exp",
-      "desc": "exp",
+      "desc": "latex.cmd.exp",
       "priority": 425
     },
     {
       "cmd": "\\det",
       "snippet": "\\det",
-      "desc": "det",
+      "desc": "latex.cmd.det",
       "priority": 426
     },
     {
       "cmd": "\\dim",
       "snippet": "\\dim",
-      "desc": "dim",
+      "desc": "latex.cmd.dim",
       "priority": 427
     },
     {
       "cmd": "\\ker",
       "snippet": "\\ker",
-      "desc": "ker",
+      "desc": "latex.cmd.ker",
       "priority": 428
     },
     {
       "cmd": "\\hom",
       "snippet": "\\hom",
-      "desc": "hom",
+      "desc": "latex.cmd.hom",
       "priority": 429
     },
     {
       "cmd": "\\deg",
       "snippet": "\\deg",
-      "desc": "deg",
+      "desc": "latex.cmd.deg",
       "priority": 430
     },
     {
       "cmd": "\\gcd",
       "snippet": "\\gcd",
-      "desc": "gcd",
+      "desc": "latex.cmd.gcd",
       "priority": 431
     },
     {
       "cmd": "\\max",
       "snippet": "\\max",
-      "desc": "max",
+      "desc": "latex.cmd.max",
       "priority": 432
     },
     {
       "cmd": "\\min",
       "snippet": "\\min",
-      "desc": "min",
+      "desc": "latex.cmd.min",
       "priority": 433
     },
     {
       "cmd": "\\sup",
       "snippet": "\\sup",
-      "desc": "sup",
+      "desc": "latex.cmd.sup",
       "priority": 434
     },
     {
       "cmd": "\\inf",
       "snippet": "\\inf",
-      "desc": "inf",
+      "desc": "latex.cmd.inf",
       "priority": 435
     },
     {
       "cmd": "\\arg",
       "snippet": "\\arg",
-      "desc": "arg",
+      "desc": "latex.cmd.arg",
       "priority": 436
     },
     {
       "cmd": "\\limsup",
       "snippet": "\\limsup",
-      "desc": "limsup",
+      "desc": "latex.cmd.limsup",
       "priority": 437
     },
     {
       "cmd": "\\liminf",
       "snippet": "\\liminf",
-      "desc": "liminf",
+      "desc": "latex.cmd.liminf",
       "priority": 438
     },
     {
       "cmd": "\\Pr",
       "snippet": "\\Pr",
-      "desc": "Pr",
+      "desc": "latex.cmd.Pr",
       "priority": 439
     },
     {
       "cmd": "\\mod",
       "snippet": "\\mod",
-      "desc": "mod",
+      "desc": "latex.cmd.mod",
       "priority": 440
     },
     {
       "cmd": "\\bmod",
       "snippet": "\\bmod",
-      "desc": "mod 二元",
+      "desc": "latex.cmd.bmod",
       "priority": 441
     },
     {
       "cmd": "\\pmod",
       "snippet": "\\pmod{$1}",
-      "desc": "括号mod",
+      "desc": "latex.cmd.pmod",
       "priority": 442
     },
     {
       "cmd": "\\mathcal",
       "snippet": "\\mathcal{$1}",
-      "desc": "花体",
+      "desc": "latex.cmd.mathcal",
       "priority": 450
     },
     {
       "cmd": "\\mathfrak",
       "snippet": "\\mathfrak{$1}",
-      "desc": "哥特体",
+      "desc": "latex.cmd.mathfrak",
       "priority": 451
     },
     {
       "cmd": "\\mathit",
       "snippet": "\\mathit{$1}",
-      "desc": "斜体",
+      "desc": "latex.cmd.mathit",
       "priority": 452
     },
     {
       "cmd": "\\mathsf",
       "snippet": "\\mathsf{$1}",
-      "desc": "无衬线体",
+      "desc": "latex.cmd.mathsf",
       "priority": 453
     },
     {
       "cmd": "\\mathtt",
       "snippet": "\\mathtt{$1}",
-      "desc": "等宽体",
+      "desc": "latex.cmd.mathtt",
       "priority": 454
     },
     {
       "cmd": "\\mathscr",
       "snippet": "\\mathscr{$1}",
-      "desc": "手写体",
+      "desc": "latex.cmd.mathscr",
       "priority": 455
     },
     {
       "cmd": "\\boldsymbol",
       "snippet": "\\boldsymbol{$1}",
-      "desc": "粗体符号",
+      "desc": "latex.cmd.boldsymbol",
       "priority": 456
     },
     {
       "cmd": "\\textbf",
       "snippet": "\\textbf{$1}",
-      "desc": "粗体文本",
+      "desc": "latex.cmd.textbf",
       "priority": 457
     },
     {
       "cmd": "\\textit",
       "snippet": "\\textit{$1}",
-      "desc": "斜体文本",
+      "desc": "latex.cmd.textit",
       "priority": 458
     },
     {
       "cmd": "\\textsf",
       "snippet": "\\textsf{$1}",
-      "desc": "无衬线文本",
+      "desc": "latex.cmd.textsf",
       "priority": 459
     },
     {
       "cmd": "\\texttt",
       "snippet": "\\texttt{$1}",
-      "desc": "等宽文本",
+      "desc": "latex.cmd.texttt",
       "priority": 460
     },
     {
       "cmd": "\\operatorname",
       "snippet": "\\operatorname{$1}",
-      "desc": "自定义算子",
+      "desc": "latex.cmd.operatorname",
       "priority": 461
     },
     {
       "cmd": "\\quad",
       "snippet": "\\quad",
-      "desc": "宽空格",
+      "desc": "latex.cmd.quad",
       "priority": 480
     },
     {
       "cmd": "\\qquad",
       "snippet": "\\qquad",
-      "desc": "双宽空格",
+      "desc": "latex.cmd.qquad",
       "priority": 481
     },
     {
       "cmd": "\\enspace",
       "snippet": "\\enspace",
-      "desc": "半宽空格",
+      "desc": "latex.cmd.enspace",
       "priority": 482
     },
     {
       "cmd": "\\thinspace",
       "snippet": "\\thinspace",
-      "desc": "窄空格",
+      "desc": "latex.cmd.thinspace",
       "priority": 483
     },
     {
       "cmd": "\\medspace",
       "snippet": "\\medspace",
-      "desc": "中空格",
+      "desc": "latex.cmd.medspace",
       "priority": 484
     },
     {
       "cmd": "\\thickspace",
       "snippet": "\\thickspace",
-      "desc": "宽空格",
+      "desc": "latex.cmd.thickspace",
       "priority": 485
     },
     {
       "cmd": "\\negthickspace",
       "snippet": "\\negthickspace",
-      "desc": "负宽空格",
+      "desc": "latex.cmd.negthickspace",
       "priority": 486
     },
     {
       "cmd": "\\negmedspace",
       "snippet": "\\negmedspace",
-      "desc": "负中空格",
+      "desc": "latex.cmd.negmedspace",
       "priority": 487
     },
     {
       "cmd": "\\negthinspace",
       "snippet": "\\negthinspace",
-      "desc": "负窄空格",
+      "desc": "latex.cmd.negthinspace",
       "priority": 488
     },
     {
       "cmd": "\\space",
       "snippet": "\\space",
-      "desc": "空格",
+      "desc": "latex.cmd.space",
       "priority": 489
     },
     {
       "cmd": "\\nobreakspace",
       "snippet": "\\nobreakspace",
-      "desc": "不断空格",
+      "desc": "latex.cmd.nobreakspace",
       "priority": 490
     },
     {
       "cmd": "\\,",
       "snippet": "\\,",
-      "desc": "窄空格 (3/18em)",
+      "desc": "latex.cmd.comma_space",
       "priority": 491
     },
     {
       "cmd": "\\;",
       "snippet": "\\;",
-      "desc": "宽空格 (5/18em)",
+      "desc": "latex.cmd.semicolon_space",
       "priority": 492
     },
     {
       "cmd": "\\:",
       "snippet": "\\:",
-      "desc": "中空格 (4/18em)",
+      "desc": "latex.cmd.colon_space",
       "priority": 493
     },
     {
       "cmd": "\\!",
       "snippet": "\\!",
-      "desc": "负窄空格",
+      "desc": "latex.cmd.neg_thin_space",
       "priority": 494
     },
     {
       "cmd": "\\tiny",
       "snippet": "\\tiny",
-      "desc": "字号: tiny",
+      "desc": "latex.cmd.tiny",
       "priority": 505
     },
     {
       "cmd": "\\scriptsize",
       "snippet": "\\scriptsize",
-      "desc": "字号: scriptsize",
+      "desc": "latex.cmd.scriptsize",
       "priority": 506
     },
     {
       "cmd": "\\footnotesize",
       "snippet": "\\footnotesize",
-      "desc": "字号: footnotesize",
+      "desc": "latex.cmd.footnotesize",
       "priority": 507
     },
     {
       "cmd": "\\small",
       "snippet": "\\small",
-      "desc": "字号: small",
+      "desc": "latex.cmd.small",
       "priority": 508
     },
     {
       "cmd": "\\normalsize",
       "snippet": "\\normalsize",
-      "desc": "字号: normalsize",
+      "desc": "latex.cmd.normalsize",
       "priority": 509
     },
     {
       "cmd": "\\large",
       "snippet": "\\large",
-      "desc": "字号: large",
+      "desc": "latex.cmd.large",
       "priority": 510
     },
     {
       "cmd": "\\Large",
       "snippet": "\\Large",
-      "desc": "字号: Large",
+      "desc": "latex.cmd.Large",
       "priority": 511
     },
     {
       "cmd": "\\LARGE",
       "snippet": "\\LARGE",
-      "desc": "字号: LARGE",
+      "desc": "latex.cmd.LARGE",
       "priority": 512
     },
     {
       "cmd": "\\huge",
       "snippet": "\\huge",
-      "desc": "字号: huge",
+      "desc": "latex.cmd.huge",
       "priority": 513
     },
     {
       "cmd": "\\Huge",
       "snippet": "\\Huge",
-      "desc": "字号: Huge",
+      "desc": "latex.cmd.Huge",
       "priority": 514
     },
     {
       "cmd": "\\cdots",
       "snippet": "\\cdots",
-      "desc": "⋯",
+      "desc": "latex.cmd.cdots",
       "priority": 520
     },
     {
       "cmd": "\\ldots",
       "snippet": "\\ldots",
-      "desc": "…",
+      "desc": "latex.cmd.ldots",
       "priority": 521
     },
     {
       "cmd": "\\vdots",
       "snippet": "\\vdots",
-      "desc": "⋮",
+      "desc": "latex.cmd.vdots",
       "priority": 522
     },
     {
       "cmd": "\\ddots",
       "snippet": "\\ddots",
-      "desc": "⋱",
+      "desc": "latex.cmd.ddots",
       "priority": 523
     },
     {
       "cmd": "\\forall",
       "snippet": "\\forall",
-      "desc": "∀",
+      "desc": "latex.cmd.forall",
       "priority": 524
     },
     {
       "cmd": "\\exists",
       "snippet": "\\exists",
-      "desc": "∃",
+      "desc": "latex.cmd.exists",
       "priority": 525
     },
     {
       "cmd": "\\nexists",
       "snippet": "\\nexists",
-      "desc": "∄",
+      "desc": "latex.cmd.nexists",
       "priority": 526
     },
     {
       "cmd": "\\emptyset",
       "snippet": "\\emptyset",
-      "desc": "∅",
+      "desc": "latex.cmd.emptyset",
       "priority": 527
     },
     {
       "cmd": "\\varnothing",
       "snippet": "\\varnothing",
-      "desc": "∅",
+      "desc": "latex.cmd.varnothing",
       "priority": 528
     },
     {
       "cmd": "\\nabla",
       "snippet": "\\nabla",
-      "desc": "∇",
+      "desc": "latex.cmd.nabla",
       "priority": 529
     },
     {
       "cmd": "\\triangle",
       "snippet": "\\triangle",
-      "desc": "△",
+      "desc": "latex.cmd.triangle",
       "priority": 530
     },
     {
       "cmd": "\\triangledown",
       "snippet": "\\triangledown",
-      "desc": "▽",
+      "desc": "latex.cmd.triangledown",
       "priority": 531
     },
     {
       "cmd": "\\square",
       "snippet": "\\square",
-      "desc": "□",
+      "desc": "latex.cmd.square",
       "priority": 532
     },
     {
       "cmd": "\\blacksquare",
       "snippet": "\\blacksquare",
-      "desc": "■",
+      "desc": "latex.cmd.blacksquare",
       "priority": 533
     },
     {
       "cmd": "\\diamond",
       "snippet": "\\diamond",
-      "desc": "⋄",
+      "desc": "latex.cmd.diamond",
       "priority": 534
     },
     {
       "cmd": "\\lozenge",
       "snippet": "\\lozenge",
-      "desc": "◊",
+      "desc": "latex.cmd.lozenge",
       "priority": 535
     },
     {
       "cmd": "\\clubsuit",
       "snippet": "\\clubsuit",
-      "desc": "♣",
+      "desc": "latex.cmd.clubsuit",
       "priority": 536
     },
     {
       "cmd": "\\diamondsuit",
       "snippet": "\\diamondsuit",
-      "desc": "♢",
+      "desc": "latex.cmd.diamondsuit",
       "priority": 537
     },
     {
       "cmd": "\\heartsuit",
       "snippet": "\\heartsuit",
-      "desc": "♡",
+      "desc": "latex.cmd.heartsuit",
       "priority": 538
     },
     {
       "cmd": "\\spadesuit",
       "snippet": "\\spadesuit",
-      "desc": "♠",
+      "desc": "latex.cmd.spadesuit",
       "priority": 539
     },
     {
       "cmd": "\\flat",
       "snippet": "\\flat",
-      "desc": "♭",
+      "desc": "latex.cmd.flat",
       "priority": 540
     },
     {
       "cmd": "\\natural",
       "snippet": "\\natural",
-      "desc": "♮",
+      "desc": "latex.cmd.natural",
       "priority": 541
     },
     {
       "cmd": "\\sharp",
       "snippet": "\\sharp",
-      "desc": "♯",
+      "desc": "latex.cmd.sharp",
       "priority": 542
     },
     {
       "cmd": "\\dagger",
       "snippet": "\\dagger",
-      "desc": "†",
+      "desc": "latex.cmd.dagger",
       "priority": 543
     },
     {
       "cmd": "\\ddagger",
       "snippet": "\\ddagger",
-      "desc": "‡",
+      "desc": "latex.cmd.ddagger",
       "priority": 544
     },
     {
       "cmd": "\\ell",
       "snippet": "\\ell",
-      "desc": "ℓ",
+      "desc": "latex.cmd.ell",
       "priority": 545
     },
     {
       "cmd": "\\hbar",
       "snippet": "\\hbar",
-      "desc": "ℏ",
+      "desc": "latex.cmd.hbar",
       "priority": 546
     },
     {
       "cmd": "\\imath",
       "snippet": "\\imath",
-      "desc": "ı",
+      "desc": "latex.cmd.imath",
       "priority": 547
     },
     {
       "cmd": "\\jmath",
       "snippet": "\\jmath",
-      "desc": "ȷ",
+      "desc": "latex.cmd.jmath",
       "priority": 548
     },
     {
       "cmd": "\\Re",
       "snippet": "\\Re",
-      "desc": "ℜ",
+      "desc": "latex.cmd.Re",
       "priority": 549
     },
     {
       "cmd": "\\Im",
       "snippet": "\\Im",
-      "desc": "ℑ",
+      "desc": "latex.cmd.Im",
       "priority": 550
     },
     {
       "cmd": "\\wp",
       "snippet": "\\wp",
-      "desc": "℘",
+      "desc": "latex.cmd.wp",
       "priority": 551
     },
     {
       "cmd": "\\aleph",
       "snippet": "\\aleph",
-      "desc": "ℵ",
+      "desc": "latex.cmd.aleph",
       "priority": 552
     },
     {
       "cmd": "\\beth",
       "snippet": "\\beth",
-      "desc": "ℶ",
+      "desc": "latex.cmd.beth",
       "priority": 553
     },
     {
       "cmd": "\\gimel",
       "snippet": "\\gimel",
-      "desc": "ℷ",
+      "desc": "latex.cmd.gimel",
       "priority": 554
     },
     {
       "cmd": "\\complement",
       "snippet": "\\complement",
-      "desc": "∁",
+      "desc": "latex.cmd.complement",
       "priority": 555
     },
     {
       "cmd": "\\angle",
       "snippet": "\\angle",
-      "desc": "∠",
+      "desc": "latex.cmd.angle",
       "priority": 556
     },
     {
       "cmd": "\\measuredangle",
       "snippet": "\\measuredangle",
-      "desc": "∡",
+      "desc": "latex.cmd.measuredangle",
       "priority": 557
     },
     {
       "cmd": "\\sphericalangle",
       "snippet": "\\sphericalangle",
-      "desc": "∢",
+      "desc": "latex.cmd.sphericalangle",
       "priority": 558
     },
     {
       "cmd": "\\top",
       "snippet": "\\top",
-      "desc": "⊤",
+      "desc": "latex.cmd.top",
       "priority": 559
     },
     {
       "cmd": "\\bot",
       "snippet": "\\bot",
-      "desc": "⊥",
+      "desc": "latex.cmd.bot",
       "priority": 560
     },
     {
       "cmd": "\\neg",
       "snippet": "\\neg",
-      "desc": "¬",
+      "desc": "latex.cmd.neg",
       "priority": 561
     },
     {
       "cmd": "\\lnot",
       "snippet": "\\lnot",
-      "desc": "¬",
+      "desc": "latex.cmd.lnot",
       "priority": 562
     },
     {
       "cmd": "\\surd",
       "snippet": "\\surd",
-      "desc": "√",
+      "desc": "latex.cmd.surd",
       "priority": 563
     },
     {
       "cmd": "\\checkmark",
       "snippet": "\\checkmark",
-      "desc": "✓",
+      "desc": "latex.cmd.checkmark",
       "priority": 564
     },
     {
       "cmd": "\\therefore",
       "snippet": "\\therefore",
-      "desc": "∴",
+      "desc": "latex.cmd.therefore",
       "priority": 565
     },
     {
       "cmd": "\\because",
       "snippet": "\\because",
-      "desc": "∵",
+      "desc": "latex.cmd.because",
       "priority": 566
     },
     {
       "cmd": "\\degree",
       "snippet": "\\degree",
-      "desc": "°",
+      "desc": "latex.cmd.degree",
       "priority": 567
     },
     {
       "cmd": "\\prime",
       "snippet": "\\prime",
-      "desc": "′",
+      "desc": "latex.cmd.prime",
       "priority": 568
     },
     {
       "cmd": "\\backprime",
       "snippet": "\\backprime",
-      "desc": "‵",
+      "desc": "latex.cmd.backprime",
       "priority": 569
     },
     {
       "cmd": "\\substack",
       "snippet": "\\substack{$1}",
-      "desc": "多行下标",
+      "desc": "latex.cmd.substack",
       "priority": 590
     },
     {
       "cmd": "\\overparen",
       "snippet": "\\overparen{$1}",
-      "desc": "上圆括号",
+      "desc": "latex.cmd.overparen",
       "priority": 591
     },
     {
       "cmd": "\\underparen",
       "snippet": "\\underparen{$1}",
-      "desc": "下圆括号",
+      "desc": "latex.cmd.underparen",
       "priority": 592
     },
     {
       "cmd": "\\not",
       "snippet": "\\not",
-      "desc": "否定",
+      "desc": "latex.cmd.not",
       "priority": 593
     },
     {
       "cmd": "\\tag",
       "snippet": "\\tag{$1}",
-      "desc": "标签",
+      "desc": "latex.cmd.tag",
       "priority": 594
     },
     {
       "cmd": "\\tag*",
       "snippet": "\\tag*{$1}",
-      "desc": "无括号标签",
+      "desc": "latex.cmd.tag_star",
       "priority": 595
     },
     {
       "cmd": "\\genfrac",
       "snippet": "\\genfrac",
-      "desc": "通用分数",
+      "desc": "latex.cmd.genfrac",
       "priority": 596
     },
     {
       "cmd": "\\above",
       "snippet": "\\above",
-      "desc": "上方",
+      "desc": "latex.cmd.above",
       "priority": 597
     },
     {
       "cmd": "\\atop",
       "snippet": "\\atop",
-      "desc": "堆叠",
+      "desc": "latex.cmd.atop",
       "priority": 598
     },
     {
       "cmd": "\\choose",
       "snippet": "\\choose",
-      "desc": "组合",
+      "desc": "latex.cmd.choose",
       "priority": 599
     },
     {
       "cmd": "\\cfrac",
       "snippet": "\\cfrac{$1}{$2}",
-      "desc": "连分数",
+      "desc": "latex.cmd.cfrac",
       "priority": 600
     },
     {
       "cmd": "\\dfrac",
       "snippet": "\\dfrac{$1}{$2}",
-      "desc": "行间分数",
+      "desc": "latex.cmd.dfrac",
       "priority": 601
     },
     {
       "cmd": "\\tfrac",
       "snippet": "\\tfrac{$1}{$2}",
-      "desc": "行内分数",
+      "desc": "latex.cmd.tfrac",
       "priority": 602
     },
     {
       "cmd": "\\dbinom",
       "snippet": "\\dbinom{$1}{$2}",
-      "desc": "行间二项式",
+      "desc": "latex.cmd.dbinom",
       "priority": 603
     },
     {
       "cmd": "\\tbinom",
       "snippet": "\\tbinom{$1}{$2}",
-      "desc": "行内二项式",
+      "desc": "latex.cmd.tbinom",
       "priority": 604
     },
     {
       "cmd": "\\sideset",
       "snippet": "\\sideset",
-      "desc": "侧设上下标",
+      "desc": "latex.cmd.sideset",
       "priority": 605
     },
     {
       "cmd": "\\smash",
       "snippet": "\\smash{$1}",
-      "desc": "压缩高度",
+      "desc": "latex.cmd.smash",
       "priority": 606
     },
     {
       "cmd": "\\mathop",
       "snippet": "\\mathop{$1}",
-      "desc": "算子类",
+      "desc": "latex.cmd.mathop",
       "priority": 607
     },
     {
       "cmd": "\\mathrel",
       "snippet": "\\mathrel{$1}",
-      "desc": "关系类",
+      "desc": "latex.cmd.mathrel",
       "priority": 608
     },
     {
       "cmd": "\\mathbin",
       "snippet": "\\mathbin{$1}",
-      "desc": "二元类",
+      "desc": "latex.cmd.mathbin",
       "priority": 609
     },
     {
       "cmd": "\\mathord",
       "snippet": "\\mathord{$1}",
-      "desc": "普通类",
+      "desc": "latex.cmd.mathord",
       "priority": 610
     },
     {
       "cmd": "\\mathopen",
       "snippet": "\\mathopen{$1}",
-      "desc": "开括号类",
+      "desc": "latex.cmd.mathopen",
       "priority": 611
     },
     {
       "cmd": "\\mathclose",
       "snippet": "\\mathclose{$1}",
-      "desc": "闭括号类",
+      "desc": "latex.cmd.mathclose",
       "priority": 612
     },
     {
       "cmd": "\\mathpunct",
       "snippet": "\\mathpunct{$1}",
-      "desc": "标点类",
+      "desc": "latex.cmd.mathpunct",
       "priority": 613
     },
     {
       "cmd": "\\mathinner",
       "snippet": "\\mathinner{$1}",
-      "desc": "内部类",
+      "desc": "latex.cmd.mathinner",
       "priority": 614
     },
     {
       "cmd": "\\limits",
       "snippet": "\\limits",
-      "desc": "上下标位置",
+      "desc": "latex.cmd.limits",
       "priority": 615
     },
     {
       "cmd": "\\nolimits",
       "snippet": "\\nolimits",
-      "desc": "取消上下标",
+      "desc": "latex.cmd.nolimits",
       "priority": 616
     },
     {
       "cmd": "\\rule",
       "snippet": "\\rule{$1}{$2}",
-      "desc": "矩形规则",
+      "desc": "latex.cmd.rule",
       "priority": 617
     },
     {
       "cmd": "\\kern",
       "snippet": "\\kern{$1}",
-      "desc": "水平间距",
+      "desc": "latex.cmd.kern",
       "priority": 618
     },
     {
       "cmd": "\\mkern",
       "snippet": "\\mkern{$1}",
-      "desc": "数学间距",
+      "desc": "latex.cmd.mkern",
       "priority": 619
     },
     {
       "cmd": "\\hspace",
       "snippet": "\\hspace{$1}",
-      "desc": "水平空间",
+      "desc": "latex.cmd.hspace",
       "priority": 620
     },
     {
       "cmd": "\\raisebox",
       "snippet": "\\raisebox{$1}{$2}",
-      "desc": "垂直偏移",
+      "desc": "latex.cmd.raisebox",
       "priority": 621
     }
   ],
   "environments": [
     {
       "name": "matrix",
-      "desc": "矩阵"
+      "desc": "latex.env.matrix"
     },
     {
       "name": "pmatrix",
-      "desc": "圆括号矩阵"
+      "desc": "latex.env.pmatrix"
     },
     {
       "name": "bmatrix",
-      "desc": "方括号矩阵"
+      "desc": "latex.env.bmatrix"
     },
     {
       "name": "Bmatrix",
-      "desc": "花括号矩阵"
+      "desc": "latex.env.Bmatrix"
     },
     {
       "name": "vmatrix",
-      "desc": "行列式"
+      "desc": "latex.env.vmatrix"
     },
     {
       "name": "Vmatrix",
-      "desc": "双竖线矩阵"
+      "desc": "latex.env.Vmatrix"
     },
     {
       "name": "cases",
-      "desc": "分段函数"
+      "desc": "latex.env.cases"
     },
     {
       "name": "rcases",
-      "desc": "右分段"
+      "desc": "latex.env.rcases"
     },
     {
       "name": "aligned",
-      "desc": "对齐环境"
+      "desc": "latex.env.aligned"
     },
     {
       "name": "gathered",
-      "desc": "居中环境"
+      "desc": "latex.env.gathered"
     },
     {
       "name": "array",
-      "desc": "数组环境"
+      "desc": "latex.env.array"
     },
     {
       "name": "align",
-      "desc": "对齐等式"
+      "desc": "latex.env.align"
     },
     {
       "name": "align*",
-      "desc": "无编号对齐"
+      "desc": "latex.env.align_star"
     },
     {
       "name": "equation",
-      "desc": "编号等式"
+      "desc": "latex.env.equation"
     },
     {
       "name": "equation*",
-      "desc": "无编号等式"
+      "desc": "latex.env.equation_star"
     }
   ]
 };
-
-
-

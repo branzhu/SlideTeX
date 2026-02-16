@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import puppeteer from 'puppeteer-core';
-import { resolveChromePath, startStaticServer, ensureDir, ensureEmptyDir } from './lib/test-infra.mjs';
+import { resolveChromePath, startStaticServer, ensureDir, ensureEmptyDir, resolvePath as resolvePathBase, readJson, writeJson } from './lib/test-infra.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,18 +72,7 @@ function parseArgs(argv) {
 }
 
 function resolvePath(input) {
-  if (!input) {
-    return '';
-  }
-  return path.isAbsolute(input) ? input : path.resolve(repoRoot, input);
-}
-
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-function writeJson(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+  return resolvePathBase(input, repoRoot);
 }
 
 function sequenceEquals(left, right) {

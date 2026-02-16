@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Office = Microsoft.Office.Core;
@@ -14,6 +13,7 @@ using SlideTeX.VstoAddin.Diagnostics;
 using SlideTeX.VstoAddin.Hosting;
 using SlideTeX.VstoAddin.Localization;
 using SlideTeX.VstoAddin.Metadata;
+using SlideTeX.VstoAddin.Models;
 using SlideTeX.VstoAddin.Ocr;
 using SlideTeX.VstoAddin.PowerPoint;
 
@@ -25,13 +25,6 @@ namespace SlideTeX.VstoAddin
     /// </summary>
     internal sealed class SlideTeXAddinController : IDisposable
     {
-        private static readonly Regex NumberingEnvBeginRegex = new Regex(
-            @"\\begin\{(equation|align|gather)(\*)?\}", RegexOptions.Compiled);
-        private static readonly Regex NumberingSuppressionRegex = new Regex(
-            @"\\(?:nonumber|notag)\b", RegexOptions.Compiled);
-        private static readonly Regex LineBreakRegex = new Regex(
-            @"(?<!\\)\\\\(?![a-zA-Z])", RegexOptions.Compiled);
-
         private readonly ThisAddIn _addIn;
         private readonly JavaScriptSerializer _serializer = new JavaScriptSerializer();
         private readonly PowerPointEquationShapeService _equationShapeService = new PowerPointEquationShapeService();
@@ -189,7 +182,7 @@ namespace SlideTeX.VstoAddin
             {
                 var renderToInsert = _lastRender;
                 var originalLatex = _lastRender.Latex;
-                int autoNumberLineCount = GetAutoNumberLineCount(originalLatex);
+                int autoNumberLineCount = EquationNumberingService.GetAutoNumberLineCount(originalLatex);
                 bool autoNumbered = autoNumberLineCount > 0;
                 DiagLog.Debug("InsertCurrentFormula autoNumbered=" + autoNumbered
                     + " autoNumberLineCount=" + autoNumberLineCount
@@ -206,7 +199,7 @@ namespace SlideTeX.VstoAddin
                     }
 
                     int consumedCount;
-                    string numberedLatex = BuildNumberedLatex(originalLatex, nextNumber, out consumedCount);
+                    string numberedLatex = EquationNumberingService.BuildNumberedLatex(originalLatex, nextNumber, out consumedCount);
                     DiagLog.Debug("InsertCurrentFormula nextNumber=" + nextNumber + " consumedCount=" + consumedCount);
                     var numberedRender = RenderAndWait(originalLatex, _lastRender.Options, numberedLatex);
                     DiagLog.Debug("InsertCurrentFormula numbered render returned. isNull=" + (numberedRender == null));
@@ -301,7 +294,7 @@ namespace SlideTeX.VstoAddin
                 }
 
                 var newShape = _equationShapeService.Update(shape, _lastRender, newWidth, newHeight);
-                int autoNumberLineCount = GetAutoNumberLineCount(_lastRender.Latex);
+                int autoNumberLineCount = EquationNumberingService.GetAutoNumberLineCount(_lastRender.Latex);
                 var newMeta = BuildMeta(_lastRender, autoNumberLineCount > 0, autoNumberLineCount);
                 _metadataStore.Write(new PowerPointShapeTagAccessor(newShape), newMeta);
                 DiagLog.Info("UpdateSelectedFormula succeeded.");
@@ -988,405 +981,6 @@ namespace SlideTeX.VstoAddin
                 MessageBoxIcon.Warning);
         }
 
-        private static bool IsAutoNumberedLatex(string latex)
-        {
-            return GetAutoNumberLineCount(latex) > 0;
-        }
-
-        /// <summary>
-        /// Counts auto-numbered equation lines based on environment and tag/nonumber markers.
-        /// </summary>
-        private static int GetAutoNumberLineCount(string latex)
-        {
-            ParsedNumberingEnvironment parsed;
-            if (!TryParseNumberingEnvironment(latex, out parsed) || parsed.IsStarred)
-            {
-                return 0;
-            }
-
-            if (IsPerLineNumberingEnvironment(parsed.EnvironmentName))
-            {
-                int count = 0;
-                var lines = SplitEnvironmentLines(parsed.Content);
-                foreach (var line in lines)
-                {
-                    var info = AnalyzeLineNumbering(line);
-                    if (!info.HasCustomTag && !info.SuppressAutoNumber)
-                    {
-                        count++;
-                    }
-                }
-
-                return count;
-            }
-
-            // equation/multline are single-number environments.
-            var envInfo = AnalyzeLineNumbering(parsed.Content);
-            if (envInfo.HasCustomTag || envInfo.SuppressAutoNumber)
-            {
-                return 0;
-            }
-
-            return 1;
-        }
-
-        /// <summary>
-        /// Rewrites equation environments with explicit \tag values starting from a seed number.
-        /// </summary>
-        private static string BuildNumberedLatex(string latex, int startNumber, out int consumedCount)
-        {
-            consumedCount = 0;
-            ParsedNumberingEnvironment parsed;
-            if (!TryParseNumberingEnvironment(latex, out parsed) || parsed.IsStarred)
-            {
-                return latex;
-            }
-
-            if (!IsPerLineNumberingEnvironment(parsed.EnvironmentName))
-            {
-                int singleNumber = Math.Max(1, startNumber);
-                var info = AnalyzeLineNumbering(parsed.Content);
-                var cleanedContent = StripLineNumberingCommands(parsed.Content).TrimEnd();
-                string tagCommand = null;
-
-                if (info.HasCustomTag)
-                {
-                    tagCommand = BuildTagCommand(info.CustomTagContent, info.CustomTagStarred);
-                }
-                else if (!info.SuppressAutoNumber)
-                {
-                    tagCommand = BuildTagCommand(singleNumber.ToString(), false);
-                    consumedCount = 1;
-                }
-
-                if (consumedCount <= 0)
-                {
-                    return latex;
-                }
-
-                string singleBeginReplacement = "\\begin{" + parsed.EnvironmentName + "*}";
-                string singleEndReplacement = "\\end{" + parsed.EnvironmentName + "*}";
-                var singleBuilder = new StringBuilder();
-                singleBuilder.Append(latex.Substring(0, parsed.BeginIndex));
-                singleBuilder.Append(singleBeginReplacement);
-                singleBuilder.Append(AppendTagToLine(cleanedContent, tagCommand));
-                singleBuilder.Append(singleEndReplacement);
-                singleBuilder.Append(latex.Substring(parsed.EndIndex + parsed.EndTokenLength));
-                return singleBuilder.ToString();
-            }
-
-            var lines = SplitEnvironmentLines(parsed.Content);
-            if (lines.Count == 0)
-            {
-                return latex;
-            }
-
-            int nextNumber = Math.Max(1, startNumber);
-            var rebuiltLines = new List<string>(lines.Count);
-
-            foreach (var line in lines)
-            {
-                var info = AnalyzeLineNumbering(line);
-                var cleanedLine = StripLineNumberingCommands(line).TrimEnd();
-                string tagCommand = null;
-
-                if (info.HasCustomTag)
-                {
-                    tagCommand = BuildTagCommand(info.CustomTagContent, info.CustomTagStarred);
-                }
-                else if (!info.SuppressAutoNumber)
-                {
-                    tagCommand = BuildTagCommand(nextNumber.ToString(), false);
-                    nextNumber++;
-                    consumedCount++;
-                }
-
-                rebuiltLines.Add(AppendTagToLine(cleanedLine, tagCommand));
-            }
-
-            if (consumedCount <= 0)
-            {
-                return latex;
-            }
-
-            string beginReplacement = "\\begin{" + parsed.EnvironmentName + "*}";
-            string endReplacement = "\\end{" + parsed.EnvironmentName + "*}";
-            var builder = new StringBuilder();
-            builder.Append(latex.Substring(0, parsed.BeginIndex));
-            builder.Append(beginReplacement);
-            builder.Append(string.Join(@"\\", rebuiltLines.ToArray()));
-            builder.Append(endReplacement);
-            builder.Append(latex.Substring(parsed.EndIndex + parsed.EndTokenLength));
-            return builder.ToString();
-        }
-
-        private static bool IsPerLineNumberingEnvironment(string environmentName)
-        {
-            return string.Equals(environmentName, "align", StringComparison.Ordinal)
-                || string.Equals(environmentName, "gather", StringComparison.Ordinal);
-        }
-
-        /// <summary>
-        /// Parses the first supported numbering environment and its exact begin/end offsets.
-        /// </summary>
-        private static bool TryParseNumberingEnvironment(string latex, out ParsedNumberingEnvironment parsed)
-        {
-            parsed = null;
-            if (string.IsNullOrWhiteSpace(latex))
-            {
-                return false;
-            }
-
-            var beginMatch = NumberingEnvBeginRegex.Match(latex);
-            if (!beginMatch.Success)
-            {
-                return false;
-            }
-
-            string environmentName = beginMatch.Groups[1].Value;
-            bool isStarred = beginMatch.Groups[2].Success;
-            string endToken = "\\end{" + environmentName + (isStarred ? "*" : string.Empty) + "}";
-            int endIndex = latex.IndexOf(endToken, beginMatch.Index + beginMatch.Length, StringComparison.Ordinal);
-            if (endIndex < 0)
-            {
-                string fallbackEndToken = "\\end{" + environmentName + "}";
-                endIndex = latex.IndexOf(fallbackEndToken, beginMatch.Index + beginMatch.Length, StringComparison.Ordinal);
-                if (endIndex < 0)
-                {
-                    fallbackEndToken = "\\end{" + environmentName + "*}";
-                    endIndex = latex.IndexOf(fallbackEndToken, beginMatch.Index + beginMatch.Length, StringComparison.Ordinal);
-                    if (endIndex < 0)
-                    {
-                        return false;
-                    }
-                }
-
-                endToken = fallbackEndToken;
-                isStarred = endToken.EndsWith("*}", StringComparison.Ordinal);
-            }
-
-            int contentStart = beginMatch.Index + beginMatch.Length;
-            parsed = new ParsedNumberingEnvironment
-            {
-                BeginIndex = beginMatch.Index,
-                BeginTokenLength = beginMatch.Length,
-                EndIndex = endIndex,
-                EndTokenLength = endToken.Length,
-                EnvironmentName = environmentName,
-                IsStarred = isStarred,
-                Content = latex.Substring(contentStart, endIndex - contentStart)
-            };
-            return true;
-        }
-
-        private static List<string> SplitEnvironmentLines(string content)
-        {
-            var lines = new List<string>();
-            if (string.IsNullOrEmpty(content))
-            {
-                lines.Add(string.Empty);
-                return lines;
-            }
-
-            var parts = LineBreakRegex.Split(content);
-            if (parts.Length == 0)
-            {
-                lines.Add(content);
-                return lines;
-            }
-
-            lines.AddRange(parts);
-            return lines;
-        }
-
-        /// <summary>
-        /// Extracts numbering directives on a single logical line (tag/nonumber/notag).
-        /// </summary>
-        private static LineNumberingInfo AnalyzeLineNumbering(string line)
-        {
-            var info = new LineNumberingInfo
-            {
-                SuppressAutoNumber = NumberingSuppressionRegex.IsMatch(line ?? string.Empty)
-            };
-
-            int searchStart = 0;
-            int tagStart;
-            while (TryFindTagCommand(line, searchStart, out tagStart))
-            {
-                int tagEnd;
-                string tagContent;
-                bool isTagStarred;
-                if (TryParseTagCommand(line, tagStart, out tagEnd, out tagContent, out isTagStarred))
-                {
-                    info.HasCustomTag = true;
-                    info.CustomTagContent = tagContent;
-                    info.CustomTagStarred = isTagStarred;
-                    return info;
-                }
-
-                searchStart = tagStart + 4;
-            }
-
-            return info;
-        }
-
-        /// <summary>
-        /// Removes numbering directives so renumbering can rebuild deterministic tag commands.
-        /// </summary>
-        private static string StripLineNumberingCommands(string line)
-        {
-            string cleaned = NumberingSuppressionRegex.Replace(line ?? string.Empty, string.Empty);
-            int searchStart = 0;
-            int cursor = 0;
-            StringBuilder builder = null;
-
-            int tagStart;
-            while (TryFindTagCommand(cleaned, searchStart, out tagStart))
-            {
-                int tagEnd;
-                string tagContent;
-                bool isTagStarred;
-                if (!TryParseTagCommand(cleaned, tagStart, out tagEnd, out tagContent, out isTagStarred))
-                {
-                    searchStart = tagStart + 4;
-                    continue;
-                }
-
-                if (builder == null)
-                {
-                    builder = new StringBuilder(cleaned.Length);
-                }
-
-                builder.Append(cleaned, cursor, tagStart - cursor);
-                cursor = tagEnd;
-                searchStart = tagEnd;
-            }
-
-            if (builder == null)
-            {
-                return cleaned;
-            }
-
-            builder.Append(cleaned, cursor, cleaned.Length - cursor);
-            return builder.ToString();
-        }
-
-        private static bool TryFindTagCommand(string line, int startIndex, out int tagStart)
-        {
-            tagStart = -1;
-            if (string.IsNullOrEmpty(line) || startIndex >= line.Length)
-            {
-                return false;
-            }
-
-            for (int i = Math.Max(0, startIndex); i <= line.Length - 4; i++)
-            {
-                if (line[i] != '\\')
-                {
-                    continue;
-                }
-
-                if (line[i + 1] != 't' || line[i + 2] != 'a' || line[i + 3] != 'g')
-                {
-                    continue;
-                }
-
-                int next = i + 4;
-                if (next < line.Length && char.IsLetter(line[next]))
-                {
-                    continue;
-                }
-
-                tagStart = i;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Parses a \tag or \tag* command, including nested braces, and returns the parse span.
-        /// </summary>
-        private static bool TryParseTagCommand(
-            string line,
-            int tagStart,
-            out int tagEnd,
-            out string tagContent,
-            out bool isTagStarred)
-        {
-            tagEnd = -1;
-            tagContent = string.Empty;
-            isTagStarred = false;
-
-            if (string.IsNullOrEmpty(line) || tagStart < 0 || tagStart + 4 > line.Length)
-            {
-                return false;
-            }
-
-            int index = tagStart + 4;
-            if (index < line.Length && line[index] == '*')
-            {
-                isTagStarred = true;
-                index++;
-            }
-
-            while (index < line.Length && char.IsWhiteSpace(line[index]))
-            {
-                index++;
-            }
-
-            if (index >= line.Length || line[index] != '{')
-            {
-                return false;
-            }
-
-            int contentStart = index + 1;
-            int depth = 1;
-            index++;
-            while (index < line.Length && depth > 0)
-            {
-                if (line[index] == '{')
-                {
-                    depth++;
-                }
-                else if (line[index] == '}')
-                {
-                    depth--;
-                }
-
-                index++;
-            }
-
-            if (depth != 0)
-            {
-                return false;
-            }
-
-            tagEnd = index;
-            tagContent = line.Substring(contentStart, index - contentStart - 1);
-            return true;
-        }
-
-        private static string BuildTagCommand(string content, bool starred)
-        {
-            return "\\tag" + (starred ? "*" : string.Empty) + "{" + (content ?? string.Empty) + "}";
-        }
-
-        private static string AppendTagToLine(string line, string tagCommand)
-        {
-            if (string.IsNullOrEmpty(tagCommand))
-            {
-                return line ?? string.Empty;
-            }
-
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                return tagCommand;
-            }
-
-            return line.TrimEnd() + " " + tagCommand;
-        }
-
         /// <summary>
         /// Scans all slides and returns auto-numbered shapes in visual reading order.
         /// </summary>
@@ -1424,7 +1018,7 @@ namespace SlideTeX.VstoAddin
                                 Left = (float)shape.Left,
                                 AutoNumberLineCount = meta.AutoNumberLineCount > 0
                                     ? meta.AutoNumberLineCount
-                                    : Math.Max(1, GetAutoNumberLineCount(meta.LatexSource))
+                                    : Math.Max(1, EquationNumberingService.GetAutoNumberLineCount(meta.LatexSource))
                             });
                         }
                     }
@@ -1605,7 +1199,7 @@ namespace SlideTeX.VstoAddin
                 foreach (var info in shapes)
                 {
                     int consumedCount;
-                    string numberedLatex = BuildNumberedLatex(info.Meta.LatexSource, number, out consumedCount);
+                    string numberedLatex = EquationNumberingService.BuildNumberedLatex(info.Meta.LatexSource, number, out consumedCount);
                     if (consumedCount <= 0)
                     {
                         continue;
@@ -1650,35 +1244,6 @@ namespace SlideTeX.VstoAddin
                 DiagLog.Error("RenumberAllEquations failed.", ex);
                 ShowWarning(LocalizationManager.Format("warning.renumber_failed", ex.Message));
             }
-        }
-
-        private sealed class AutoNumberedShapeInfo
-        {
-            public dynamic Shape { get; set; }
-            public ShapeMetaV1 Meta { get; set; }
-            public int SlideIndex { get; set; }
-            public float Top { get; set; }
-            public float Left { get; set; }
-            public int AutoNumberLineCount { get; set; }
-        }
-
-        private sealed class ParsedNumberingEnvironment
-        {
-            public int BeginIndex { get; set; }
-            public int BeginTokenLength { get; set; }
-            public int EndIndex { get; set; }
-            public int EndTokenLength { get; set; }
-            public string EnvironmentName { get; set; }
-            public bool IsStarred { get; set; }
-            public string Content { get; set; }
-        }
-
-        private sealed class LineNumberingInfo
-        {
-            public bool SuppressAutoNumber { get; set; }
-            public bool HasCustomTag { get; set; }
-            public bool CustomTagStarred { get; set; }
-            public string CustomTagContent { get; set; }
         }
     }
 }

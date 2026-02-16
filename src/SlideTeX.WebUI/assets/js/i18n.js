@@ -217,5 +217,3 @@
     module.exports = { normalizeLocale, deepMerge, formatMessage, getByPath, isPlainObject };
   }
 })();
-
-

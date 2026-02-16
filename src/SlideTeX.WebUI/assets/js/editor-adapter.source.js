@@ -35,6 +35,15 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
 
   var PLACEHOLDER_CHAR = "⬚";
 
+  // Resolves a desc value through i18n if available, falling back to raw string.
+  function resolveDesc(desc) {
+    var raw = desc || "";
+    if (typeof window !== "undefined" && window.SlideTeXI18n && typeof window.SlideTeXI18n.t === "function") {
+      return window.SlideTeXI18n.t(raw);
+    }
+    return raw;
+  }
+
   // Builds completion provider for both LaTeX commands and begin-environment names.
   function buildCommandCompleter(commands, environments) {
     var commandOptions = (commands || []).map(function (item) {
@@ -43,7 +52,7 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
       var applySnippet = buildSnippetApply(snippetText, cmd);
       return {
         label: cmd,
-        detail: item.desc || "",
+        detail: resolveDesc(item.desc),
         type: "keyword",
         boost: 1000 - Number(item.priority || 0),
         apply: applySnippet
@@ -53,7 +62,7 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
     var envOptions = (environments || []).map(function (item) {
       return {
         label: String(item.name || ""),
-        detail: item.desc || "",
+        detail: resolveDesc(item.desc),
         type: "type"
       };
     });

@@ -236,6 +236,18 @@
     <Compile Include="SlideTeXAddinController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EquationNumberingService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\AutoNumberedShapeInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ParsedNumberingEnvironment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\LineNumberingInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SlideTeXRibbon.cs">
       <SubType>Code</SubType>
     </Compile>
