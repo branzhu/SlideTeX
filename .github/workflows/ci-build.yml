@@ -8,6 +8,39 @@ on:
   pull_request:
 
 jobs:
+  test:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: "Tier 0: JS unit tests"
+        run: |
+          node --test scripts/test-app-logic.mjs
+          node --test scripts/test-i18n.mjs
+          node scripts/test-ocr-latex-postprocess.mjs
+
+      - name: "Tier 1: Browser integration"
+        run: |
+          node scripts/test-main-flow.mjs
+          node scripts/render-known-good.mjs --mode verify --suite smoke
+
+      - name: "Tier 1: Full visual regression (main only)"
+        if: github.ref == 'refs/heads/main'
+        run: node scripts/render-known-good.mjs --mode verify --suite full
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-artifacts
+          path: artifacts/
+
   build-installer:
     runs-on: windows-2022
 

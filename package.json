@@ -4,6 +4,11 @@
   "version": "1.0.0",
   "description": "SlideTeX local test tooling",
   "scripts": {
+    "test": "npm run test:tier0 && npm run test:tier1:smoke",
+    "test:tier0": "node --test scripts/test-app-logic.mjs && node --test scripts/test-i18n.mjs && node scripts/test-ocr-latex-postprocess.mjs",
+    "test:tier1": "node scripts/test-main-flow.mjs && node scripts/render-known-good.mjs --mode verify --suite all",
+    "test:tier1:smoke": "node scripts/test-main-flow.mjs && node scripts/render-known-good.mjs --mode verify --suite smoke",
+    "test:all": "npm run test:tier0 && npm run test:tier1",
     "build:ocr-baseline-fixture": "node ./scripts/build-ocr-baseline-fixture.mjs",
     "test:ocr-postprocess": "node ./scripts/test-ocr-latex-postprocess.mjs",
     "test:render-known-good": "node ./scripts/render-known-good.mjs --mode verify --suite all",

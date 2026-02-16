@@ -1,13 +1,16 @@
 // SlideTeX Note: Application bootstrap and event orchestration for the web editor panel.
 
 (() => {
-  const DEFAULT_OPTIONS = Object.freeze({
-    fontPt: 18,
-    dpi: 300,
-    colorHex: "#000000",
-    isTransparent: true,
-    displayMode: "auto",
-  });
+  const logic = window.SlideTeXAppLogic;
+  const DEFAULT_OPTIONS = logic.DEFAULT_OPTIONS;
+  const shouldUseDisplayMode = logic.shouldUseDisplayMode;
+  const resolveDisplayMode = logic.resolveDisplayMode;
+  const extractTagTokensFromLatex = logic.extractTagTokensFromLatex;
+  const normalizeTagToken = logic.normalizeTagToken;
+  const normalizeOptions = logic.normalizeOptions;
+  const normalizeDisplayMode = logic.normalizeDisplayMode;
+  const toBoolean = logic.toBoolean;
+  const stripAutoNumbering = logic.stripAutoNumbering;
 
   // localStorage persistence constants
   const STORAGE_KEY = "slidetex:user-settings";
@@ -331,11 +334,6 @@
     row.classList.toggle("settings-row-wrapped", wrapped);
   }
 
-  function stripAutoNumbering(latex) {
-    return latex
-      .replace(/\\begin\{(equation|align|gather)\}/g, '\\begin{$1*}')
-      .replace(/\\end\{(equation|align|gather)\}/g, '\\end{$1*}');
-  }
 
   // Runs MathJax render, SVG->PNG export, and host notification.
   async function render(latexFromHost, optionsFromHost, renderLatexOverride) {
@@ -554,18 +552,6 @@
     });
   }
 
-  function extractTagTokensFromLatex(latex) {
-    const tags = [];
-    const pattern = /\\tag\*?\s*\{([^{}]*)\}/g;
-    let match = null;
-    while ((match = pattern.exec(String(latex ?? ""))) !== null) {
-      const token = normalizeTagToken(match[1]);
-      if (token.length > 0) {
-        tags.push(token);
-      }
-    }
-    return tags;
-  }
 
   async function ensureMathJaxReady(timeoutMs = 15000) {
     const hasRenderApi = () => {
@@ -588,16 +574,6 @@
     throw new Error(t("webui.error.mathjax_missing"));
   }
 
-  function normalizeTagToken(raw) {
-    const text = String(raw ?? "").trim();
-    if (!text) {
-      return "";
-    }
-    if (text.startsWith("(") && text.endsWith(")")) {
-      return text;
-    }
-    return `(${text})`;
-  }
 
   function getOptions() {
     return normalizeOptions({
@@ -609,17 +585,6 @@
     });
   }
 
-  function normalizeOptions(raw) {
-    const source = raw ?? {};
-
-    return {
-      fontPt: Number(source.fontPt ?? source.FontPt ?? DEFAULT_OPTIONS.fontPt),
-      dpi: Number(source.dpi ?? source.Dpi ?? DEFAULT_OPTIONS.dpi),
-      colorHex: String(source.colorHex ?? source.ColorHex ?? DEFAULT_OPTIONS.colorHex),
-      isTransparent: toBoolean(source.isTransparent ?? source.IsTransparent ?? DEFAULT_OPTIONS.isTransparent),
-      displayMode: normalizeDisplayMode(source.displayMode ?? source.DisplayMode ?? DEFAULT_OPTIONS.displayMode),
-    };
-  }
 
   function applyOptionsToInputs(options) {
     elements.fontPtInput.value = String(options.fontPt);
@@ -629,54 +594,9 @@
     elements.transparentCheckbox.checked = Boolean(options.isTransparent);
   }
 
-  function toBoolean(value) {
-    if (typeof value === "boolean") {
-      return value;
-    }
 
-    if (typeof value === "string") {
-      return value.toLowerCase() === "true";
-    }
 
-    return Boolean(value);
-  }
 
-  function normalizeDisplayMode(value) {
-    const normalized = String(value ?? "auto").trim().toLowerCase();
-    if (normalized === "inline" || normalized === "display" || normalized === "auto") {
-      return normalized;
-    }
-
-    return "auto";
-  }
-
-  // Resolves final display mode based on explicit selection or LaTeX heuristics.
-  function resolveDisplayMode(latex, selectedMode) {
-    if (selectedMode === "inline") {
-      return "inline";
-    }
-
-    if (selectedMode === "display") {
-      return "display";
-    }
-
-    return shouldUseDisplayMode(latex) ? "display" : "inline";
-  }
-
-  // Heuristic for selecting display mode when user picks "auto".
-  function shouldUseDisplayMode(latex) {
-    if (typeof latex !== "string") {
-      return false;
-    }
-
-    const displayOnlyEnvironment = /\\begin\{(?:align\*?|aligned|gather\*?|equation\*?|split|cases|matrix|pmatrix|bmatrix|Bmatrix|vmatrix|Vmatrix)\}/;
-    if (displayOnlyEnvironment.test(latex)) {
-      return true;
-    }
-
-    // Multi-line formulas usually require block rendering.
-    return /\\\\/.test(latex);
-  }
 
   function notifyRenderSuccess(result) {
     if (host?.notifyRenderSuccess) {

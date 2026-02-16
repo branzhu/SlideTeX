@@ -202,14 +202,20 @@
     await setLocale(getRequestedLocale());
   }
 
-  window.SlideTeXI18n = {
-    init,
-    setLocale,
-    t,
-    getLocale: () => activeLocale,
-    applyI18nToDom,
-    normalizeLocale
-  };
+  if (typeof window !== "undefined") {
+    window.SlideTeXI18n = {
+      init,
+      setLocale,
+      t,
+      getLocale: () => activeLocale,
+      applyI18nToDom,
+      normalizeLocale
+    };
+  }
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { normalizeLocale, deepMerge, formatMessage, getByPath, isPlainObject };
+  }
 })();
 
 
