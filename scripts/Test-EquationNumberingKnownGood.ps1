@@ -94,12 +94,12 @@ if (-not (Test-Path $assemblyPath)) {
 }
 
 $assembly = [System.Reflection.Assembly]::LoadFrom($assemblyPath)
-$controllerType = $assembly.GetType('SlideTeX.VstoAddin.SlideTeXAddinController', $false, $false)
-Assert-True ($null -ne $controllerType) 'cannot load SlideTeXAddinController type'
+$serviceType = $assembly.GetType('SlideTeX.VstoAddin.EquationNumberingService', $false, $false)
+Assert-True ($null -ne $serviceType) 'cannot load EquationNumberingService type'
 
 $flags = [System.Reflection.BindingFlags]'NonPublic,Static'
-$buildMethod = $controllerType.GetMethod('BuildNumberedLatex', $flags)
-$countMethod = $controllerType.GetMethod('GetAutoNumberLineCount', $flags)
+$buildMethod = $serviceType.GetMethod('BuildNumberedLatex', $flags)
+$countMethod = $serviceType.GetMethod('GetAutoNumberLineCount', $flags)
 Assert-True ($null -ne $buildMethod) 'cannot find BuildNumberedLatex'
 Assert-True ($null -ne $countMethod) 'cannot find GetAutoNumberLineCount'
 
@@ -119,7 +119,8 @@ foreach ($case in $fixture.cases) {
     $expectedAutoCount = [int]$case.expectedAutoNumberLineCount
     $tagMatch = Sequence-Equals -Left @($actualTags) -Right @($expectedTags)
     $countMatch = ($autoCount -eq $expectedAutoCount)
-    $ok = $tagMatch -and $countMatch
+    $consumedMatch = ($buildResult.Consumed -eq $expectedAutoCount)
+    $ok = $tagMatch -and $countMatch -and $consumedMatch
 
     if (-not $ok) {
         $failures.Add($id) | Out-Null

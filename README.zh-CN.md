@@ -116,12 +116,6 @@ pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoMan
 pwsh ./scripts/Invoke-PowerPointSmoke.ps1
 ```
 
-- 编号转换回归：
-
-```powershell
-pwsh ./scripts/Test-EquationNumberingTransform.ps1 -Configuration Debug
-```
-
 - 编号 known-good 回归：
 
 ```powershell
@@ -131,8 +125,8 @@ pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 - 渲染 known-good（快速/完整）：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
+node scripts/render-known-good.mjs --mode verify --suite smoke
+node scripts/render-known-good.mjs --mode verify --suite full
 ```
 
 - 从渲染基线生成 OCR known-pairs fixture：

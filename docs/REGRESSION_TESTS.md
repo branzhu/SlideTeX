@@ -32,11 +32,6 @@ This document consolidates regression testing for:
 - Node dependencies installed (`npm install`) for render regression tooling.
 
 ## Core Commands
-- Numbering transform regression:
-```powershell
-pwsh ./scripts/Test-EquationNumberingTransform.ps1 -Configuration Debug
-```
-
 - Numbering known-good comparison:
 ```powershell
 pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
@@ -44,17 +39,17 @@ pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 
 - Render regression (daily smoke):
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
+node scripts/render-known-good.mjs --mode verify --suite smoke
 ```
 
 - Render regression (pre-release full):
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
+node scripts/render-known-good.mjs --mode verify --suite full
 ```
 
 - Render baseline update (only when intended):
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode update-baseline -Suite all
+node scripts/render-known-good.mjs --mode update-baseline --suite all
 ```
 
 - Rebuild OCR known-pairs fixture:

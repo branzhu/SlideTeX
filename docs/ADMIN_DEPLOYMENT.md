@@ -77,7 +77,7 @@ pwsh ./scripts/Test-MsiLifecycle.ps1 `
 ## 7. Office Add-in Registration Check
 Run after installation:
 ```powershell
-pwsh ./scripts/Test-OfficeAddinRegistration.ps1 -ProgId SlideTeX
+pwsh ./scripts/Set-OfficeAddinRegistration.ps1 -Mode Validate -ProgId SlideTeX
 ```
 
 - Report output: `artifacts/installer/office-addin-report.json`

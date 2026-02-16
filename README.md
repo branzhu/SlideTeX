@@ -118,12 +118,6 @@ pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoMan
 pwsh ./scripts/Invoke-PowerPointSmoke.ps1
 ```
 
-- Equation numbering transform regression:
-
-```powershell
-pwsh ./scripts/Test-EquationNumberingTransform.ps1 -Configuration Debug
-```
-
 - Equation numbering known-good:
 
 ```powershell
@@ -133,8 +127,8 @@ pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 - Render known-good (smoke/full):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite full
+node scripts/render-known-good.mjs --mode verify --suite smoke
+node scripts/render-known-good.mjs --mode verify --suite full
 ```
 
 - Build OCR baseline fixture from render known-good pairs:

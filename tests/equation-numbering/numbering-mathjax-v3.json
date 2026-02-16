@@ -62,6 +62,13 @@
       "startNumber": 1,
       "expectedTags": ["(1)", "(2)", "(3)"],
       "expectedAutoNumberLineCount": 3
+    },
+    {
+      "id": "multline_unsupported",
+      "latex": "\\begin{multline} a+b+c \\\\ d+e \\\\ f+g \\end{multline}",
+      "startNumber": 1,
+      "expectedTags": [],
+      "expectedAutoNumberLineCount": 0
     }
   ]
 }

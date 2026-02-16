@@ -12,8 +12,7 @@
 - `scripts/generate-webui-i18n-bundle.mjs`: 将 `assets/i18n/*.json` 生成到 `index.html` 内联 i18n bundle
 - `scripts/Generate-WixFragment.ps1`: 基于 Addin 输出目录生成 WiX Fragment
 - `scripts/Test-MsiLifecycle.ps1`: 安装/升级/卸载链路验证脚本
-- `scripts/Test-OfficeAddinRegistration.ps1`: 检查 Office 加载项注册表与 Manifest 可达性
-- `scripts/Set-OfficeAddinRegistration.ps1`: 本机手动写入/删除 Office 加载项注册（调试用）
+- `scripts/Set-OfficeAddinRegistration.ps1`: 检查/写入/删除 Office 加载项注册（含 `-Mode Validate` 验证模式）
 
 ## 依赖
 - WiX Toolset (`wix` CLI，推荐 `6.0.2`)
@@ -48,7 +47,7 @@ pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoBui
 pwsh ./scripts/Test-MsiLifecycle.ps1 -OldMsi .\artifacts\installer\SlideTeX-1.0.0-Release-x64.msi -NewMsi .\artifacts\installer\SlideTeX-1.0.1-Release-x64.msi
 
 # 单独检查注册表与 Manifest
-pwsh ./scripts/Test-OfficeAddinRegistration.ps1 -ProgId SlideTeX
+pwsh ./scripts/Set-OfficeAddinRegistration.ps1 -Mode Validate -ProgId SlideTeX
 
 # 本机手动注册（调试）
 pwsh ./scripts/Set-OfficeAddinRegistration.ps1 -Mode Install -ProgId SlideTeX -ManifestPath "C:\Program Files\SlideTeX\Addin\SlideTeX.VstoAddin.vsto" -RegisterWow6432Node

@@ -9,9 +9,8 @@ node ./scripts/generate-webui-i18n-bundle.mjs
 
 Run regression checks:
 ```powershell
-pwsh ./scripts/Test-EquationNumberingTransform.ps1 -Configuration Debug
 pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
-powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
+node scripts/render-known-good.mjs --mode verify --suite smoke
 ```
 
 ## 2. Local TaskPane/WebView2 Debugging (Browser Mock Host)
@@ -41,7 +40,7 @@ Exit codes:
 
 ## 4. Post-install Add-in Registration Check
 ```powershell
-pwsh ./scripts/Test-OfficeAddinRegistration.ps1 -ProgId SlideTeX
+pwsh ./scripts/Set-OfficeAddinRegistration.ps1 -Mode Validate -ProgId SlideTeX
 ```
 
 If `ValidCount=0`, verify that the manifest path exists and is accessible.
