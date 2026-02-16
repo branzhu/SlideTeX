@@ -506,6 +506,10 @@
 
   async function renderMathJaxToPreview(latex, displayMode) {
     const mj = await ensureMathJaxReady();
+    // Clear MathJax internal state (equation numbers, labels) between renders
+    if (typeof mj.texReset === "function") {
+      mj.texReset();
+    }
     // Use sync tex2svg — the promise variant chains through MathJax's internal
     // _readyPromise / actionPromises queue which can get permanently stuck in
     // WebView2 (and causes the "waiting to render" hang in production).
@@ -634,13 +638,77 @@
     });
   }
 
+  let fontsPreloaded = false;
+  let mathjaxStartupSettled = false;
+
+  // After MathJax initialises, dynamicSetup() (called by font scripts
+  // loaded via <script> tags in index.html) registers setup functions on
+  // each file object in MathJaxNewcmFont.dynamicFiles.  However, the
+  // variant.chars entries still hold file-object references — MathJax's
+  // getChar() only replaces them one-at-a-time via the async retry loop,
+  // which hangs in WebView2.  We bypass the retry loop entirely: delete
+  // every file-object reference from variant.chars, then call
+  // setup(fontInstance) to bulk-populate the actual glyph data.
+  function preloadDynamicFonts() {
+    if (fontsPreloaded) return;
+    fontsPreloaded = true;
+    try {
+      var font = window.MathJax.startup.output.font;
+      var fontClass = window.MathJax._.output.fonts["mathjax-newcm"].svg_ts.MathJaxNewcmFont;
+      var df = fontClass.dynamicFiles;
+      if (!font || !df) return;
+      var names = Object.keys(df);
+      var processedCount = 0;
+      for (var i = 0; i < names.length; i++) {
+        var fileObj = df[names[i]];
+        if (typeof fileObj.setup !== "function") continue;
+        processedCount++;
+        // Remove stale file-object refs so defineChars() can overwrite
+        var varNames = Object.keys(font.variant);
+        for (var v = 0; v < varNames.length; v++) {
+          var chars = font.variant[varNames[v]].chars;
+          var codes = Object.keys(chars);
+          for (var c = 0; c < codes.length; c++) {
+            if (chars[codes[c]] === fileObj) {
+              delete chars[codes[c]];
+            }
+          }
+        }
+        fileObj.setup(font);
+        fileObj.promise = Promise.resolve();
+      }
+      console.log("[SlideTeX:font-preload] preloaded", processedCount, "of", names.length, "dynamic font files");
+    } catch (e) {
+      console.error("[SlideTeX:font-preload] ERROR:", e.message);
+    }
+  }
+
   async function ensureMathJaxReady(timeoutMs = MATHJAX_TIMEOUT_MS) {
     const hasRenderApi = () => {
       const mj = window.MathJax;
       return Boolean(mj && (typeof mj.tex2svg === "function" || typeof mj.tex2svgPromise === "function"));
     };
 
+    // Wait for MathJax's startup promise to fully resolve before rendering.
+    // In WebView2 the promise may hang (file:// fetch failures), so we race
+    // against a timeout and proceed anyway — preloadDynamicFonts() will have
+    // populated the font data we need.
+    if (window.MathJax?.startup?.promise && !mathjaxStartupSettled) {
+      try {
+        await Promise.race([
+          window.MathJax.startup.promise.then(() => { mathjaxStartupSettled = true; }),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("startup timeout")), Math.min(timeoutMs, 5000)))
+        ]);
+      } catch (e) {
+        mathjaxStartupSettled = true;
+        console.warn("[SlideTeX:ready] MathJax startup promise did not resolve:", e.message,
+          "— proceeding with preloaded fonts");
+      }
+    }
+
     if (hasRenderApi()) {
+      preloadDynamicFonts();
       return window.MathJax;
     }
 
@@ -648,6 +716,7 @@
     while (Date.now() - startAt < timeoutMs) {
       await new Promise((resolve) => setTimeout(resolve, MATHJAX_POLL_MS));
       if (hasRenderApi()) {
+        preloadDynamicFonts();
         return window.MathJax;
       }
     }

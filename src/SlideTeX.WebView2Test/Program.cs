@@ -38,7 +38,7 @@ namespace SlideTeX.WebView2Test
     {
         const int RENDER_WAIT_MS = 15000;
         const int CMD_WAIT_MS = 5000;
-        const int GLOBAL_TIMEOUT_MS = 25000;
+        const int GLOBAL_TIMEOUT_MS = 45000;
 
         readonly WebView2 webView;
         readonly SlideTeXHostObject hostObject;
@@ -50,6 +50,7 @@ namespace SlideTeX.WebView2Test
 
         bool initialRenderReceived;
         bool hostRenderReceived;
+        bool complexRenderReceived;
         bool insertCommandReceived;
         string lastRenderPayload;
 
@@ -110,6 +111,7 @@ namespace SlideTeX.WebView2Test
             Log("Page loaded, waiting for initial render...");
             await RunInitialRenderTest();
             await RunHostRenderTest();
+            await RunComplexFormulaTest();
             await RunInsertCommandTest();
             FinishTests();
         }
@@ -168,6 +170,60 @@ namespace SlideTeX.WebView2Test
             }
         }
 
+        async Task RunComplexFormulaTest()
+        {
+            complexRenderReceived = false;
+            lastRenderPayload = null;
+
+            try
+            {
+                var latex = @"{\cal W} \equiv \frac {1} {4 \rho^{2}} \Big [\cosh ( 2 \varphi_{2} ) ( \rho^{6} - 2 ) - ( 3 \rho^{6} + 2 ) \Big], \qquad \rho \equiv e^{\frac {1} {\sqrt {6}} \varphi_{1}}.";
+                await webView.CoreWebView2.ExecuteScriptAsync(
+                    "window.slideTex.renderFromHost({ latex: '" + latex.Replace("\\", "\\\\") + "' })");
+
+                var deadline = DateTime.UtcNow.AddMilliseconds(RENDER_WAIT_MS);
+                while (!complexRenderReceived && DateTime.UtcNow < deadline)
+                {
+                    await Task.Delay(200);
+                    Application.DoEvents();
+                }
+
+                bool pass = complexRenderReceived && lastRenderPayload != null
+                    && lastRenderPayload.Contains("\"pngBase64\":");
+                string err = complexRenderReceived ? (pass ? null : "Missing pngBase64") : "Timeout";
+
+                // Verify SVG structural integrity — the complex formula should
+                // produce many glyphs.  Inline line-breaking bug produced only 1.
+                if (pass)
+                {
+                    var svgJson = await webView.CoreWebView2.ExecuteScriptAsync(
+                        "JSON.stringify({" +
+                        "pathCount: document.querySelectorAll('#previewContent svg path').length," +
+                        "useCount: document.querySelectorAll('#previewContent svg use').length," +
+                        "hasMerror: !!document.querySelector('#previewContent mjx-merror, #previewContent [data-mjx-error]')" +
+                        "})");
+                    var svgInfo = svgJson.Trim('"').Replace("\\\"", "\"");
+                    Log("complex-formula SVG: " + svgInfo);
+                    bool hasMerror = svgInfo.Contains("\"hasMerror\":true");
+                    int glyphCount = ExtractJsonInt(svgInfo, "pathCount") + ExtractJsonInt(svgInfo, "useCount");
+                    bool svgOk = glyphCount >= 20 && !hasMerror;
+                    if (!svgOk)
+                    {
+                        pass = false;
+                        err = "SVG verification failed (glyphs=" + glyphCount + "): " + svgInfo;
+                    }
+                }
+
+                results.Add(new TestResult { Name = "complex-formula", Pass = pass, Error = err });
+                Log("complex-formula: " + (pass ? "PASS" : "FAIL — " + err));
+            }
+            catch (Exception ex)
+            {
+                results.Add(new TestResult { Name = "complex-formula", Pass = false, Error = ex.Message });
+                Log("complex-formula: FAIL — " + ex.Message);
+            }
+        }
+
         async Task RunInsertCommandTest()
         {
             insertCommandReceived = false;
@@ -204,8 +260,10 @@ namespace SlideTeX.WebView2Test
                 lastRenderPayload = e.Payload;
                 if (!initialRenderReceived)
                     initialRenderReceived = true;
-                else
+                else if (!hostRenderReceived)
                     hostRenderReceived = true;
+                else
+                    complexRenderReceived = true;
             }
         }
 
@@ -253,6 +311,20 @@ namespace SlideTeX.WebView2Test
                 if (dir == null) break;
             }
             throw new FileNotFoundException("Cannot find src/SlideTeX.WebUI/index.html");
+        }
+
+        static int ExtractJsonInt(string json, string key)
+        {
+            var token = "\"" + key + "\":";
+            int idx = json.IndexOf(token, StringComparison.Ordinal);
+            if (idx < 0) return 0;
+            idx += token.Length;
+            int end = idx;
+            while (end < json.Length && (char.IsDigit(json[end]) || json[end] == '-'))
+                end++;
+            int val;
+            int.TryParse(json.Substring(idx, end - idx), out val);
+            return val;
         }
 
         void Log(string msg) { Console.Error.WriteLine("[test] " + msg); }

@@ -68,18 +68,31 @@
         tags: "ams"
       },
       svg: {
-        fontCache: "none"
+        fontCache: "none",
+        linebreaks: {
+          inline: false
+        }
       },
       options: {
         enableMenu: false,
         enableExplorer: false,
+        enableEnrichment: false,
+        enableSpeech: false,
+        enableBraille: false,
+        enableComplexity: false,
         renderActions: {
-          assistiveMml: []
+          assistiveMml: [],
+          attachSpeech: []
         }
       }
     };
   </script>
-  <script src="./vendor/mathjax/tex-svg-nofont.js"></script>
+  <script src="./vendor/mathjax/tex-svg.js"></script>
+  <!-- Load ALL dynamic font glyph data (SVG paths) that tex-svg.js only stubs
+       with SMP remappings.  This single bundle contains all 40 font files so
+       that preloadDynamicFonts() can populate every character's glyph path,
+       bypassing MathJax's async retry mechanism that hangs in WebView2. -->
+  <script src="./vendor/mathjax-newcm-font/svg/dynamic-all.js"></script>
   <script src="./assets/data/latex-commands.js"></script>
   <script src="./assets/js/editor-adapter.js"></script>
   <!-- SLIDETEX_I18N_BUNDLE_START -->

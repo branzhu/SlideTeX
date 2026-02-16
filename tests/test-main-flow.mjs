@@ -97,7 +97,164 @@ async function testRenderAndInsert(browser, baseUrl) {
   }
 }
 
-// Test 2: OCR flow
+// Test 2: Complex formula requiring MathJax async retry
+async function testComplexFormulaRetry(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const latex = '{\\cal W} \\equiv \\frac {1} {4 \\rho^{2}} \\Big [\\cosh ( 2 \\varphi_{2} ) ( \\rho^{6} - 2 ) - ( 3 \\rho^{6} + 2 ) \\Big], \\qquad \\rho \\equiv e^{\\frac {1} {\\sqrt {6}} \\varphi_{1}}.';
+    await page.evaluate(async (tex) => {
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { fontPt: 24, dpi: 300, colorHex: '#000000', isTransparent: true, displayMode: 'display' }
+      });
+    }, latex);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0 ||
+            window.slidetexHost._calls.renderError.length > 0,
+      { timeout: 15000 }
+    );
+
+    const result = await page.evaluate(() => ({
+      successCount: window.slidetexHost._calls.renderSuccess.length,
+      errorCount: window.slidetexHost._calls.renderError.length,
+      payload: window.slidetexHost._calls.renderSuccess[0] || null
+    }));
+
+    assert(result.errorCount === 0, `Expected 0 renderError calls, got ${result.errorCount}`);
+    assert(result.successCount === 1, 'Expected exactly 1 renderSuccess call');
+    assert(result.payload.pixelWidth > 0, `pixelWidth should be > 0`);
+    assert(result.payload.pixelHeight > 0, `pixelHeight should be > 0`);
+
+    // Verify SVG structural integrity — ensures the retry path produces
+    // the same math layout as a direct tex2svgPromise render.
+    const svgCheck = await page.evaluate(() => {
+      const pc = document.getElementById('previewContent');
+      const svg = pc?.querySelector('svg');
+      const merror = pc?.querySelector('mjx-merror, [data-mjx-error]');
+      return {
+        hasSvg: !!svg,
+        hasMerror: !!merror,
+        viewBox: svg?.getAttribute('viewBox') || '',
+        pathCount: svg ? svg.querySelectorAll('path').length : 0,
+      };
+    });
+
+    assert(svgCheck.hasSvg, 'Preview should contain an SVG element');
+    assert(!svgCheck.hasMerror, 'Preview should not contain MathJax error markers');
+    assert(svgCheck.viewBox === '0 -1342 25139.8 2277.9',
+      `SVG viewBox should match expected layout, got "${svgCheck.viewBox}"`);
+    assert(svgCheck.pathCount >= 40,
+      `SVG should have >= 40 path elements (glyphs), got ${svgCheck.pathCount}`);
+
+    return { pass: true, name: 'complex-formula-retry' };
+  } catch (error) {
+    return { pass: false, name: 'complex-formula-retry', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 2b: Simulate WebView2 — dynamic font loading is broken, only
+// pre-loaded fonts should work.  This catches the real-world bug where
+// \cal renders as just a "W" in the PowerPoint VSTO add-in.
+//
+// We patch fetch() and the MathJax loader BEFORE the page loads so that
+// the font preloading code path also runs under the same constraints as
+// WebView2 (where fetch for local font files may fail or the loader's
+// promise queue hangs).
+async function testWebView2FontPreload(browser, baseUrl) {
+  // Do NOT use setupPage — we need evaluateOnNewDocument before goto.
+  const page = await browser.newPage();
+  try {
+    // Inject mock host (same as setupPage)
+    await page.evaluateOnNewDocument(MOCK_HOST_SCRIPT);
+
+    // Patch fetch + MathJax loader BEFORE page loads to simulate WebView2.
+    // In WebView2, MathJax's dynamic font loading hangs because its
+    // internal promise queue is broken.  We simulate this by making
+    // fetch() for font URLs return a never-resolving promise, and
+    // patching the loader after MathJax initialises.
+    await page.evaluateOnNewDocument(`
+      (function() {
+        var origFetch = window.fetch;
+        window.fetch = function(url) {
+          if (typeof url === 'string' && url.indexOf('dynamic/') >= 0) {
+            return new Promise(function() {}); // hang forever
+          }
+          return origFetch.apply(this, arguments);
+        };
+        // Patch MathJax loader once it appears
+        var _timer = setInterval(function() {
+          if (window.MathJax && window.MathJax.loader && window.MathJax.loader.load) {
+            window.MathJax.loader.load = function() {
+              return new Promise(function() {});
+            };
+            clearInterval(_timer);
+          }
+        }, 10);
+      })();
+    `);
+
+    await page.goto(baseUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+
+    // Wait for initial render to settle (may take longer with broken fonts)
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 20000 }
+    );
+
+    const latex = '{\\cal W} \\equiv \\frac {1} {4 \\rho^{2}} \\Big [\\cosh ( 2 \\varphi_{2} ) ( \\rho^{6} - 2 ) - ( 3 \\rho^{6} + 2 ) \\Big], \\qquad \\rho \\equiv e^{\\frac {1} {\\sqrt {6}} \\varphi_{1}}.';
+
+    // Render via MathJax directly — must succeed using only pre-loaded
+    // font data, without any dynamic loading.
+    const renderOk = await page.evaluate((tex) => {
+      try {
+        var mj = window.MathJax;
+        var math = mj.tex2svg(tex, { display: true });
+        var svg = math && math.querySelector ? math.querySelector('svg') : null;
+        if (!svg) return { ok: false, reason: 'no SVG produced' };
+        // Verify calligraphic W glyph path is present (starts with "902 586")
+        // as opposed to the italic W fallback (starts with "956 680")
+        var html = svg.outerHTML;
+        var hasCalGlyph = html.indexOf('902 586C902 570') >= 0;
+        var hasItalicFallback = html.indexOf('956 680C937 680') >= 0;
+        return {
+          ok: true,
+          viewBox: svg.getAttribute('viewBox') || '',
+          pathCount: svg.querySelectorAll('path').length,
+          svgLength: html.length,
+          hasCalGlyph: hasCalGlyph,
+          hasItalicFallback: hasItalicFallback
+        };
+      } catch (e) {
+        return {
+          ok: false,
+          reason: e.retry ? 'RETRY error — font not pre-loaded' : (e.message || String(e))
+        };
+      }
+    }, latex);
+
+    assert(renderOk.ok,
+      'tex2svg should succeed without dynamic loading, but: ' + renderOk.reason);
+    assert(renderOk.pathCount >= 40,
+      'SVG should have >= 40 paths (got ' + renderOk.pathCount + ') — missing font glyphs');
+    assert(renderOk.viewBox === '0 -1342 25139.8 2277.9',
+      'viewBox should match full formula, got "' + renderOk.viewBox + '"');
+    assert(renderOk.hasCalGlyph,
+      'SVG should contain calligraphic W glyph path (902 586), not italic fallback');
+    assert(!renderOk.hasItalicFallback,
+      'SVG should NOT contain italic W fallback path (956 680)');
+
+    return { pass: true, name: 'webview2-font-preload' };
+  } catch (error) {
+    return { pass: false, name: 'webview2-font-preload', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 3: OCR flow
 async function testOcrFlow(browser, baseUrl) {
   const page = await setupPage(browser, baseUrl);
   try {
@@ -150,7 +307,7 @@ async function testOcrFlow(browser, baseUrl) {
   }
 }
 
-// Test 3: Render error handling
+// Test 4: Render error handling
 async function testRenderError(browser, baseUrl) {
   const page = await setupPage(browser, baseUrl);
   try {
@@ -207,6 +364,8 @@ async function run() {
   const results = [];
   try {
     results.push(await testRenderAndInsert(browser, serverContext.baseUrl));
+    results.push(await testComplexFormulaRetry(browser, serverContext.baseUrl));
+    results.push(await testWebView2FontPreload(browser, serverContext.baseUrl));
     results.push(await testOcrFlow(browser, serverContext.baseUrl));
     results.push(await testRenderError(browser, serverContext.baseUrl));
   } finally {

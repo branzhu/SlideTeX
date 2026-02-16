@@ -111,6 +111,63 @@ function Sync-MathJax {
     Copy-Item -Path (Join-Path $pkgDir "*") -Destination $vendorDir -Recurse -Force
 
     Write-Host "MathJax $MathJaxVersion synced to $vendorDir"
+
+    # Sync the NewCM font package (SVG dynamic fonts used by tex-svg-nofont.js)
+    $fontVendorDir = Join-Path $root "src/SlideTeX.WebUI/vendor/mathjax-newcm-font"
+    $fontTmpDir = Join-Path $root ".tmp/mathjax-newcm-font"
+    $fontArchive = Join-Path $fontTmpDir "mathjax-newcm-font-$MathJaxVersion.tgz"
+    $fontExtractDir = Join-Path $fontTmpDir "extract"
+
+    New-Item -ItemType Directory -Path $fontTmpDir -Force | Out-Null
+
+    $fontUri = "https://registry.npmjs.org/@mathjax/mathjax-newcm-font/-/mathjax-newcm-font-$MathJaxVersion.tgz"
+    Write-Host "Downloading @mathjax/mathjax-newcm-font $MathJaxVersion from $fontUri"
+    try {
+        Invoke-DownloadFile -Uri $fontUri -OutFile $fontArchive
+    }
+    catch {
+        Write-Warning "Direct download failed; fallback to npm pack."
+        $fontPackDir = Join-Path $fontTmpDir "pack"
+        New-Item -ItemType Directory -Path $fontPackDir -Force | Out-Null
+        & npm pack "@mathjax/mathjax-newcm-font@$MathJaxVersion" --pack-destination $fontPackDir | Out-Host
+        if ($LASTEXITCODE -ne 0) {
+            throw "npm pack @mathjax/mathjax-newcm-font@$MathJaxVersion failed."
+        }
+        $packedFontArchive = Join-Path $fontPackDir "mathjax-mathjax-newcm-font-$MathJaxVersion.tgz"
+        if (!(Test-Path $packedFontArchive)) {
+            throw "Font archive not found after npm pack: $packedFontArchive"
+        }
+        Copy-Item -Path $packedFontArchive -Destination $fontArchive -Force
+    }
+
+    if (Test-Path $fontExtractDir) {
+        Remove-Item -Path $fontExtractDir -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $fontExtractDir -Force | Out-Null
+    tar -xf $fontArchive -C $fontExtractDir
+
+    $fontPkgDir = Join-Path $fontExtractDir "package"
+    if (!(Test-Path $fontPkgDir)) {
+        throw "Font package folder not found in archive."
+    }
+
+    # Copy svg.js and svg/dynamic/ (only SVG output fonts needed)
+    New-Item -ItemType Directory -Path $fontVendorDir -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $fontVendorDir "svg/dynamic") -Force | Out-Null
+    Copy-Item -Path (Join-Path $fontPkgDir "svg.js") -Destination $fontVendorDir -Force
+    Copy-Item -Path (Join-Path $fontPkgDir "svg/dynamic/*") -Destination (Join-Path $fontVendorDir "svg/dynamic") -Force
+
+    # Build a single concatenated bundle of all dynamic font files so that
+    # index.html can load them with one <script> tag.  This is required for
+    # WebView2 where MathJax's async font loading hangs.
+    $dynamicDir = Join-Path $fontVendorDir "svg/dynamic"
+    $bundlePath = Join-Path $fontVendorDir "svg/dynamic-all.js"
+    $jsFiles = Get-ChildItem -Path $dynamicDir -Filter "*.js" | Sort-Object Name
+    $bundleContent = ($jsFiles | ForEach-Object { Get-Content -Path $_.FullName -Raw }) -join "`n"
+    Set-Content -Path $bundlePath -Value $bundleContent -NoNewline
+    Write-Host "Built dynamic font bundle: $bundlePath ($($jsFiles.Count) files)"
+
+    Write-Host "@mathjax/mathjax-newcm-font $MathJaxVersion SVG fonts synced to $fontVendorDir"
 }
 
 function Sync-Pix2TextMfr {
