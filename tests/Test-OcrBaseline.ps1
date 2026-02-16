@@ -247,7 +247,7 @@ function Get-LevenshteinDistance {
 }
 
 if ([string]::IsNullOrWhiteSpace($FixturePath)) {
-    $FixturePath = Join-Path $PSScriptRoot '..\tests\ocr-baseline\ocr-baseline-v1.json'
+    $FixturePath = Join-Path $PSScriptRoot 'ocr-baseline\ocr-baseline-v1.json'
 }
 
 if ([string]::IsNullOrWhiteSpace($ArtifactsDir)) {

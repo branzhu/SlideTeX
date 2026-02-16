@@ -22,18 +22,18 @@ jobs:
 
       - name: "Tier 0: JS unit tests"
         run: |
-          node --test scripts/test-app-logic.mjs
-          node --test scripts/test-i18n.mjs
-          node scripts/test-ocr-latex-postprocess.mjs
+          node --test tests/test-app-logic.mjs
+          node --test tests/test-i18n.mjs
+          node tests/test-ocr-latex-postprocess.mjs
 
       - name: "Tier 1: Browser integration"
         run: |
-          node scripts/test-main-flow.mjs
-          node scripts/render-known-good.mjs --mode verify --suite smoke
+          node tests/test-main-flow.mjs
+          node tests/render-known-good.mjs --mode verify --suite smoke
 
       - name: "Tier 1: Full visual regression (main only)"
         if: github.ref == 'refs/heads/main'
-        run: node scripts/render-known-good.mjs --mode verify --suite full
+        run: node tests/render-known-good.mjs --mode verify --suite full
 
       - uses: actions/upload-artifact@v4
         if: failure()

@@ -9,8 +9,8 @@ node ./scripts/generate-webui-i18n-bundle.mjs
 
 Run regression checks:
 ```powershell
-pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
-node scripts/render-known-good.mjs --mode verify --suite smoke
+pwsh ./tests/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
+node tests/render-known-good.mjs --mode verify --suite smoke
 ```
 
 ## 2. Local TaskPane/WebView2 Debugging (Browser Mock Host)
@@ -27,7 +27,7 @@ Note: `mock-host.js` is a no-op when running inside the real VSTO WebView2 host 
 
 ## 3. PowerPoint COM Smoke Test
 ```powershell
-pwsh ./scripts/Invoke-PowerPointSmoke.ps1
+pwsh ./tests/Invoke-PowerPointSmoke.ps1
 ```
 
 - Report output: `artifacts/smoke/smoke-report.json`

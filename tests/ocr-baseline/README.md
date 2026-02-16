@@ -10,14 +10,14 @@ This folder stores known image-LaTeX pairs for OCR baseline testing.
 ## Rebuild Fixture
 
 ```powershell
-node ./scripts/build-ocr-baseline-fixture.mjs
+node ./tests/build-ocr-baseline-fixture.mjs
 ```
 
 ## Run Baseline
 
 ```powershell
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full
 ```
 
 ## Model Requirement

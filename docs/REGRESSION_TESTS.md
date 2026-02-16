@@ -34,33 +34,33 @@ This document consolidates regression testing for:
 ## Core Commands
 - Numbering known-good comparison:
 ```powershell
-pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
+pwsh ./tests/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 ```
 
 - Render regression (daily smoke):
 ```powershell
-node scripts/render-known-good.mjs --mode verify --suite smoke
+node tests/render-known-good.mjs --mode verify --suite smoke
 ```
 
 - Render regression (pre-release full):
 ```powershell
-node scripts/render-known-good.mjs --mode verify --suite full
+node tests/render-known-good.mjs --mode verify --suite full
 ```
 
 - Render baseline update (only when intended):
 ```powershell
-node scripts/render-known-good.mjs --mode update-baseline --suite all
+node tests/render-known-good.mjs --mode update-baseline --suite all
 ```
 
 - Rebuild OCR known-pairs fixture:
 ```powershell
-node ./scripts/build-ocr-baseline-fixture.mjs
+node ./tests/build-ocr-baseline-fixture.mjs
 ```
 
 - OCR baseline (smoke/full):
 ```powershell
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
 ```
 
 ## Numbering Semantic Cases

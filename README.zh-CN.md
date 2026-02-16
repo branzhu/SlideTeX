@@ -113,33 +113,33 @@ pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoMan
 - PowerPoint 烟雾测试：
 
 ```powershell
-pwsh ./scripts/Invoke-PowerPointSmoke.ps1
+pwsh ./tests/Invoke-PowerPointSmoke.ps1
 ```
 
 - 编号 known-good 回归：
 
 ```powershell
-pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
+pwsh ./tests/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 ```
 
 - 渲染 known-good（快速/完整）：
 
 ```powershell
-node scripts/render-known-good.mjs --mode verify --suite smoke
-node scripts/render-known-good.mjs --mode verify --suite full
+node tests/render-known-good.mjs --mode verify --suite smoke
+node tests/render-known-good.mjs --mode verify --suite full
 ```
 
 - 从渲染基线生成 OCR known-pairs fixture：
 
 ```powershell
-node ./scripts/build-ocr-baseline-fixture.mjs
+node ./tests/build-ocr-baseline-fixture.mjs
 ```
 
 - OCR baseline（快速/完整）：
 
 ```powershell
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
 ```
 
 ## CI/CD

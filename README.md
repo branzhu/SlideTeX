@@ -115,33 +115,33 @@ pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoMan
 - PowerPoint smoke test:
 
 ```powershell
-pwsh ./scripts/Invoke-PowerPointSmoke.ps1
+pwsh ./tests/Invoke-PowerPointSmoke.ps1
 ```
 
 - Equation numbering known-good:
 
 ```powershell
-pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
+pwsh ./tests/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 ```
 
 - Render known-good (smoke/full):
 
 ```powershell
-node scripts/render-known-good.mjs --mode verify --suite smoke
-node scripts/render-known-good.mjs --mode verify --suite full
+node tests/render-known-good.mjs --mode verify --suite smoke
+node tests/render-known-good.mjs --mode verify --suite full
 ```
 
 - Build OCR baseline fixture from render known-good pairs:
 
 ```powershell
-node ./scripts/build-ocr-baseline-fixture.mjs
+node ./tests/build-ocr-baseline-fixture.mjs
 ```
 
 - OCR baseline (smoke/full):
 
 ```powershell
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
-pwsh ./scripts/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
+pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
 ```
 
 ## CI/CD

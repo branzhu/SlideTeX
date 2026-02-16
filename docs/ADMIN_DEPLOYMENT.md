@@ -61,7 +61,7 @@ msiexec /x {PRODUCT-CODE} /qn /l*v C:\Temp\SlideTeX-uninstall.log
 
 ## 5.1 Upgrade Path Validation Script
 ```powershell
-pwsh ./scripts/Test-MsiLifecycle.ps1 `
+pwsh ./tests/Test-MsiLifecycle.ps1 `
   -OldMsi .\artifacts\installer\SlideTeX-1.0.0-Release-x64-en-US.msi `
   -NewMsi .\artifacts\installer\SlideTeX-1.0.1-Release-x64-en-US.msi
 ```

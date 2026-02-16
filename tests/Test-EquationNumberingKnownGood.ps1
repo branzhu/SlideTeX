@@ -77,7 +77,7 @@ function Sequence-Equals {
 }
 
 if ([string]::IsNullOrWhiteSpace($FixturePath)) {
-    $FixturePath = Join-Path $PSScriptRoot '..\tests\equation-numbering\numbering-mathjax-v3.json'
+    $FixturePath = Join-Path $PSScriptRoot 'equation-numbering\numbering-mathjax-v3.json'
 }
 
 if (-not (Test-Path $FixturePath)) {
