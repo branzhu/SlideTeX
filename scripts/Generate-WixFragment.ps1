@@ -76,14 +76,14 @@ $buildDir = Resolve-PathFromRoot -Root $root -PathValue $BuildOutputDir
 $outputPath = Resolve-PathFromRoot -Root $root -PathValue $OutputFile
 
 if (!(Test-Path $buildDir)) {
-    throw "BuildOutputDir 不存在: $buildDir"
+    throw "BuildOutputDir does not exist: $buildDir"
 }
 
 $allFiles = Get-ChildItem -Path $buildDir -Recurse -File |
     Where-Object { $_.Extension -notin @(".pdb", ".xml") }
 
 if ($allFiles.Count -eq 0) {
-    throw "未找到可打包文件: $buildDir"
+    throw "No packagable files found: $buildDir"
 }
 
 $dirIdMap = @{

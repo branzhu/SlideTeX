@@ -58,23 +58,23 @@ function Get-RegistryReport {
     $result.Manifest = $item.Manifest
 
     if ([string]::IsNullOrWhiteSpace($result.FriendlyName)) {
-        $result.Errors += "FriendlyName 缺失"
+        $result.Errors += "FriendlyName is missing"
     }
     if ([string]::IsNullOrWhiteSpace($result.Description)) {
-        $result.Errors += "Description 缺失"
+        $result.Errors += "Description is missing"
     }
     if ($result.LoadBehavior -ne 3) {
-        $result.Errors += "LoadBehavior 不是 3"
+        $result.Errors += "LoadBehavior is not 3"
     }
     if ([string]::IsNullOrWhiteSpace($result.Manifest)) {
-        $result.Errors += "Manifest 缺失"
+        $result.Errors += "Manifest is missing"
     }
     else {
         $manifestFile = $result.Manifest.Split("|")[0]
         $result.ManifestFile = $manifestFile
         $result.ManifestExists = Test-Path $manifestFile
         if (-not $result.ManifestExists) {
-            $result.Errors += "Manifest 文件不存在: $manifestFile"
+            $result.Errors += "Manifest file does not exist: $manifestFile"
         }
     }
 
@@ -116,11 +116,11 @@ if ($Mode -eq "Validate") {
     }
 
     if ($existing.Count -eq 0) {
-        Write-Warning "未找到 SlideTeX Office 加载项注册表项。"
+        Write-Warning "No SlideTeX Office add-in registry entry found."
         exit 2
     }
 
-    Write-Warning "找到注册表项，但校验失败。请查看报告详情。"
+    Write-Warning "Registry entry found but validation failed. See report for details."
     exit 1
 }
 
@@ -128,11 +128,11 @@ $paths = Get-RegistryPaths -AddinProgId $ProgId -IncludeWow6432:$RegisterWow6432
 
 if ($Mode -eq "Install") {
     if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
-        throw "Install 模式必须提供 -ManifestPath。"
+        throw "Install mode requires -ManifestPath."
     }
 
     if (!(Test-Path $ManifestPath)) {
-        throw "ManifestPath 不存在: $ManifestPath"
+        throw "ManifestPath does not exist: $ManifestPath"
     }
 
     $manifestValue = "$ManifestPath|vstolocal"

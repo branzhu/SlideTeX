@@ -42,7 +42,7 @@ function flattenKeys(source, prefix = "", output = new Set()) {
 // Reads all locale JSON files and validates basic payload shape.
 function readLocales() {
   if (!fs.existsSync(i18nDir)) {
-    throw new Error(`i18n 目录不存在: ${i18nDir}`);
+    throw new Error(`i18n directory does not exist: ${i18nDir}`);
   }
 
   const files = fs.readdirSync(i18nDir)
@@ -50,7 +50,7 @@ function readLocales() {
     .sort((a, b) => a.localeCompare(b));
 
   if (files.length === 0) {
-    throw new Error(`未找到语言文件: ${i18nDir}`);
+    throw new Error(`No locale files found: ${i18nDir}`);
   }
 
   const locales = {};
@@ -63,18 +63,18 @@ function readLocales() {
     try {
       parsed = JSON.parse(raw);
     } catch (error) {
-      throw new Error(`JSON 解析失败: ${fullPath}\n${error.message}`);
+      throw new Error(`JSON parse failed: ${fullPath}\n${error.message}`);
     }
 
     if (!isPlainObject(parsed)) {
-      throw new Error(`语言文件必须为对象: ${fullPath}`);
+      throw new Error(`Locale file must be an object: ${fullPath}`);
     }
 
     locales[locale] = parsed;
   }
 
   if (!(defaultLocale in locales)) {
-    throw new Error(`缺少默认语言文件: ${defaultLocale}.json`);
+    throw new Error(`Missing default locale file: ${defaultLocale}.json`);
   }
 
   return locales;
@@ -100,7 +100,7 @@ function validateLocaleKeyConsistency(locales) {
       if (extra.length > 0) {
         lines.push(`extra(${locale}): ${extra.join(", ")}`);
       }
-      throw new Error(`语言 key 不一致:\n${lines.join("\n")}`);
+      throw new Error(`Locale key mismatch:\n${lines.join("\n")}`);
     }
   }
 }
@@ -108,7 +108,7 @@ function validateLocaleKeyConsistency(locales) {
 // Rewrites the inline i18n bundle block inside index.html markers.
 function updateIndexHtml(bundle) {
   if (!fs.existsSync(indexHtmlPath)) {
-    throw new Error(`index.html 不存在: ${indexHtmlPath}`);
+    throw new Error(`index.html does not exist: ${indexHtmlPath}`);
   }
 
   const indexRaw = fs.readFileSync(indexHtmlPath, "utf8");
@@ -116,7 +116,7 @@ function updateIndexHtml(bundle) {
   const endIdx = indexRaw.indexOf(markerEnd);
 
   if (startIdx < 0 || endIdx < 0 || endIdx < startIdx) {
-    throw new Error("index.html 缺少 i18n bundle 标记块。");
+    throw new Error("index.html is missing the i18n bundle marker block.");
   }
 
   const before = indexRaw.slice(0, startIdx + markerStart.length);

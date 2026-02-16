@@ -23,10 +23,12 @@
 - `src/SlideTeX.VstoAddin`: VSTO 插件运行时代码。
 - `src/SlideTeX.WebUI`: 任务窗格 HTML/CSS/JS 与静态资源。
 - `src/SlideTeX.Installer`: WiX 安装器项目。
-- `scripts`: 构建、打包、烟雾测试、回归脚本。
-- `tests/render-regression`: 渲染视觉回归基线与用例。
-- `tests/equation-numbering`: 编号回归 known-good 用例。
-- `tests/ocr-baseline`: OCR 图片-公式 known-pairs 基线用例。
+- `scripts`: 构建、打包、资源同步脚本。
+- `tests`: 全部测试脚本与用例。
+  - `tests/render-regression`: 渲染视觉回归基线与用例。
+  - `tests/equation-numbering`: 编号回归 known-good 用例。
+  - `tests/ocr-baseline`: OCR 图片-公式 known-pairs 基线用例。
+  - `tests/lib`: 共享测试基础设施工具。
 - `docs`: 调试、部署、回归说明文档。
 
 ## 环境要求
@@ -110,6 +112,26 @@ pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64
 pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoManifestCertificateThumbprint "<THUMBPRINT>"
 ```
 
+- 单元测试（纯函数，无浏览器）：
+
+```powershell
+node tests/test-app-logic.mjs
+node tests/test-i18n.mjs
+node tests/test-ocr-latex-postprocess.mjs
+```
+
+- WebUI 集成测试（Puppeteer + mock host）：
+
+```powershell
+node tests/test-main-flow.mjs
+```
+
+- WebView2 桥接集成测试：
+
+```powershell
+node tests/test-webview2-flow.mjs
+```
+
 - PowerPoint 烟雾测试：
 
 ```powershell
@@ -140,6 +162,12 @@ node ./tests/build-ocr-baseline-fixture.mjs
 ```powershell
 pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
 pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
+```
+
+- MSI 生命周期测试（安装旧版 → 升级 → 卸载）：
+
+```powershell
+pwsh ./tests/Test-MsiLifecycle.ps1 -OldMsi <path> -NewMsi <path>
 ```
 
 ## CI/CD

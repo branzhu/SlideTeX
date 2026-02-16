@@ -43,17 +43,17 @@ function Get-ProductCode {
     $view.Execute()
     $record = $view.Fetch()
     if ($null -eq $record) {
-        throw "无法从 MSI 读取 ProductCode: $MsiPath"
+        throw "Failed to read ProductCode from MSI: $MsiPath"
     }
 
     return $record.StringData(1)
 }
 
 if (!(Test-Path $OldMsi)) {
-    throw "OldMsi 不存在: $OldMsi"
+    throw "OldMsi does not exist: $OldMsi"
 }
 if (!(Test-Path $NewMsi)) {
-    throw "NewMsi 不存在: $NewMsi"
+    throw "NewMsi does not exist: $NewMsi"
 }
 
 New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
@@ -81,14 +81,14 @@ $step1 = Invoke-Msi -Arguments "/i \"$oldFull\" /qn /l*v \"$oldInstallLog\"" -Lo
 $report.steps += [ordered]@{ step = "install-old"; result = $step1 }
 if (-not $step1.Success) {
     $report | ConvertTo-Json -Depth 8 | Set-Content -Path (Join-Path $LogDir "report.json") -Encoding utf8
-    throw "安装旧版 MSI 失败，ExitCode=$($step1.ExitCode)"
+    throw "Install old MSI failed, ExitCode=$($step1.ExitCode)"
 }
 
 $step2 = Invoke-Msi -Arguments "/i \"$newFull\" /qn /l*v \"$upgradeLog\"" -LogPath $upgradeLog
 $report.steps += [ordered]@{ step = "upgrade-to-new"; result = $step2 }
 if (-not $step2.Success) {
     $report | ConvertTo-Json -Depth 8 | Set-Content -Path (Join-Path $LogDir "report.json") -Encoding utf8
-    throw "升级到新版 MSI 失败，ExitCode=$($step2.ExitCode)"
+    throw "Upgrade to new MSI failed, ExitCode=$($step2.ExitCode)"
 }
 
 if (-not $SkipCleanup) {
@@ -96,7 +96,7 @@ if (-not $SkipCleanup) {
     $report.steps += [ordered]@{ step = "uninstall-new"; result = $step3 }
     if (-not $step3.Success) {
         $report | ConvertTo-Json -Depth 8 | Set-Content -Path (Join-Path $LogDir "report.json") -Encoding utf8
-        throw "卸载新版 MSI 失败，ExitCode=$($step3.ExitCode)"
+        throw "Uninstall new MSI failed, ExitCode=$($step3.ExitCode)"
     }
 }
 

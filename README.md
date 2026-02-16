@@ -25,10 +25,12 @@ English WebUI preview:
 - `src/SlideTeX.VstoAddin`: VSTO add-in (`net48`) runtime code.
 - `src/SlideTeX.WebUI`: Task pane HTML/CSS/JS and vendored assets.
 - `src/SlideTeX.Installer`: WiX-based installer project.
-- `scripts`: build, packaging, smoke tests, and regression scripts.
-- `tests/render-regression`: visual rendering baselines and fixtures.
-- `tests/equation-numbering`: equation numbering known-good fixtures.
-- `tests/ocr-baseline`: OCR known image-LaTeX pair fixture.
+- `scripts`: build, packaging, and asset sync scripts.
+- `tests`: all test scripts and fixtures.
+  - `tests/render-regression`: visual rendering baselines and fixtures.
+  - `tests/equation-numbering`: equation numbering known-good fixtures.
+  - `tests/ocr-baseline`: OCR known image-LaTeX pair fixture.
+  - `tests/lib`: shared test infrastructure utilities.
 - `docs`: debugging, deployment, and regression guides.
 
 ## Requirements
@@ -112,6 +114,26 @@ Language override at install time:
 pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoManifestCertificateThumbprint "<THUMBPRINT>"
 ```
 
+- Unit tests (pure functions, no browser):
+
+```powershell
+node tests/test-app-logic.mjs
+node tests/test-i18n.mjs
+node tests/test-ocr-latex-postprocess.mjs
+```
+
+- WebUI integration test (Puppeteer + mock host):
+
+```powershell
+node tests/test-main-flow.mjs
+```
+
+- WebView2 bridge integration test:
+
+```powershell
+node tests/test-webview2-flow.mjs
+```
+
 - PowerPoint smoke test:
 
 ```powershell
@@ -142,6 +164,12 @@ node ./tests/build-ocr-baseline-fixture.mjs
 ```powershell
 pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
 pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
+```
+
+- MSI lifecycle test (install old → upgrade → uninstall):
+
+```powershell
+pwsh ./tests/Test-MsiLifecycle.ps1 -OldMsi <path> -NewMsi <path>
 ```
 
 ## CI/CD

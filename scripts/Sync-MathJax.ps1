@@ -46,7 +46,7 @@ function Invoke-DownloadFile {
         Invoke-WebRequest -Uri $Uri -OutFile $OutFile
     }
     catch {
-        throw "下载失败: $Uri，错误: $($_.Exception.Message)"
+        throw "Download failed: $Uri, error: $($_.Exception.Message)"
     }
 }
 
@@ -89,7 +89,7 @@ function Sync-MathJax {
     }
     else {
         if (!(Test-Path $MathJaxArchivePath)) {
-            throw "指定的 ArchivePath 不存在: $MathJaxArchivePath"
+            throw "Specified ArchivePath does not exist: $MathJaxArchivePath"
         }
 
         Copy-Item -Path $MathJaxArchivePath -Destination $archive -Force
