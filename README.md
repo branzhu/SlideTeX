@@ -25,7 +25,6 @@ English WebUI preview:
 - `src/SlideTeX.VstoAddin`: VSTO add-in (`net48`) runtime code.
 - `src/SlideTeX.WebUI`: Task pane HTML/CSS/JS and vendored assets.
 - `src/SlideTeX.Installer`: WiX-based installer project.
-- `tools/SlideTeX.DebugHost`: local host app for WebUI/host-bridge debugging.
 - `scripts`: build, packaging, smoke tests, and regression scripts.
 - `tests/render-regression`: visual rendering baselines and fixtures.
 - `tests/equation-numbering`: equation numbering known-good fixtures.
@@ -83,12 +82,9 @@ node ./scripts/generate-webui-i18n-bundle.mjs
 & "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" SlideTeX.sln /m:1
 ```
 
-4. Run debug host:
+4. Preview WebUI in browser (mock host):
 
-```powershell
-& "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" tools\SlideTeX.DebugHost\SlideTeX.DebugHost.csproj /p:Configuration=Debug /m:1
-.\tools\SlideTeX.DebugHost\bin\Debug\net48\SlideTeX.DebugHost.exe
-```
+Open `src/SlideTeX.WebUI/index.html` directly in a browser. The built-in `mock-host.js` provides a lightweight stub for all host bridge methods, logging calls to the console.
 
 ## Build and Test Commands
 

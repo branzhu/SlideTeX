@@ -23,7 +23,6 @@
 - `src/SlideTeX.VstoAddin`: VSTO 插件运行时代码。
 - `src/SlideTeX.WebUI`: 任务窗格 HTML/CSS/JS 与静态资源。
 - `src/SlideTeX.Installer`: WiX 安装器项目。
-- `tools/SlideTeX.DebugHost`: 本地调试宿主（用于 WebUI/Host 桥接调试）。
 - `scripts`: 构建、打包、烟雾测试、回归脚本。
 - `tests/render-regression`: 渲染视觉回归基线与用例。
 - `tests/equation-numbering`: 编号回归 known-good 用例。
@@ -81,12 +80,9 @@ node ./scripts/generate-webui-i18n-bundle.mjs
 & "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" SlideTeX.sln /m:1
 ```
 
-4. 启动调试宿主：
+4. 在浏览器中预览 WebUI（mock host）：
 
-```powershell
-& "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" tools\SlideTeX.DebugHost\SlideTeX.DebugHost.csproj /p:Configuration=Debug /m:1
-.\tools\SlideTeX.DebugHost\bin\Debug\net48\SlideTeX.DebugHost.exe
-```
+直接在浏览器中打开 `src/SlideTeX.WebUI/index.html`。内置的 `mock-host.js` 会为所有宿主桥接方法提供轻量 stub，调用信息输出到控制台。
 
 ## 常用构建与测试命令
 

@@ -14,27 +14,17 @@ pwsh ./scripts/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
 powershell -ExecutionPolicy Bypass -File scripts/Test-RenderKnownGood.ps1 -Mode verify -Suite smoke
 ```
 
-## 2. Local TaskPane/WebView2 Debugging (Debug Host)
-If WebView2 SDK assemblies are missing during build, set:
-```powershell
-$env:WEBVIEW2_SDK_DIR="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Web Live Preview"
-```
-
-Start DebugHost:
-```powershell
-node ./scripts/generate-webui-i18n-bundle.mjs
-& "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" tools\SlideTeX.DebugHost\SlideTeX.DebugHost.csproj /p:Configuration=Debug /m:1
-.\tools\SlideTeX.DebugHost\bin\Debug\net48\SlideTeX.DebugHost.exe
-```
+## 2. Local TaskPane/WebView2 Debugging (Browser Mock Host)
+Open `src/SlideTeX.WebUI/index.html` directly in a browser. The `mock-host.js` script auto-activates when no WebView2 COM bridge is detected, providing console-logged stubs for all 8 host methods.
 
 Manual debug flow:
-1. Click the `Initialize WebUI` button in the DebugHost window.
-2. Enter formula text in the LaTeX box.
-3. Click the `Host Render` button.
-4. Inspect callbacks in the right-side log (`notifyRenderSuccess/notifyRenderError`).
-5. `auto` mode switches to display when needed (for example `align/align*` or multi-line `\\`).
+1. Open `src/SlideTeX.WebUI/index.html` in Chrome/Edge.
+2. Open DevTools console — you should see `[mock-host] Mock host active (browser mode)`.
+3. Enter formula text in the LaTeX box; preview renders via MathJax.
+4. Click "Insert" — console logs `[mock-host] requestInsert` with the payload.
+5. Click "OCR Image" — after 500 ms the mock returns `\frac{a}{b}` via `onFormulaOcrSuccess`.
 
-If WebView2 is still not ready, install WebView2 Runtime.
+Note: `mock-host.js` is a no-op when running inside the real VSTO WebView2 host or when the test harness (`test-main-flow.mjs`) injects its own mock first.
 
 ## 3. PowerPoint COM Smoke Test
 ```powershell
