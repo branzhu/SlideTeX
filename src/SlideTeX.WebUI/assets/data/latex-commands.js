@@ -2114,6 +2114,276 @@ window.LATEX_COMMANDS = {
       "snippet": "\\raisebox{$1}{$2}",
       "desc": "latex.cmd.raisebox",
       "priority": 621
+    },
+    {
+      "cmd": "\\notag",
+      "snippet": "\\notag",
+      "desc": "latex.cmd.notag",
+      "priority": 80
+    },
+    {
+      "cmd": "\\nonumber",
+      "snippet": "\\nonumber",
+      "desc": "latex.cmd.nonumber",
+      "priority": 80
+    },
+    {
+      "cmd": "\\label",
+      "snippet": "\\label{$1}",
+      "desc": "latex.cmd.label",
+      "priority": 75
+    },
+    {
+      "cmd": "\\ref",
+      "snippet": "\\ref{$1}",
+      "desc": "latex.cmd.ref",
+      "priority": 75
+    },
+    {
+      "cmd": "\\eqref",
+      "snippet": "\\eqref{$1}",
+      "desc": "latex.cmd.eqref",
+      "priority": 75
+    },
+    {
+      "cmd": "\\bcancel",
+      "snippet": "\\bcancel{$1}",
+      "desc": "latex.cmd.bcancel",
+      "priority": 60
+    },
+    {
+      "cmd": "\\xcancel",
+      "snippet": "\\xcancel{$1}",
+      "desc": "latex.cmd.xcancel",
+      "priority": 60
+    },
+    {
+      "cmd": "\\cancelto",
+      "snippet": "\\cancelto{$1}{$2}",
+      "desc": "latex.cmd.cancelto",
+      "priority": 60
+    },
+    {
+      "cmd": "\\bra",
+      "snippet": "\\bra{$1}",
+      "desc": "latex.cmd.bra",
+      "priority": 55
+    },
+    {
+      "cmd": "\\ket",
+      "snippet": "\\ket{$1}",
+      "desc": "latex.cmd.ket",
+      "priority": 55
+    },
+    {
+      "cmd": "\\braket",
+      "snippet": "\\braket{$1}{$2}",
+      "desc": "latex.cmd.braket",
+      "priority": 55
+    },
+    {
+      "cmd": "\\Bra",
+      "snippet": "\\Bra{$1}",
+      "desc": "latex.cmd.Bra",
+      "priority": 55
+    },
+    {
+      "cmd": "\\Ket",
+      "snippet": "\\Ket{$1}",
+      "desc": "latex.cmd.Ket",
+      "priority": 55
+    },
+    {
+      "cmd": "\\Braket",
+      "snippet": "\\Braket{$1}{$2}",
+      "desc": "latex.cmd.Braket",
+      "priority": 55
+    },
+    {
+      "cmd": "\\ketbra",
+      "snippet": "\\ketbra{$1}{$2}",
+      "desc": "latex.cmd.ketbra",
+      "priority": 55
+    },
+    {
+      "cmd": "\\Ketbra",
+      "snippet": "\\Ketbra{$1}{$2}",
+      "desc": "latex.cmd.Ketbra",
+      "priority": 55
+    },
+    {
+      "cmd": "\\xlongequal",
+      "snippet": "\\xlongequal[$1]{$2}",
+      "desc": "latex.cmd.xlongequal",
+      "priority": 50
+    },
+    {
+      "cmd": "\\xmapsto",
+      "snippet": "\\xmapsto[$1]{$2}",
+      "desc": "latex.cmd.xmapsto",
+      "priority": 50
+    },
+    {
+      "cmd": "\\xtofrom",
+      "snippet": "\\xtofrom[$1]{$2}",
+      "desc": "latex.cmd.xtofrom",
+      "priority": 50
+    },
+    {
+      "cmd": "\\xtwoheadleftarrow",
+      "snippet": "\\xtwoheadleftarrow[$1]{$2}",
+      "desc": "latex.cmd.xtwoheadleftarrow",
+      "priority": 50
+    },
+    {
+      "cmd": "\\xtwoheadrightarrow",
+      "snippet": "\\xtwoheadrightarrow[$1]{$2}",
+      "desc": "latex.cmd.xtwoheadrightarrow",
+      "priority": 50
+    },
+    {
+      "cmd": "\\colorbox",
+      "snippet": "\\colorbox{$1}{$2}",
+      "desc": "latex.cmd.colorbox",
+      "priority": 45
+    },
+    {
+      "cmd": "\\fcolorbox",
+      "snippet": "\\fcolorbox{$1}{$2}{$3}",
+      "desc": "latex.cmd.fcolorbox",
+      "priority": 45
+    },
+    {
+      "cmd": "\\definecolor",
+      "snippet": "\\definecolor{$1}{$2}{$3}",
+      "desc": "latex.cmd.definecolor",
+      "priority": 45
+    },
+    {
+      "cmd": "\\bigstar",
+      "snippet": "\\bigstar",
+      "desc": "latex.cmd.bigstar",
+      "priority": 40
+    },
+    {
+      "cmd": "\\blacklozenge",
+      "snippet": "\\blacklozenge",
+      "desc": "latex.cmd.blacklozenge",
+      "priority": 40
+    },
+    {
+      "cmd": "\\blacktriangle",
+      "snippet": "\\blacktriangle",
+      "desc": "latex.cmd.blacktriangle",
+      "priority": 40
+    },
+    {
+      "cmd": "\\blacktriangledown",
+      "snippet": "\\blacktriangledown",
+      "desc": "latex.cmd.blacktriangledown",
+      "priority": 40
+    },
+    {
+      "cmd": "\\circledR",
+      "snippet": "\\circledR",
+      "desc": "latex.cmd.circledR",
+      "priority": 40
+    },
+    {
+      "cmd": "\\circledS",
+      "snippet": "\\circledS",
+      "desc": "latex.cmd.circledS",
+      "priority": 40
+    },
+    {
+      "cmd": "\\maltese",
+      "snippet": "\\maltese",
+      "desc": "latex.cmd.maltese",
+      "priority": 40
+    },
+    {
+      "cmd": "\\impliedby",
+      "snippet": "\\impliedby",
+      "desc": "latex.cmd.impliedby",
+      "priority": 40
+    },
+    {
+      "cmd": "\\asymp",
+      "snippet": "\\asymp",
+      "desc": "latex.cmd.asymp",
+      "priority": 40
+    },
+    {
+      "cmd": "\\bowtie",
+      "snippet": "\\bowtie",
+      "desc": "latex.cmd.bowtie",
+      "priority": 40
+    },
+    {
+      "cmd": "\\doteq",
+      "snippet": "\\doteq",
+      "desc": "latex.cmd.doteq",
+      "priority": 40
+    },
+    {
+      "cmd": "\\daleth",
+      "snippet": "\\daleth",
+      "desc": "latex.cmd.daleth",
+      "priority": 40
+    },
+    {
+      "cmd": "\\idotsint",
+      "snippet": "\\idotsint",
+      "desc": "latex.cmd.idotsint",
+      "priority": 35
+    },
+    {
+      "cmd": "\\iiiint",
+      "snippet": "\\iiiint",
+      "desc": "latex.cmd.iiiint",
+      "priority": 35
+    },
+    {
+      "cmd": "\\dddot",
+      "snippet": "\\dddot{$1}",
+      "desc": "latex.cmd.dddot",
+      "priority": 35
+    },
+    {
+      "cmd": "\\ddddot",
+      "snippet": "\\ddddot{$1}",
+      "desc": "latex.cmd.ddddot",
+      "priority": 35
+    },
+    {
+      "cmd": "\\middle",
+      "snippet": "\\middle",
+      "desc": "latex.cmd.middle",
+      "priority": 30
+    },
+    {
+      "cmd": "\\bbox",
+      "snippet": "\\bbox[$1]{$2}",
+      "desc": "latex.cmd.bbox",
+      "priority": 30
+    },
+    {
+      "cmd": "\\href",
+      "snippet": "\\href{$1}{$2}",
+      "desc": "latex.cmd.href",
+      "priority": 30
+    },
+    {
+      "cmd": "\\ce",
+      "snippet": "\\ce{$1}",
+      "desc": "latex.cmd.ce",
+      "priority": 30
+    },
+    {
+      "cmd": "\\varpi",
+      "snippet": "\\varpi",
+      "desc": "latex.cmd.varpi",
+      "priority": 30
     }
   ],
   "environments": [
@@ -2176,6 +2446,54 @@ window.LATEX_COMMANDS = {
     {
       "name": "equation*",
       "desc": "latex.env.equation_star"
+    },
+    {
+      "name": "gather",
+      "snippet": "\\begin{gather}\n$1\n\\end{gather}",
+      "desc": "latex.env.gather",
+      "priority": 10
+    },
+    {
+      "name": "gather*",
+      "snippet": "\\begin{gather*}\n$1\n\\end{gather*}",
+      "desc": "latex.env.gather_star",
+      "priority": 10
+    },
+    {
+      "name": "split",
+      "snippet": "\\begin{split}\n$1\n\\end{split}",
+      "desc": "latex.env.split",
+      "priority": 10
+    },
+    {
+      "name": "multline",
+      "snippet": "\\begin{multline}\n$1\n\\end{multline}",
+      "desc": "latex.env.multline",
+      "priority": 10
+    },
+    {
+      "name": "multline*",
+      "snippet": "\\begin{multline*}\n$1\n\\end{multline*}",
+      "desc": "latex.env.multline_star",
+      "priority": 10
+    },
+    {
+      "name": "alignat",
+      "snippet": "\\begin{alignat}{$1}\n$2\n\\end{alignat}",
+      "desc": "latex.env.alignat",
+      "priority": 10
+    },
+    {
+      "name": "alignat*",
+      "snippet": "\\begin{alignat*}{$1}\n$2\n\\end{alignat*}",
+      "desc": "latex.env.alignat_star",
+      "priority": 10
+    },
+    {
+      "name": "smallmatrix",
+      "snippet": "\\begin{smallmatrix}\n$1\n\\end{smallmatrix}",
+      "desc": "latex.env.smallmatrix",
+      "priority": 10
     }
   ]
 };
