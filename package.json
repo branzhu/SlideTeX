@@ -15,7 +15,8 @@
     "test:render-known-good:smoke": "node ./scripts/render-known-good.mjs --mode verify --suite smoke",
     "test:render-known-good:full": "node ./scripts/render-known-good.mjs --mode verify --suite full",
     "test:render-known-good:update": "node ./scripts/render-known-good.mjs --mode update-baseline --suite all",
-    "test:main-flow": "node ./scripts/test-main-flow.mjs"
+    "test:main-flow": "node ./scripts/test-main-flow.mjs",
+    "test:tier2:webview2": "node scripts/test-webview2-flow.mjs"
   },
   "devDependencies": {
     "pixelmatch": "7.1.0",

@@ -71,7 +71,10 @@
     params: null
   };
 
-  const host = resolveHost();
+  // Lazy host resolution — the WebView2 COM proxy may not be wired
+  // at the instant this IIFE runs; re-resolve on every access so that
+  // a late-arriving proxy is picked up automatically.
+  function getHost() { return resolveHost(); }
   const i18n = window.SlideTeXI18n;
 
   initialize().catch((error) => {
@@ -87,6 +90,9 @@
     },
     onFormulaOcrError: (payload) => {
       handleFormulaOcrError(payload);
+    },
+    onHostImageOcr: (payload) => {
+      handleHostImageOcr(payload);
     }
   };
 
@@ -163,14 +169,14 @@
     }
 
     elements.insertBtn.addEventListener("click", () => {
-      if (host?.requestInsert) {
-        host.requestInsert();
+      if (getHost()?.requestInsert) {
+        getHost().requestInsert();
       }
     });
 
     elements.updateBtn.addEventListener("click", () => {
-      if (host?.requestUpdate) {
-        host.requestUpdate();
+      if (getHost()?.requestUpdate) {
+        getHost().requestUpdate();
       }
     });
 
@@ -193,14 +199,60 @@
     });
 
     elements.renumberBtn.addEventListener("click", () => {
-      if (host?.requestRenumber) {
-        host.requestRenumber();
+      if (getHost()?.requestRenumber) {
+        getHost().requestRenumber();
+      }
+    });
+
+    // Paste image → OCR
+    document.addEventListener("paste", async (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) await requestFormulaOcrFromFile(file);
+          return;
+        }
+      }
+    });
+
+    // Drag & drop image → OCR
+    const editorPanel = elements.latexInput.closest(".panel");
+
+    editorPanel.addEventListener("dragenter", (e) => {
+      if (e.dataTransfer?.types?.includes("Files")) {
+        e.preventDefault();
+        editorPanel.classList.add("drop-active");
+      }
+    });
+
+    editorPanel.addEventListener("dragover", (e) => {
+      if (e.dataTransfer?.types?.includes("Files")) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+      }
+    });
+
+    editorPanel.addEventListener("dragleave", (e) => {
+      if (!editorPanel.contains(e.relatedTarget)) {
+        editorPanel.classList.remove("drop-active");
+      }
+    });
+
+    editorPanel.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      editorPanel.classList.remove("drop-active");
+      const file = e.dataTransfer?.files?.[0];
+      if (file && file.type.startsWith("image/")) {
+        await requestFormulaOcrFromFile(file);
       }
     });
   }
 
   async function requestFormulaOcrFromFile(file) {
-    if (!host?.requestFormulaOcr) {
+    if (!getHost()?.requestFormulaOcr) {
       showError(t("webui.error.ocr_host_unavailable"), false);
       return;
     }
@@ -215,7 +267,7 @@
         maxTokens: 256,
         timeoutMs: 15000
       };
-      host.requestFormulaOcr(dataUrl, JSON.stringify(options));
+      getHost().requestFormulaOcr(dataUrl, JSON.stringify(options));
     } catch (error) {
       setOcrBusy(false);
       const message = errorMessage(error);
@@ -248,6 +300,20 @@
     setOcrBusy(false);
     const message = String(data.message || t("webui.error.ocr_failed"));
     showError(message, false);
+  }
+
+  function handleHostImageOcr(payload) {
+    const data = normalizeHostPayload(payload);
+    if (!data?.imageBase64) return;
+    if (!getHost()?.requestFormulaOcr) {
+      showError(t("webui.error.ocr_host_unavailable"), false);
+      return;
+    }
+    setOcrBusy(true);
+    hideError();
+    setStatusByKey("webui.status.ocr_running");
+    const options = { maxTokens: 256, timeoutMs: 15000 };
+    getHost().requestFormulaOcr(data.imageBase64, JSON.stringify(options));
   }
 
   function normalizeHostPayload(payload) {
@@ -440,9 +506,10 @@
 
   async function renderMathJaxToPreview(latex, displayMode) {
     const mj = await ensureMathJaxReady();
-    const math = typeof mj.tex2svgPromise === "function"
-      ? await mj.tex2svgPromise(latex, { display: Boolean(displayMode) })
-      : mj.tex2svg(latex, { display: Boolean(displayMode) });
+    // Use sync tex2svg — the promise variant chains through MathJax's internal
+    // _readyPromise / actionPromises queue which can get permanently stuck in
+    // WebView2 (and causes the "waiting to render" hang in production).
+    const math = mj.tex2svg(latex, { display: Boolean(displayMode) });
     const svg = math?.querySelector ? math.querySelector("svg") : null;
     if (!svg) {
       throw new Error(t("webui.error.mathjax_render_failed"));
@@ -608,14 +675,14 @@
 
 
   function notifyRenderSuccess(result) {
-    if (host?.notifyRenderSuccess) {
-      host.notifyRenderSuccess(JSON.stringify(result));
+    if (getHost()?.notifyRenderSuccess) {
+      getHost().notifyRenderSuccess(JSON.stringify(result));
     }
   }
 
   function notifyRenderError(message) {
-    if (host?.notifyRenderError) {
-      host.notifyRenderError(message);
+    if (getHost()?.notifyRenderError) {
+      getHost().notifyRenderError(message);
     }
   }
 

@@ -404,6 +404,13 @@ namespace SlideTeX.VstoAddin
                 ShapeMetaV1 meta;
                 if (!_metadataStore.TryRead(new PowerPointShapeTagAccessor(shape), out meta) || meta == null)
                 {
+                    if (IsImageShape(shape))
+                    {
+                        _lastAutoEditShapeKey = key;
+                        OcrSelectedImage(shape);
+                        return;
+                    }
+
                     _lastAutoEditShapeKey = key;
                     return;
                 }
@@ -427,6 +434,71 @@ namespace SlideTeX.VstoAddin
             catch
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns true when the shape is a standalone picture (not a SlideTeX equation).
+        /// msoLinkedPicture = 13, msoPicture = 14.
+        /// </summary>
+        private static bool IsImageShape(dynamic shape)
+        {
+            try
+            {
+                int shapeType = (int)shape.Type;
+                return shapeType == 13 || shapeType == 14;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Exports the selected image shape to a temporary PNG and pushes it to WebUI for OCR.
+        /// </summary>
+        private void OcrSelectedImage(dynamic shape)
+        {
+            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            {
+                return;
+            }
+
+            string tempPath = null;
+            try
+            {
+                tempPath = Path.Combine(Path.GetTempPath(), "slidetex_ocr_" + Guid.NewGuid().ToString("N") + ".png");
+                // ppShapeFormatPNG = 2
+                shape.Export(tempPath, 2);
+
+                if (!File.Exists(tempPath))
+                {
+                    DiagLog.Warn("OcrSelectedImage export file not found: " + tempPath);
+                    return;
+                }
+
+                var bytes = File.ReadAllBytes(tempPath);
+                var base64 = "data:image/png;base64," + Convert.ToBase64String(bytes);
+                var payload = _serializer.Serialize(new { imageBase64 = base64 });
+                var script = "window.slideTex && window.slideTex.onHostImageOcr(" + payload + ");";
+
+                _taskPaneControl.BeginInvoke(new Action(() =>
+                {
+                    _taskPaneControl.ExecuteScript(script);
+                }));
+
+                DiagLog.Debug("OcrSelectedImage pushed image to WebUI. bytes=" + bytes.Length);
+            }
+            catch (Exception ex)
+            {
+                DiagLog.Warn("OcrSelectedImage failed: " + ex.Message);
+            }
+            finally
+            {
+                if (tempPath != null && File.Exists(tempPath))
+                {
+                    try { File.Delete(tempPath); } catch { }
+                }
             }
         }
 

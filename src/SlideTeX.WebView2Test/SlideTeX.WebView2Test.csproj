@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>SlideTeX.WebView2Test</RootNamespace>
+    <AssemblyName>SlideTeX.WebView2Test</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+
+  <!-- Link shared source files from VstoAddin (no VSTO dependencies) -->
+  <ItemGroup>
+    <Compile Include="..\SlideTeX.VstoAddin\Hosting\SlideTeXHostObject.cs"
+             Link="Linked\SlideTeXHostObject.cs" />
+    <Compile Include="..\SlideTeX.VstoAddin\Contracts\RenderNotificationEventArgs.cs"
+             Link="Linked\RenderNotificationEventArgs.cs" />
+    <Compile Include="..\SlideTeX.VstoAddin\Contracts\HostCommandRequestedEventArgs.cs"
+             Link="Linked\HostCommandRequestedEventArgs.cs" />
+    <Compile Include="..\SlideTeX.VstoAddin\Contracts\HostCommandPayload.cs"
+             Link="Linked\HostCommandPayload.cs" />
+    <Compile Include="..\SlideTeX.VstoAddin\Contracts\HostCommandType.cs"
+             Link="Linked\HostCommandType.cs" />
+    <Compile Include="..\SlideTeX.VstoAddin\Contracts\FormulaOcrRequestedEventArgs.cs"
+             Link="Linked\FormulaOcrRequestedEventArgs.cs" />
+  </ItemGroup>
+
+</Project>
