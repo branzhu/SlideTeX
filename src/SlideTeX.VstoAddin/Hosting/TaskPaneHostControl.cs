@@ -216,6 +216,11 @@ namespace SlideTeX.VstoAddin.Hosting
 
                 _webView.CoreWebView2.AddHostObjectToScript("slidetexHost", _hostObject);
                 DiagLog.Debug("TaskPaneHostControl.InitializeAsync AddHostObjectToScript done.");
+
+                // Block all non-local network requests to enforce offline-only operation.
+                _webView.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
+                _webView.CoreWebView2.WebResourceRequested += OnWebResourceRequested;
+
                 await InjectHostContextAsync(uiCultureName).ConfigureAwait(true);
                 _webView.Source = BuildWebUiSourceUri(pagePath);
                 stopwatch.Stop();
@@ -288,6 +293,28 @@ namespace SlideTeX.VstoAddin.Hosting
             }
 
             await _webView.CoreWebView2.ExecuteScriptAsync(script).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Blocks all non-file:// requests to enforce offline-only operation.
+        /// </summary>
+        private void OnWebResourceRequested(object sender, CoreWebView2WebResourceRequestedEventArgs args)
+        {
+            try
+            {
+                var uri = new Uri(args.Request.Uri);
+                if (string.Equals(uri.Scheme, "file", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                // Malformed URI — block it.
+            }
+
+            args.Response = _webView.CoreWebView2.Environment.CreateWebResourceResponse(
+                null, 403, "Blocked", "Content-Type: text/plain");
         }
 
         /// <summary>
