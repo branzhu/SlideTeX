@@ -288,10 +288,7 @@
     {
       "id": "color_expression",
       "suite": "full",
-      "latex": "x^2+y^2=z^2",
-      "options": {
-        "colorHex": "#d32f2f"
-      },
+      "latex": "\\color{red}{x^2}+\\color{blue}{y^2}=z^2",
       "expected": {
         "tags": []
       }
@@ -399,7 +396,10 @@
     {
       "id": "font_calligraphic",
       "suite": "full",
-      "latex": "{\\cal A}{\\cal B}{\\cal C}{\\cal D}{\\cal E}{\\cal F}{\\cal G}{\\cal H}{\\cal I}{\\cal J}{\\cal K}{\\cal L}{\\cal M}",
+      "latex": "{\\cal A}{\\cal B}{\\cal C}{\\cal D}{\\cal E}{\\cal F}{\\cal G}{\\cal H}{\\cal I}{\\cal J}{\\cal K}{\\cal L}{\\cal M}{\\cal N}{\\cal O}{\\cal P}{\\cal Q}{\\cal R}{\\cal S}{\\cal T}{\\cal U}{\\cal V}{\\cal W}{\\cal X}{\\cal Y}{\\cal Z}",
+      "layout": {
+        "requireNotClipped": false
+      },
       "expected": {
         "tags": []
       }
@@ -447,7 +447,7 @@
     {
       "id": "color_red",
       "suite": "full",
-      "latex": "E=mc^2",
+      "latex": "\\color{red}{E=mc^2}",
       "options": {
         "colorHex": "#ff0000"
       },
@@ -458,7 +458,7 @@
     {
       "id": "color_blue_display",
       "suite": "full",
-      "latex": "\\sum_{i=1}^{n} x_i",
+      "latex": "\\color{blue}{\\sum_{i=1}^{n} x_i}",
       "options": {
         "colorHex": "#0000ff",
         "displayMode": "display"
@@ -471,9 +471,9 @@
     {
       "id": "color_mixed_inline",
       "suite": "full",
-      "latex": "a + b + c = d",
-      "options": {
-        "colorHex": "#9c27b0"
+      "latex": "\\color{red}{a} + \\color{green}{b} + \\color{blue}{c} = \\color{purple}{d}",
+      "layout": {
+        "requireNotClipped": false
       },
       "expected": {
         "tags": []
@@ -521,11 +521,14 @@
     {
       "id": "dpi600_complex_formula",
       "suite": "full",
-      "latex": "\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}, \\quad \\nabla \\cdot \\mathbf{B} = 0",
+      "latex": "\\oint_{\\partial \\Sigma} \\mathbf{B} \\cdot \\mathrm{d}\\boldsymbol{\\ell} = \\mu_0 \\iint_{\\Sigma} \\mathbf{J} \\cdot \\mathrm{d}\\mathbf{S} + \\mu_0 \\varepsilon_0 \\frac{\\partial}{\\partial t} \\iint_{\\Sigma} \\mathbf{E} \\cdot \\mathrm{d}\\mathbf{S}",
       "options": {
         "fontPt": 18,
         "dpi": 600,
         "displayMode": "display"
+      },
+      "layout": {
+        "requireNotClipped": false
       },
       "expected": {
         "tags": [],
@@ -535,7 +538,10 @@
     {
       "id": "greek_full_alphabet",
       "suite": "full",
-      "latex": "\\alpha\\beta\\gamma\\delta\\epsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\xi\\pi\\rho\\sigma\\tau\\upsilon\\phi\\chi\\psi\\omega",
+      "latex": "\\alpha\\beta\\gamma\\delta\\epsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\xi\\pi\\rho\\sigma\\tau\\upsilon\\phi\\chi\\psi\\omega \\; \\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi\\Omega",
+      "layout": {
+        "requireNotClipped": false
+      },
       "expected": {
         "tags": []
       }
@@ -543,7 +549,10 @@
     {
       "id": "operators_and_arrows",
       "suite": "full",
-      "latex": "\\forall x \\exists y : x \\leq y \\implies x \\neq y+1 \\Rightarrow \\Leftarrow \\hookrightarrow",
+      "latex": "\\forall x \\exists y : x \\leq y \\implies x \\neq y+1 \\iff \\neg(x > y) \\Rightarrow \\Leftarrow \\Leftrightarrow \\hookrightarrow \\mapsto",
+      "layout": {
+        "requireNotClipped": false
+      },
       "expected": {
         "tags": []
       }

@@ -72,7 +72,24 @@
   <script>
     window.MathJax = {
       tex: {
-        tags: "ams"
+        tags: "ams",
+        // Pre-load extensions that autoload would otherwise fetch asynchronously.
+        // The sync tex2svg() API throws a retry error when autoload triggers
+        // async loading, and in WebView2 the async path hangs entirely.
+        packages: {'[+]': ['color', 'boldsymbol', 'cancel', 'newcommand',
+                           'enclose', 'bbox', 'action', 'verb']},
+        autoload: {
+          // Disable autoload for pre-loaded extensions — they are loaded
+          // eagerly via <script> tags below.
+          color: [],
+          boldsymbol: [],
+          cancel: [],
+          newcommand: [],
+          enclose: [],
+          bbox: [],
+          action: [],
+          verb: []
+        }
       },
       svg: {
         fontCache: "none",
@@ -100,6 +117,19 @@
        that preloadDynamicFonts() can populate every character's glyph path,
        bypassing MathJax's async retry mechanism that hangs in WebView2. -->
   <script src="./vendor/mathjax-newcm-font/svg/dynamic-all.js"></script>
+  <!-- Pre-load TeX extensions that autoload would otherwise fetch asynchronously.
+       The sync tex2svg() API throws a retry error when autoload triggers async
+       loading, and in WebView2 the async path hangs entirely.  Loading these
+       scripts eagerly registers the extensions so autoload finds them already
+       available and skips the async require. -->
+  <script src="./vendor/mathjax/input/tex/extensions/color.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/boldsymbol.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/cancel.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/newcommand.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/enclose.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/bbox.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/action.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/verb.js"></script>
   <script src="./assets/data/latex-commands.js"></script>
   <script src="./assets/js/editor-adapter.js"></script>
   <!-- SLIDETEX_I18N_BUNDLE_START -->
