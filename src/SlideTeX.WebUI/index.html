@@ -73,14 +73,14 @@
     window.MathJax = {
       tex: {
         tags: "ams",
-        // Pre-load extensions that autoload would otherwise fetch asynchronously.
+        // Include TeX extensions that are loaded eagerly via <script> tags.
         // The sync tex2svg() API throws a retry error when autoload triggers
         // async loading, and in WebView2 the async path hangs entirely.
         packages: {'[+]': ['color', 'boldsymbol', 'cancel', 'newcommand',
                            'enclose', 'bbox', 'action', 'verb']},
         autoload: {
-          // Disable autoload for pre-loaded extensions — they are loaded
-          // eagerly via <script> tags below.
+          // Disable autoload interception for eagerly loaded extensions so
+          // the TeX parser uses the pre-registered Configuration directly.
           color: [],
           boldsymbol: [],
           cancel: [],
@@ -108,6 +108,20 @@
           assistiveMml: [],
           attachSpeech: []
         }
+      },
+      startup: {
+        // Defer MathJax startup so that extension <script> tags below have
+        // time to register their Configurations before getComponents() runs.
+        // Without this, tex-svg.js fires startup.ready() at the end of its
+        // own <script> — before the extension scripts execute — so packages
+        // like 'color' are listed in the config but their Configuration
+        // objects don't exist yet, causing \color to render as literal text.
+        ready: function () {
+          // Stash the default ready function; we call it from the
+          // "mathjax-extensions-loaded" script block after all extensions
+          // have been registered.
+          window.__mathjaxDefaultReady = MathJax.startup.defaultReady.bind(MathJax.startup);
+        }
       }
     };
   </script>
@@ -117,19 +131,23 @@
        that preloadDynamicFonts() can populate every character's glyph path,
        bypassing MathJax's async retry mechanism that hangs in WebView2. -->
   <script src="./vendor/mathjax-newcm-font/svg/dynamic-all.js"></script>
-  <!-- Pre-load TeX extensions that autoload would otherwise fetch asynchronously.
-       The sync tex2svg() API throws a retry error when autoload triggers async
-       loading, and in WebView2 the async path hangs entirely.  Loading these
-       scripts eagerly registers the extensions so autoload finds them already
-       available and skips the async require. -->
+  <!-- TeX extensions loaded eagerly.  These scripts call
+       Configuration.create() to register their handler maps.  They must
+       execute BEFORE MathJax.startup.defaultReady() so that getComponents()
+       can find the Configurations referenced in tex.packages. -->
   <script src="./vendor/mathjax/input/tex/extensions/color.js"></script>
   <script src="./vendor/mathjax/input/tex/extensions/boldsymbol.js"></script>
-  <script src="./vendor/mathjax/input/tex/extensions/cancel.js"></script>
   <script src="./vendor/mathjax/input/tex/extensions/newcommand.js"></script>
+  <!-- enclose.js must load before cancel.js: cancel.js accesses
+       MathJax._.input.tex.enclose.EncloseConfiguration at parse time. -->
   <script src="./vendor/mathjax/input/tex/extensions/enclose.js"></script>
+  <script src="./vendor/mathjax/input/tex/extensions/cancel.js"></script>
   <script src="./vendor/mathjax/input/tex/extensions/bbox.js"></script>
   <script src="./vendor/mathjax/input/tex/extensions/action.js"></script>
   <script src="./vendor/mathjax/input/tex/extensions/verb.js"></script>
+  <!-- Now that all extension Configurations are registered, fire the
+       deferred MathJax startup so getComponents() picks them up. -->
+  <script>window.__mathjaxDefaultReady();</script>
   <script src="./assets/data/latex-commands.js"></script>
   <script src="./assets/js/editor-adapter.js"></script>
   <!-- SLIDETEX_I18N_BUNDLE_START -->

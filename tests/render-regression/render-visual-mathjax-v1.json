@@ -491,6 +491,90 @@
       }
     },
     {
+      "id": "cancel_basic",
+      "suite": "full",
+      "latex": "\\cancel{x} + \\bcancel{y} + \\xcancel{z}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "cancel_in_fraction",
+      "suite": "full",
+      "latex": "\\frac{\\cancel{a}\\cdot b}{\\cancel{a}\\cdot c} = \\frac{b}{c}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "cancelto_value",
+      "suite": "full",
+      "latex": "\\cancelto{0}{\\frac{x^2-1}{x-1}}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "enclose_circle",
+      "suite": "full",
+      "latex": "\\enclose{circle}{x+y}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "enclose_box_and_strike",
+      "suite": "full",
+      "latex": "\\enclose{box}{a^2} + \\enclose{horizontalstrike}{b}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "bbox_with_border",
+      "suite": "full",
+      "latex": "\\bbox[yellow, 5px, border:2px solid red]{E=mc^2}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "bbox_padding_only",
+      "suite": "full",
+      "latex": "\\bbox[5px]{\\sum_{i=1}^{n} i}",
+      "options": {
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "verb_literal",
+      "suite": "full",
+      "latex": "\\verb|x^2 + y_1| \\text{ is code}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "newcommand_usage",
+      "suite": "full",
+      "latex": "\\newcommand{\\RR}{\\mathbb{R}} \\RR^n \\to \\RR^m",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "newcommand_with_args",
+      "suite": "full",
+      "latex": "\\newcommand{\\norm}[1]{\\left\\lVert #1 \\right\\rVert} \\norm{x+y} \\leq \\norm{x} + \\norm{y}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
       "id": "dpi150_large_font",
       "suite": "full",
       "latex": "\\int_0^\\infty e^{-x} \\, dx = 1",
