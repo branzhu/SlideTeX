@@ -82,6 +82,14 @@ namespace SlideTeX.VstoAddin.Hosting
         }
 
         /// <summary>
+        /// Requests writing metadata to the currently selected shape without replacing it.
+        /// </summary>
+        public void requestTagSelected()
+        {
+            RaiseCommand(new HostCommandPayload(HostCommandType.TagSelected));
+        }
+
+        /// <summary>
         /// Requests host-side formula OCR for an image payload.
         /// </summary>
         public void requestFormulaOcr(string imageBase64, string optionsJson)

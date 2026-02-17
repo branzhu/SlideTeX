@@ -11,7 +11,8 @@ namespace SlideTeX.VstoAddin.Contracts
         Insert = 1,
         Update = 2,
         EditSelected = 3,
-        Renumber = 4
+        Renumber = 4,
+        TagSelected = 5
     }
 }
 

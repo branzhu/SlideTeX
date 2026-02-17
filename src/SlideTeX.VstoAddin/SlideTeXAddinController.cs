@@ -252,6 +252,38 @@ namespace SlideTeX.VstoAddin
         /// <summary>
         /// Re-renders and replaces the selected SlideTeX shape while preserving visual scale.
         /// </summary>
+        /// <summary>
+        /// Writes metadata to the currently selected shape without replacing the image.
+        /// Used after OCR on a non-SlideTeX image to tag it as a formula shape.
+        /// </summary>
+        public void TagSelectedFormula()
+        {
+            if (!EnsureLastRender())
+            {
+                return;
+            }
+
+            var shape = GetSelectedShape();
+            if (shape == null)
+            {
+                ShowWarning(LocalizationManager.Get("warning.select_slidetex_shape"));
+                return;
+            }
+
+            try
+            {
+                int autoNumberLineCount = EquationNumberingService.GetAutoNumberLineCount(_lastRender.Latex);
+                var meta = BuildMeta(_lastRender, autoNumberLineCount > 0, autoNumberLineCount);
+                _metadataStore.Write(new PowerPointShapeTagAccessor(shape), meta);
+                DiagLog.Info("TagSelectedFormula succeeded.");
+            }
+            catch (Exception ex)
+            {
+                DiagLog.Error("TagSelectedFormula failed.", ex);
+                ShowWarning(LocalizationManager.Format("warning.update_failed", ex.Message));
+            }
+        }
+
         public void UpdateSelectedFormula()
         {
             if (!EnsureLastRender())
@@ -386,6 +418,10 @@ namespace SlideTeX.VstoAddin
                 var shape = GetSelectedShape();
                 if (shape == null)
                 {
+                    if (_lastAutoEditShapeKey != null)
+                    {
+                        NotifySelectionCleared();
+                    }
                     _lastAutoEditShapeKey = null;
                     return;
                 }
@@ -412,6 +448,7 @@ namespace SlideTeX.VstoAddin
                     }
 
                     _lastAutoEditShapeKey = key;
+                    NotifySelectionCleared();
                     return;
                 }
 
@@ -732,6 +769,9 @@ namespace SlideTeX.VstoAddin
                 case HostCommandType.Renumber:
                     RenumberAllEquations();
                     break;
+                case HostCommandType.TagSelected:
+                    TagSelectedFormula();
+                    break;
                 default:
                     DiagLog.Warn("ExecuteCommand received unsupported command: " + commandType);
                     break;
@@ -957,6 +997,16 @@ namespace SlideTeX.VstoAddin
             });
             var script = "window.slideTex && window.slideTex.renderFromHost(" + payload + ");";
             _taskPaneControl.ExecuteScript(script);
+        }
+
+        private void NotifySelectionCleared()
+        {
+            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            {
+                return;
+            }
+
+            _taskPaneControl.ExecuteScript("window.slideTex && window.slideTex.onSelectionCleared && window.slideTex.onSelectionCleared();");
         }
 
         private string ResolveWebUiPath()

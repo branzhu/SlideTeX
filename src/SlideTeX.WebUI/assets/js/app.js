@@ -51,6 +51,7 @@
     status: document.getElementById("status"),
     ocrBtn: document.getElementById("ocrBtn"),
     ocrImageInput: document.getElementById("ocrImageInput"),
+    ocrSelectedBtn: document.getElementById("ocrSelectedBtn"),
     insertBtn: document.getElementById("insertBtn"),
     updateBtn: document.getElementById("updateBtn"),
     renumberBtn: document.getElementById("renumberBtn")
@@ -65,6 +66,8 @@
   let previewBoxWidth = 0; // Cache the initial width
   let editor = null;
   let suppressEditorRender = false;
+  let pendingHostOcrImage = null; // data URL from host for non-meta image
+  let autoUpdateAfterOcr = false; // flag to auto-update shape after OCR render
   let statusState = {
     kind: "key",
     key: "webui.status.waiting",
@@ -83,7 +86,14 @@
 
   window.slideTex = {
     renderFromHost: async (request) => {
+      // Formula shape selected — hide OCR button, clear pending image
+      pendingHostOcrImage = null;
+      elements.ocrSelectedBtn.classList.add("hidden");
       await render(request?.latex, request?.options, request?.renderLatex);
+    },
+    onSelectionCleared: () => {
+      pendingHostOcrImage = null;
+      elements.ocrSelectedBtn.classList.add("hidden");
     },
     onFormulaOcrSuccess: (payload) => {
       handleFormulaOcrSuccess(payload);
@@ -204,6 +214,15 @@
       }
     });
 
+    elements.ocrSelectedBtn.addEventListener("click", async () => {
+      const dataUrl = pendingHostOcrImage;
+      if (!dataUrl) return;
+      pendingHostOcrImage = null;
+      elements.ocrSelectedBtn.classList.add("hidden");
+      autoUpdateAfterOcr = true;
+      await requestFormulaOcrFromDataUrl(dataUrl);
+    });
+
     // Paste image → OCR
     document.addEventListener("paste", async (e) => {
       const items = e.clipboardData?.items;
@@ -275,6 +294,23 @@
     }
   }
 
+  async function requestFormulaOcrFromDataUrl(dataUrl) {
+    if (!getHost()?.requestFormulaOcr) {
+      showError(t("webui.error.ocr_host_unavailable"), false);
+      return;
+    }
+    try {
+      setOcrBusy(true);
+      hideError();
+      setStatusByKey("webui.status.ocr_running");
+      const options = { maxTokens: 256, timeoutMs: 15000 };
+      getHost().requestFormulaOcr(dataUrl, JSON.stringify(options));
+    } catch (error) {
+      setOcrBusy(false);
+      showError(errorMessage(error), false);
+    }
+  }
+
   function handleFormulaOcrSuccess(payload) {
     const data = normalizeHostPayload(payload);
     const latex = String(data.latex || "").trim();
@@ -290,7 +326,14 @@
 
     setEditorValue(outputLatex);
 
-    render().catch((error) => {
+    const shouldAutoUpdate = autoUpdateAfterOcr;
+    autoUpdateAfterOcr = false;
+
+    render().then(() => {
+      if (shouldAutoUpdate && getHost()?.requestTagSelected) {
+        getHost().requestTagSelected();
+      }
+    }).catch((error) => {
       showError(errorMessage(error), false);
     });
   }
@@ -305,15 +348,9 @@
   function handleHostImageOcr(payload) {
     const data = normalizeHostPayload(payload);
     if (!data?.imageBase64) return;
-    if (!getHost()?.requestFormulaOcr) {
-      showError(t("webui.error.ocr_host_unavailable"), false);
-      return;
-    }
-    setOcrBusy(true);
-    hideError();
-    setStatusByKey("webui.status.ocr_running");
-    const options = { maxTokens: 256, timeoutMs: 15000 };
-    getHost().requestFormulaOcr(data.imageBase64, JSON.stringify(options));
+    // Store image and show OCR button — don't auto-trigger
+    pendingHostOcrImage = data.imageBase64;
+    elements.ocrSelectedBtn.classList.remove("hidden");
   }
 
   function normalizeHostPayload(payload) {
