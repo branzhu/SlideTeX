@@ -19,7 +19,7 @@ function assert(condition, message) {
 
 const MOCK_HOST_SCRIPT = `
 window.slidetexHost = {
-  _calls: { renderSuccess: [], renderError: [], insert: [], update: [], ocr: [] },
+  _calls: { renderSuccess: [], renderError: [], insert: [], update: [], ocr: [], tagSelected: [] },
   notifyRenderSuccess(json) { this._calls.renderSuccess.push(JSON.parse(json)); },
   notifyRenderError(msg) { this._calls.renderError.push(msg); },
   requestInsert() { this._calls.insert.push(Date.now()); },
@@ -27,6 +27,7 @@ window.slidetexHost = {
   requestFormulaOcr(dataUrl, optionsJson) {
     this._calls.ocr.push({ dataUrl, optionsJson });
   },
+  requestTagSelected() { this._calls.tagSelected.push(Date.now()); },
   requestOpenPane() {},
   requestEditSelected() {},
   requestRenumber() {}
@@ -46,7 +47,7 @@ async function setupPage(browser, baseUrl) {
   await page.evaluate(() => {
     const c = window.slidetexHost._calls;
     c.renderSuccess = []; c.renderError = [];
-    c.insert = []; c.update = []; c.ocr = [];
+    c.insert = []; c.update = []; c.ocr = []; c.tagSelected = [];
   });
   return page;
 }
@@ -341,6 +342,216 @@ async function testRenderError(browser, baseUrl) {
   }
 }
 
+// Test 5: Host image OCR flow — onHostImageOcr shows button, click triggers OCR + tag
+async function testHostImageOcrFlow(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    // Simulate host sending a non-meta image selection
+    const btnHidden = await page.evaluate(() => {
+      return document.getElementById('ocrSelectedBtn').classList.contains('hidden');
+    });
+    assert(btnHidden, 'ocrSelectedBtn should be hidden initially');
+
+    await page.evaluate(() => {
+      window.slideTex.onHostImageOcr({ imageBase64: 'data:image/png;base64,iVBORw0KGgo=' });
+    });
+
+    const btnVisible = await page.evaluate(() => {
+      return !document.getElementById('ocrSelectedBtn').classList.contains('hidden');
+    });
+    assert(btnVisible, 'ocrSelectedBtn should be visible after onHostImageOcr');
+
+    // Click the OCR button — should trigger requestFormulaOcr
+    await page.click('#ocrSelectedBtn');
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.ocr.length > 0,
+      { timeout: 10000 }
+    );
+
+    const ocrCall = await page.evaluate(() => {
+      const call = window.slidetexHost._calls.ocr[0];
+      return {
+        hasDataUrl: typeof call.dataUrl === 'string' && call.dataUrl.startsWith('data:image/'),
+        btnHiddenAfterClick: document.getElementById('ocrSelectedBtn').classList.contains('hidden')
+      };
+    });
+    assert(ocrCall.hasDataUrl, 'OCR dataUrl should be a valid data: URL');
+    assert(ocrCall.btnHiddenAfterClick, 'ocrSelectedBtn should be hidden after click');
+
+    // Simulate OCR success — should trigger render then requestTagSelected
+    await page.evaluate(() => {
+      window.slidetexHost._calls.renderSuccess = [];
+      window.slidetexHost._calls.tagSelected = [];
+      window.slideTex.onFormulaOcrSuccess({ latex: '\\frac{a}{b}' });
+    });
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.tagSelected.length > 0,
+      { timeout: 15000 }
+    );
+
+    const afterOcr = await page.evaluate(() => ({
+      renderCount: window.slidetexHost._calls.renderSuccess.length,
+      tagSelectedCount: window.slidetexHost._calls.tagSelected.length
+    }));
+    assert(afterOcr.renderCount >= 1, 'Should have triggered re-render after OCR');
+    assert(afterOcr.tagSelectedCount === 1, 'Should have called requestTagSelected once');
+
+    return { pass: true, name: 'host-image-ocr-flow' };
+  } catch (error) {
+    return { pass: false, name: 'host-image-ocr-flow', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 6: Selection cleared hides OCR button
+async function testSelectionCleared(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    // Show the OCR button first
+    await page.evaluate(() => {
+      window.slideTex.onHostImageOcr({ imageBase64: 'data:image/png;base64,iVBORw0KGgo=' });
+    });
+
+    const btnVisible = await page.evaluate(() => {
+      return !document.getElementById('ocrSelectedBtn').classList.contains('hidden');
+    });
+    assert(btnVisible, 'ocrSelectedBtn should be visible after onHostImageOcr');
+
+    // Clear selection
+    await page.evaluate(() => {
+      window.slideTex.onSelectionCleared();
+    });
+
+    const btnHidden = await page.evaluate(() => {
+      return document.getElementById('ocrSelectedBtn').classList.contains('hidden');
+    });
+    assert(btnHidden, 'ocrSelectedBtn should be hidden after onSelectionCleared');
+
+    return { pass: true, name: 'selection-cleared' };
+  } catch (error) {
+    return { pass: false, name: 'selection-cleared', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 7: renderFromHost clears pending OCR state
+async function testRenderFromHostClearsOcr(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    // Show OCR button
+    await page.evaluate(() => {
+      window.slideTex.onHostImageOcr({ imageBase64: 'data:image/png;base64,iVBORw0KGgo=' });
+    });
+
+    const btnVisible = await page.evaluate(() => {
+      return !document.getElementById('ocrSelectedBtn').classList.contains('hidden');
+    });
+    assert(btnVisible, 'ocrSelectedBtn should be visible after onHostImageOcr');
+
+    // renderFromHost should clear OCR state (formula shape selected)
+    await page.evaluate(async () => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: 'x^2',
+        options: { fontPt: 24, dpi: 300, colorHex: '#000000', isTransparent: true, displayMode: 'auto' }
+      });
+    });
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const btnHidden = await page.evaluate(() => {
+      return document.getElementById('ocrSelectedBtn').classList.contains('hidden');
+    });
+    assert(btnHidden, 'ocrSelectedBtn should be hidden after renderFromHost');
+
+    return { pass: true, name: 'render-from-host-clears-ocr' };
+  } catch (error) {
+    return { pass: false, name: 'render-from-host-clears-ocr', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 8: Render with custom color and DPI
+async function testRenderWithColorAndDpi(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    await page.evaluate(async () => {
+      await window.slideTex.renderFromHost({
+        latex: '\\alpha + \\beta = \\gamma',
+        options: { fontPt: 36, dpi: 600, colorHex: '#ff0000', isTransparent: false, displayMode: 'display' }
+      });
+    });
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const result = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return {
+        hasBase64: typeof p.pngBase64 === 'string' && p.pngBase64.length > 100,
+        width: p.pixelWidth,
+        height: p.pixelHeight,
+        colorHex: p.options?.colorHex,
+        dpi: p.options?.dpi
+      };
+    });
+
+    assert(result.hasBase64, 'Should produce valid PNG base64');
+    assert(result.width > 0, 'pixelWidth should be > 0');
+    assert(result.height > 0, 'pixelHeight should be > 0');
+    assert(result.colorHex === '#ff0000', 'Options should preserve colorHex');
+    assert(result.dpi === 600, 'Options should preserve dpi');
+
+    return { pass: true, name: 'render-color-and-dpi' };
+  } catch (error) {
+    return { pass: false, name: 'render-color-and-dpi', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 9: OCR error callback
+async function testOcrErrorCallback(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    await page.evaluate(() => {
+      window.slideTex.onFormulaOcrError({ message: 'OCR service timeout' });
+    });
+
+    await page.waitForFunction(() => {
+      const el = document.getElementById('errorMessage');
+      return el && !el.classList.contains('hidden');
+    }, { timeout: 5000 });
+
+    const result = await page.evaluate(() => {
+      const el = document.getElementById('errorMessage');
+      return {
+        errorVisible: el && !el.classList.contains('hidden'),
+        errorText: el?.textContent || ''
+      };
+    });
+
+    assert(result.errorVisible, 'Error message should be visible after OCR error');
+    assert(result.errorText.includes('OCR service timeout'), 'Error should contain the message');
+
+    return { pass: true, name: 'ocr-error-callback' };
+  } catch (error) {
+    return { pass: false, name: 'ocr-error-callback', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
 async function run() {
   if (!fs.existsSync(webRoot)) {
     throw new Error(`WebUI directory not found: ${webRoot}`);
@@ -368,6 +579,11 @@ async function run() {
     results.push(await testWebView2FontPreload(browser, serverContext.baseUrl));
     results.push(await testOcrFlow(browser, serverContext.baseUrl));
     results.push(await testRenderError(browser, serverContext.baseUrl));
+    results.push(await testHostImageOcrFlow(browser, serverContext.baseUrl));
+    results.push(await testSelectionCleared(browser, serverContext.baseUrl));
+    results.push(await testRenderFromHostClearsOcr(browser, serverContext.baseUrl));
+    results.push(await testRenderWithColorAndDpi(browser, serverContext.baseUrl));
+    results.push(await testOcrErrorCallback(browser, serverContext.baseUrl));
   } finally {
     await browser.close();
     await new Promise((resolve) => serverContext.server.close(resolve));

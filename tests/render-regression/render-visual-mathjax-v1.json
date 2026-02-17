@@ -288,7 +288,10 @@
     {
       "id": "color_expression",
       "suite": "full",
-      "latex": "\\color{red}{x^2}+\\color{blue}{y^2}=z^2",
+      "latex": "x^2+y^2=z^2",
+      "options": {
+        "colorHex": "#d32f2f"
+      },
       "expected": {
         "tags": []
       }
@@ -388,6 +391,222 @@
       "id": "cases_with_text_mod",
       "suite": "full",
       "latex": "\\begin{cases} \\text{odd}, & n\\equiv1\\pmod 2 \\\\ \\text{even}, & n\\equiv0\\pmod 2 \\end{cases}",
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "font_calligraphic",
+      "suite": "full",
+      "latex": "{\\cal A}{\\cal B}{\\cal C}{\\cal D}{\\cal E}{\\cal F}{\\cal G}{\\cal H}{\\cal I}{\\cal J}{\\cal K}{\\cal L}{\\cal M}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "font_blackboard_bold",
+      "suite": "full",
+      "latex": "\\mathbb{A}\\mathbb{B}\\mathbb{C}\\mathbb{N}\\mathbb{Q}\\mathbb{R}\\mathbb{Z} \\in \\mathbb{R}^n",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "font_fraktur",
+      "suite": "full",
+      "latex": "\\mathfrak{A}\\mathfrak{B}\\mathfrak{g}\\mathfrak{h}\\mathfrak{p}\\mathfrak{q}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "font_bold_italic_roman",
+      "suite": "full",
+      "latex": "\\mathbf{F} = m\\mathbf{a}, \\quad \\mathrm{d}x, \\quad \\mathit{v}_{\\max}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "font_script_scr",
+      "suite": "full",
+      "latex": "\\mathscr{L}(\\mathscr{F}) = \\int \\mathscr{H} \\, \\mathrm{d}\\mu",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "font_typewriter",
+      "suite": "full",
+      "latex": "\\mathtt{Hello\\_World} + \\mathsf{sans} + \\mathrm{roman}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "color_red",
+      "suite": "full",
+      "latex": "E=mc^2",
+      "options": {
+        "colorHex": "#ff0000"
+      },
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "color_blue_display",
+      "suite": "full",
+      "latex": "\\sum_{i=1}^{n} x_i",
+      "options": {
+        "colorHex": "#0000ff",
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "color_mixed_inline",
+      "suite": "full",
+      "latex": "a + b + c = d",
+      "options": {
+        "colorHex": "#9c27b0"
+      },
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "color_hex_custom",
+      "suite": "full",
+      "latex": "\\frac{\\alpha}{\\beta} + \\gamma",
+      "options": {
+        "colorHex": "#e91e63"
+      },
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "dpi150_large_font",
+      "suite": "full",
+      "latex": "\\int_0^\\infty e^{-x} \\, dx = 1",
+      "options": {
+        "fontPt": 48,
+        "dpi": 150,
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "dpi96_screen",
+      "suite": "full",
+      "latex": "a^2 + b^2 = c^2",
+      "options": {
+        "fontPt": 24,
+        "dpi": 96,
+        "displayMode": "inline"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": false
+      }
+    },
+    {
+      "id": "dpi600_complex_formula",
+      "suite": "full",
+      "latex": "\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}, \\quad \\nabla \\cdot \\mathbf{B} = 0",
+      "options": {
+        "fontPt": 18,
+        "dpi": 600,
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "greek_full_alphabet",
+      "suite": "full",
+      "latex": "\\alpha\\beta\\gamma\\delta\\epsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\xi\\pi\\rho\\sigma\\tau\\upsilon\\phi\\chi\\psi\\omega",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "operators_and_arrows",
+      "suite": "full",
+      "latex": "\\forall x \\exists y : x \\leq y \\implies x \\neq y+1 \\Rightarrow \\Leftarrow \\hookrightarrow",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "accents_and_decorations",
+      "suite": "full",
+      "latex": "\\hat{a} \\bar{b} \\vec{c} \\dot{d} \\ddot{e} \\tilde{f} \\widehat{xyz} \\widetilde{abc} \\overrightarrow{AB}",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "opaque_color_dpi",
+      "suite": "full",
+      "latex": "\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}",
+      "options": {
+        "fontPt": 30,
+        "dpi": 300,
+        "colorHex": "#1a237e",
+        "isTransparent": false,
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "mixed_font_formula",
+      "suite": "full",
+      "latex": "\\mathbb{E}[X] = \\int_{-\\infty}^{\\infty} x \\, f_{\\mathcal{X}}(x) \\, \\mathrm{d}x, \\quad \\mathfrak{g} \\cong \\mathfrak{sl}(2, \\mathbb{C})",
+      "options": {
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "small_font_high_dpi",
+      "suite": "full",
+      "latex": "\\prod_{p \\text{ prime}} \\frac{1}{1-p^{-s}} = \\sum_{n=1}^{\\infty} \\frac{1}{n^s}",
+      "options": {
+        "fontPt": 10,
+        "dpi": 600,
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
+    },
+    {
+      "id": "large_font_low_dpi",
+      "suite": "full",
+      "latex": "e^{i\\pi} + 1 = 0",
+      "options": {
+        "fontPt": 72,
+        "dpi": 96,
+        "displayMode": "display"
+      },
       "expected": {
         "tags": [],
         "requireDisplay": true
