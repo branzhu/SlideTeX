@@ -1,7 +1,7 @@
 {
   "name": "slidetex-tools",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.0-beta.1",
   "description": "SlideTeX local test tooling",
   "scripts": {
     "test": "npm run test:tier0 && npm run test:tier1:smoke",

@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Run tests
+        env:
+          CHROME_PATH: C:\Program Files\Google\Chrome\Application\chrome.exe
+        run: |
+          node --test tests/test-app-logic.mjs
+          node --test tests/test-i18n.mjs
+          node tests/test-ocr-latex-postprocess.mjs
+          node tests/test-main-flow.mjs
+
+      - name: Install WiX CLI
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 6.0.2
+          & "$env:USERPROFILE\.dotnet\tools\wix.exe" extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
+          "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Create VSTO manifest signing certificate
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate `
+            -Subject "CN=SlideTeX CI Temporary Manifest Signer" `
+            -Type CodeSigningCert `
+            -CertStoreLocation "Cert:\CurrentUser\My" `
+            -NotAfter (Get-Date).AddDays(7)
+          "VSTO_MANIFEST_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Restore NuGet packages
+        run: dotnet restore src/SlideTeX.VstoAddin/SlideTeX.VstoAddin.csproj -r win
+
+      - name: Extract version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag -replace '^v', ''
+          $msiVersion = $version -replace '-.*$', ''
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "MSI_VERSION=$msiVersion" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-Installer.ps1 `
+            -Configuration Release `
+            -Platform x64 `
+            -Cultures zh-CN,en-US `
+            -ProductVersion $env:MSI_VERSION `
+            -VstoManifestCertificateThumbprint $env:VSTO_MANIFEST_THUMBPRINT
+
+      - name: Create GitHub Release
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $prerelease = if ($tag -match '-') { '--prerelease' } else { '' }
+          $files = Get-ChildItem -Path artifacts/installer -Recurse -Include *.exe,*.msi
+          $fileArgs = $files | ForEach-Object { $_.FullName }
+          gh release create $tag @fileArgs `
+            --title "SlideTeX $tag" `
+            --generate-notes `
+            $prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}

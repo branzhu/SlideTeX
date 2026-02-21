@@ -3,7 +3,7 @@
 param(
     [string]$Configuration = "Release",
     [string]$Platform = "x64",
-    [string]$ProductVersion = "1.0.0",
+    [string]$ProductVersion = "",
     [string[]]$Cultures = @("zh-CN", "en-US"),
     [string]$BuildOutputDir = "",
     [string]$StagingBuildOutputDir = "",
@@ -209,6 +209,12 @@ if (-not (Get-Command wix -ErrorAction SilentlyContinue)) {
 }
 
 $root = Split-Path -Parent $PSScriptRoot
+
+if ([string]::IsNullOrWhiteSpace($ProductVersion)) {
+    $pkg = Get-Content (Join-Path $root "package.json") -Raw | ConvertFrom-Json
+    $ProductVersion = $pkg.version -replace '-.*$', ''  # strip prerelease for MSI
+}
+
 $product = Join-Path $root "src/SlideTeX.Installer/wix/Product.wxs"
 $bundle = Join-Path $root "src/SlideTeX.Installer/wix/Bundle.wxs"
 $staticFiles = Join-Path $root "src/SlideTeX.Installer/wix/Fragments/Files.wxs"
