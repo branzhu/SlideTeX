@@ -6,7 +6,9 @@ Language: **English** | [简体中文](README.zh-CN.md)
 
 ## Screenshot
 
-![SlideTeX WebUI (English)](docs/images/webui-en-us.png)
+<p align="center">
+  <img src="docs/images/webui-en-us.png" alt="SlideTeX WebUI (English)" width="360">
+</p>
 
 ## Features
 

@@ -6,7 +6,9 @@
 
 ## 截图
 
-![SlideTeX WebUI（中文）](docs/images/webui-zh-cn.png)
+<p align="center">
+  <img src="docs/images/webui-zh-cn.png" alt="SlideTeX WebUI（中文）" width="360">
+</p>
 
 ## 功能
 
