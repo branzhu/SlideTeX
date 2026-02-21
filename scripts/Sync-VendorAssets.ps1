@@ -1,4 +1,4 @@
-# SlideTeX Note: Syncs third-party runtime assets (MathJax + pix2text-mfr model files).
+# SlideTeX: Syncs third-party vendor assets (MathJax, pix2text-mfr OCR model, etc.).
 
 param(
     [ValidateSet('mathjax', 'pix2text-mfr', 'all')]

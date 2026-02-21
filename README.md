@@ -1,52 +1,58 @@
 # SlideTeX
 
-An offline PowerPoint add-in prototype for rendering LaTeX to PNG, inserting equations into slides, and supporting re-edit via metadata.
-
-`Status`: prototype / work in progress (not production-ready)
+Offline PowerPoint add-in for LaTeX equations — render, insert, re-edit, and OCR, all without a network connection.
 
 Language: **English** | [简体中文](README.zh-CN.md)
 
-## Features
-
-- PowerPoint task pane for LaTeX input, preview, insert, and update.
-- Equation insertion as embedded PNG, so decks remain viewable on machines without the add-in.
-- Shape metadata persistence for round-trip edit/update workflows.
-- MathJax-based rendering engine (no local LaTeX installation), exported through SVG-to-PNG.
-- CodeMirror 6-based editor with syntax highlighting and completion.
-
 ## Screenshot
-
-English WebUI preview:
 
 ![SlideTeX WebUI (English)](docs/images/webui-en-us.png)
 
-## Repository Layout
+## Features
 
-- `src/SlideTeX.VstoAddin`: VSTO add-in (`net48`) runtime code.
-- `src/SlideTeX.WebUI`: Task pane HTML/CSS/JS and vendored assets.
-- `src/SlideTeX.Installer`: WiX-based installer project.
-- `scripts`: build, packaging, and asset sync scripts.
-- `tests`: all test scripts and fixtures.
-  - `tests/render-regression`: visual rendering baselines and fixtures.
-  - `tests/equation-numbering`: equation numbering known-good fixtures.
-  - `tests/ocr-baseline`: OCR known image-LaTeX pair fixture.
-  - `tests/lib`: shared test infrastructure utilities.
-- `docs`: debugging, deployment, and regression guides.
+- **LaTeX task pane** — Write LaTeX in a CodeMirror 6 editor with syntax highlighting and autocomplete, preview in real time, then insert or update equations on the slide.
+- **Embedded PNG output** — Equations are inserted as PNG images, so presentations display correctly on any machine, with or without the add-in.
+- **Round-trip editing** — LaTeX source and render settings are persisted in shape metadata; select an equation to re-edit and update in place.
+- **MathJax rendering** — No local LaTeX installation required. The pipeline is MathJax → SVG → PNG, running entirely in-process via WebView2.
+- **Formula OCR** — Recognize formulas from images using a bundled ONNX model (pix2text-mfr), converting screenshots or photos back to editable LaTeX.
+- **Automatic equation numbering** — `equation`, `align`, and `gather` environments are numbered automatically across the presentation.
+- **Fully offline** — All rendering, OCR, and UI assets are local. WebView2 network requests to external hosts are blocked at runtime.
+
+## Architecture
+
+```
+SlideTeX.sln
+├── src/
+│   ├── SlideTeX.VstoAddin/      # VSTO add-in (net48) — C# runtime
+│   │   ├── Contracts/            # Host ↔ WebUI bridge interfaces
+│   │   ├── Hosting/              # WebView2 task pane and host object
+│   │   ├── Metadata/             # Shape tag persistence
+│   │   ├── PowerPoint/           # Shape insertion, numbering, slide services
+│   │   └── Ocr/                  # ONNX Runtime formula recognition
+│   ├── SlideTeX.WebUI/           # Task pane UI (HTML/CSS/JS)
+│   │   ├── assets/               # CodeMirror bundle, i18n, styles
+│   │   └── vendor/               # MathJax, CodeMirror vendored builds
+│   └── SlideTeX.Installer/       # WiX-based MSI + EXE bundle
+├── tests/                        # Unit, integration, regression, OCR baseline
+├── scripts/                      # Build, packaging, asset sync
+└── docs/                         # Debugging, deployment, regression guides
+```
 
 ## Requirements
 
 ### Runtime
+
 - Windows 10/11
-- Microsoft 365 PowerPoint (desktop). PowerPoint 2016/2019/2021/LTSC is expected to work but not fully validated in this repository.
-- .NET Framework `4.8` Runtime
+- Microsoft 365 PowerPoint (desktop). PowerPoint 2016/2019/2021/LTSC should work but is not fully validated.
+- .NET Framework 4.8 Runtime
 - WebView2 Runtime
 
 ### Build
+
 - Node.js
-- .NET Framework `4.8` Developer Pack
+- .NET Framework 4.8 Developer Pack
 - Visual Studio 2022 (or MSBuild from VS installation)
-- WiX Toolset `6.0.2`
-- WiX extension `WixToolset.BootstrapperApplications.wixext` (for unified multilingual `.exe` bundle)
+- WiX Toolset 6.0.2
 
 ```powershell
 wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
@@ -57,161 +63,99 @@ wix extension add -g WixToolset.BootstrapperApplications.wixext/6.0.2
 1. Sync third-party assets:
 
 ```powershell
-pwsh ./scripts/Sync-MathJax.ps1 -Version 4.1.0
+# MathJax
+pwsh ./scripts/Sync-VendorAssets.ps1 -Version 4.1.0
+
+# OCR model (from Hugging Face)
+pwsh ./scripts/Sync-VendorAssets.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
+
+# Or sync everything at once
+pwsh ./scripts/Sync-VendorAssets.ps1 -Component all
 ```
 
-Sync pix2text-mfr OCR model files (download from Hugging Face):
-
-```powershell
-pwsh ./scripts/Sync-MathJax.ps1 -Component pix2text-mfr -Pix2TextModelId "breezedeus/pix2text-mfr-1.5"
-```
-
-Sync all supported third-party assets:
-
-```powershell
-pwsh ./scripts/Sync-MathJax.ps1 -Component all
-```
-
-2. Generate inline i18n bundle after `src/SlideTeX.WebUI/assets/i18n/*.json` changes:
+2. Generate inline i18n bundle (after editing `src/SlideTeX.WebUI/assets/i18n/*.json`):
 
 ```powershell
 node ./scripts/generate-webui-i18n-bundle.mjs
 ```
 
-3. Build solution:
+3. Build:
 
 ```powershell
 & "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" SlideTeX.sln /m:1
 ```
 
-4. Preview WebUI in browser (mock host):
+4. Preview WebUI in browser:
 
-Open `src/SlideTeX.WebUI/index.html` directly in a browser. The built-in `mock-host.js` provides a lightweight stub for all host bridge methods, logging calls to the console.
+Open `src/SlideTeX.WebUI/index.html` directly — `mock-host.js` stubs all host bridge methods and logs calls to the console.
 
-## Build and Test Commands
+## Build and Test
 
-- Build installer:
+### Installer
 
 ```powershell
 pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64
 ```
 
-When both `zh-CN` and `en-US` cultures are built, the script generates:
-
-- language-specific MSI payloads (internal use);
-- one unified installer bundle `.exe` that selects default language from system locale.
-
-Language override at install time:
+When both `zh-CN` and `en-US` cultures are built, the script produces language-specific MSI payloads plus a unified `.exe` bundle that selects language from system locale. Override at install time:
 
 ```powershell
 .\SlideTeX-<version>-Release-x64.exe SlideTeXInstallerCulture=en-US
 .\SlideTeX-<version>-Release-x64.exe SlideTeXInstallerCulture=zh-CN
 ```
 
-- Build installer and override VSTO manifest certificate thumbprint (for CI pipelines that generate temporary certificates):
+Override VSTO manifest certificate thumbprint (for CI):
 
 ```powershell
 pwsh ./scripts/Build-Installer.ps1 -Configuration Release -Platform x64 -VstoManifestCertificateThumbprint "<THUMBPRINT>"
 ```
 
-- Unit tests (pure functions, no browser):
+### Tests
 
-```powershell
-node tests/test-app-logic.mjs
-node tests/test-i18n.mjs
-node tests/test-ocr-latex-postprocess.mjs
-```
-
-- WebUI integration test (Puppeteer + mock host):
-
-```powershell
-node tests/test-main-flow.mjs
-```
-
-- WebView2 bridge integration test:
-
-```powershell
-node tests/test-webview2-flow.mjs
-```
-
-- PowerPoint smoke test:
-
-```powershell
-pwsh ./tests/Invoke-PowerPointSmoke.ps1
-```
-
-- Equation numbering known-good:
-
-```powershell
-pwsh ./tests/Test-EquationNumberingKnownGood.ps1 -Configuration Debug
-```
-
-- Render known-good (smoke/full):
-
-```powershell
-node tests/render-known-good.mjs --mode verify --suite smoke
-node tests/render-known-good.mjs --mode verify --suite full
-```
-
-- Build OCR baseline fixture from render known-good pairs:
-
-```powershell
-node ./tests/build-ocr-baseline-fixture.mjs
-```
-
-- OCR baseline (smoke/full):
-
-```powershell
-pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"
-pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite full -ModelDir "C:\models\pix2text-mfr"
-```
-
-- MSI lifecycle test (install old → upgrade → uninstall):
-
-```powershell
-pwsh ./tests/Test-MsiLifecycle.ps1 -OldMsi <path> -NewMsi <path>
-```
+| Category | Command |
+| --- | --- |
+| Unit tests (pure functions) | `node tests/test-app-logic.mjs` / `test-i18n.mjs` / `test-ocr-latex-postprocess.mjs` |
+| WebUI integration (Puppeteer) | `node tests/test-main-flow.mjs` |
+| WebView2 bridge integration | `node tests/test-webview2-flow.mjs` |
+| PowerPoint smoke test | `pwsh ./tests/Invoke-PowerPointSmoke.ps1` |
+| Equation numbering regression | `pwsh ./tests/Test-EquationNumberingKnownGood.ps1 -Configuration Debug` |
+| Render known-good (smoke/full) | `node tests/render-known-good.mjs --mode verify --suite smoke\|full` |
+| OCR baseline (smoke/full) | `pwsh ./tests/Test-OcrBaseline.ps1 -Configuration Debug -Suite smoke -ModelDir "C:\models\pix2text-mfr"` |
+| MSI lifecycle | `pwsh ./tests/Test-MsiLifecycle.ps1 -OldMsi <path> -NewMsi <path>` |
 
 ## CI/CD
 
-This repository includes one GitHub Actions workflow:
+`.github/workflows/ci-build.yml` builds installer artifacts on push/PR and uploads them as CI artifacts. The workflow generates a temporary code-signing certificate and passes its thumbprint to `Build-Installer.ps1`.
 
-- `.github/workflows/ci-build.yml`: builds installer artifacts on push/PR and uploads them as CI artifacts.
+## Docs
 
-The workflow generates a temporary code-signing certificate and passes its thumbprint to `Build-Installer.ps1` for VSTO manifest generation.
-
-## Deployment and Docs
-
-- Debug guide: `docs/DEBUG_GUIDE.md`
-- Admin deployment: `docs/ADMIN_DEPLOYMENT.md`
-- Regression testing doc: `docs/REGRESSION_TESTS.md`
+- [Debug Guide](docs/DEBUG_GUIDE.md)
+- [Admin Deployment](docs/ADMIN_DEPLOYMENT.md)
+- [Regression Tests](docs/REGRESSION_TESTS.md)
 
 ## Limitations
 
 - Windows-only (PowerPoint desktop).
-- Math formula support is scoped to the current rendering pipeline (not full TeX/LaTeX ecosystem).
-- Production signing and release process is not included in this repository.
+- Formula support is scoped to MathJax's TeX capabilities, not the full TeX/LaTeX ecosystem.
+- Production signing and release process is not included.
 
 ## Third-Party Components
 
-The table below lists the main third-party components used in this project:
-
 | Component | Version | License | Usage |
 | --- | --- | --- | --- |
-| MathJax | `4.1.0` | Apache-2.0 | Equation rendering and SVG output (runtime, vendored in `src/SlideTeX.WebUI/vendor/mathjax`) |
-| CodeMirror | `6.0.2` | MIT | Editor core (runtime bundle in `src/SlideTeX.WebUI/assets/js/editor-adapter.js`) |
-| @codemirror/legacy-modes | `6.5.2` | MIT | Editor language modes (bundled at build time) |
-| pixelmatch | `7.1.0` | ISC | Render regression image diffing (test tooling) |
-| pngjs | `7.0.0` | MIT | PNG read/write in test tooling |
-| puppeteer-core | `24.31.0` | Apache-2.0 | Browser automation for render regression tests |
-| rollup | `4.57.1` | MIT | CodeMirror bundle build tooling |
-| @rollup/plugin-node-resolve | `16.0.3` | MIT | Dependency resolution in Rollup build |
+| MathJax | 4.1.0 | Apache-2.0 | Equation rendering (vendored in `src/SlideTeX.WebUI/vendor/mathjax`) |
+| CodeMirror | 6.0.2 | MIT | Editor core (bundled in `src/SlideTeX.WebUI/assets/js/editor-adapter.js`) |
+| @codemirror/legacy-modes | 6.5.2 | MIT | Editor language modes (bundled at build time) |
+| pix2text-mfr | 1.5 | MIT | Formula OCR model (synced via `scripts/Sync-VendorAssets.ps1`) |
+| Microsoft.ML.OnnxRuntime | 1.22.0 | MIT | Formula OCR inference (NuGet) |
+| pixelmatch | 7.1.0 | ISC | Render regression image diff (test) |
+| pngjs | 7.0.0 | MIT | PNG read/write (test) |
+| puppeteer-core | 24.31.0 | Apache-2.0 | Browser automation (test) |
+| rollup | 4.57.1 | MIT | CodeMirror bundle build |
+| @rollup/plugin-node-resolve | 16.0.3 | MIT | Rollup dependency resolution |
 
-Notes:
-- Versions are pinned in repository configs/scripts (`package.json`, `src/SlideTeX.WebUI/vendor/codemirror/VERSIONS.md`).
-- License identifiers are based on upstream package metadata. Refer to upstream repositories/distributions for full license texts.
-- OCR model binaries under `src/SlideTeX.VstoAddin/Assets/OcrModels` are ignored by git and should be synced via `scripts/Sync-MathJax.ps1`.
+OCR model binaries (`src/SlideTeX.VstoAddin/Assets/OcrModels`) are git-ignored — sync via `scripts/Sync-VendorAssets.ps1`.
 
 ## License
 
-This project is licensed under the MIT License. See `LICENSE`.
+MIT — see [LICENSE](LICENSE).
