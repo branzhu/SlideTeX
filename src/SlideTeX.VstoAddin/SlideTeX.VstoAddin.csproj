@@ -37,8 +37,6 @@
     <VsInstallDir Condition="'$(VsInstallDir)' == ''">$(ProgramFiles)\Microsoft Visual Studio\2022\Community</VsInstallDir>
     <VsRefAsmDir Condition="'$(VsRefAsmDir)' == ''">$(VsInstallDir)\Common7\IDE\ReferenceAssemblies\v4.0</VsRefAsmDir>
     <VsPublicAsmDir Condition="'$(VsPublicAsmDir)' == ''">$(VsInstallDir)\Common7\IDE\PublicAssemblies</VsPublicAsmDir>
-    <WebView2SdkDir Condition="'$(WebView2SdkDir)' == '' and '$(WEBVIEW2_SDK_DIR)' != ''">$(WEBVIEW2_SDK_DIR)</WebView2SdkDir>
-    <WebView2SdkDir Condition="'$(WebView2SdkDir)' == ''">C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Web Live Preview</WebView2SdkDir>
     <PowerPointInteropDll Condition="'$(PowerPointInteropDll)' == '' and '$(SLIDETEX_POWERPOINT_INTEROP_DLL)' != ''">$(SLIDETEX_POWERPOINT_INTEROP_DLL)</PowerPointInteropDll>
     <EnableVstoManifestGeneration Condition="'$(EnableVstoManifestGeneration)' == ''">true</EnableVstoManifestGeneration>
     <GenerateManifests Condition="'$(GenerateManifests)' == ''">true</GenerateManifests>
@@ -141,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Tools.v4.0.Framework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -180,16 +179,6 @@
     <Reference Include="stdole">
       <HintPath>$(VsPublicAsmDir)\stdole.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="Exists('$(WebView2SdkDir)\Microsoft.Web.WebView2.WinForms.dll')">
-    <Reference Include="Microsoft.Web.WebView2.Core">
-      <HintPath>$(WebView2SdkDir)\Microsoft.Web.WebView2.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Web.WebView2.WinForms">
-      <HintPath>$(WebView2SdkDir)\Microsoft.Web.WebView2.WinForms.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="!Exists('$(PowerPointInteropDll)')">
