@@ -704,6 +704,18 @@
         "tags": [],
         "requireDisplay": true
       }
+    },
+    {
+      "id": "action_mathtip",
+      "suite": "full",
+      "latex": "\\mathtip{\\sum_{k=1}^{n} k}{\\text{sum of integers}}",
+      "options": {
+        "displayMode": "display"
+      },
+      "expected": {
+        "tags": [],
+        "requireDisplay": true
+      }
     }
   ]
 }

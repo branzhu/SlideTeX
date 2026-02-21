@@ -314,6 +314,9 @@
     <Content Update="..\SlideTeX.WebUI\vendor\codemirror\VERSIONS.md">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <Content Update="..\SlideTeX.WebUI\vendor\mathjax\LICENSE">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\OcrModels\**\*.*">
       <Link>OcrModels\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

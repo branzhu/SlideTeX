@@ -107,12 +107,40 @@ function Sync-MathJax {
         throw "MathJax package folder not found in archive."
     }
 
+    # Whitelist: only copy the files actually referenced by index.html.
+    # tex-svg.js is the combined entry point; the 8 extensions are loaded via
+    # individual <script> tags; LICENSE is kept for compliance.
+    $mathjaxWhitelist = @(
+        "tex-svg.js",
+        "input/tex/extensions/action.js",
+        "input/tex/extensions/bbox.js",
+        "input/tex/extensions/boldsymbol.js",
+        "input/tex/extensions/cancel.js",
+        "input/tex/extensions/color.js",
+        "input/tex/extensions/enclose.js",
+        "input/tex/extensions/newcommand.js",
+        "input/tex/extensions/verb.js",
+        "LICENSE"
+    )
+
     Get-ChildItem -Path $vendorDir -Exclude README.md | Remove-Item -Recurse -Force
-    Copy-Item -Path (Join-Path $pkgDir "*") -Destination $vendorDir -Recurse -Force
 
-    Write-Host "MathJax $MathJaxVersion synced to $vendorDir"
+    foreach ($relPath in $mathjaxWhitelist) {
+        $src = Join-Path $pkgDir $relPath
+        if (!(Test-Path $src)) {
+            throw "Expected MathJax file not found in package: $relPath"
+        }
+        $dst = Join-Path $vendorDir $relPath
+        $dstDir = Split-Path -Parent $dst
+        if (-not [string]::IsNullOrWhiteSpace($dstDir)) {
+            New-Item -ItemType Directory -Path $dstDir -Force | Out-Null
+        }
+        Copy-Item -Path $src -Destination $dst -Force
+    }
 
-    # Sync the NewCM font package (SVG dynamic fonts used by tex-svg-nofont.js)
+    Write-Host "MathJax $MathJaxVersion synced to $vendorDir ($($mathjaxWhitelist.Count) files, whitelist mode)"
+
+    # Sync the NewCM font package (SVG dynamic fonts bundled into dynamic-all.js)
     $fontVendorDir = Join-Path $root "src/SlideTeX.WebUI/vendor/mathjax-newcm-font"
     $fontTmpDir = Join-Path $root ".tmp/mathjax-newcm-font"
     $fontArchive = Join-Path $fontTmpDir "mathjax-newcm-font-$MathJaxVersion.tgz"
@@ -167,7 +195,15 @@ function Sync-MathJax {
     Set-Content -Path $bundlePath -Value $bundleContent -NoNewline
     Write-Host "Built dynamic font bundle: $bundlePath ($($jsFiles.Count) files)"
 
-    Write-Host "@mathjax/mathjax-newcm-font $MathJaxVersion SVG fonts synced to $fontVendorDir"
+    # Remove individual dynamic font files and svg.js loader — they are
+    # redundant now that dynamic-all.js exists.
+    Remove-Item -Path $dynamicDir -Recurse -Force
+    $svgLoaderPath = Join-Path $fontVendorDir "svg.js"
+    if (Test-Path $svgLoaderPath) {
+        Remove-Item -Path $svgLoaderPath -Force
+    }
+
+    Write-Host "@mathjax/mathjax-newcm-font $MathJaxVersion SVG fonts synced to $fontVendorDir (bundle only)"
 }
 
 function Sync-Pix2TextMfr {
