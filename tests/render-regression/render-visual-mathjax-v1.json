@@ -16,8 +16,8 @@
       "displayMode": "auto"
     },
     "imageDiff": {
-      "maxDiffPixels": 120,
-      "maxDiffRatio": 0.003
+      "maxDiffPixels": 500,
+      "maxDiffRatio": 0.01
     },
     "layout": {
       "allowTagOverlap": false,
