@@ -230,13 +230,13 @@ function Sync-Pix2TextMfr {
     New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
 
     $files = @(
-        @{ remote = "onnx/encoder_model.onnx"; local = "encoder_model.onnx" },
-        @{ remote = "onnx/decoder_model.onnx"; local = "decoder_model.onnx" },
-        @{ remote = "onnx/tokenizer.json"; local = "tokenizer.json" },
-        @{ remote = "onnx/generation_config.json"; local = "generation_config.json" },
-        @{ remote = "onnx/tokenizer_config.json"; local = "tokenizer_config.json" },
-        @{ remote = "onnx/special_tokens_map.json"; local = "special_tokens_map.json" },
-        @{ remote = "onnx/preprocessor_config.json"; local = "preprocessor_config.json" }
+        @{ remote = "encoder_model.onnx"; local = "encoder_model.onnx" },
+        @{ remote = "decoder_model.onnx"; local = "decoder_model.onnx" },
+        @{ remote = "tokenizer.json"; local = "tokenizer.json" },
+        @{ remote = "generation_config.json"; local = "generation_config.json" },
+        @{ remote = "tokenizer_config.json"; local = "tokenizer_config.json" },
+        @{ remote = "special_tokens_map.json"; local = "special_tokens_map.json" },
+        @{ remote = "preprocessor_config.json"; local = "preprocessor_config.json" }
     )
 
     foreach ($file in $files) {

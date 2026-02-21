@@ -10,8 +10,29 @@
     "mathit",
     "mathsf",
     "mathtt",
-    "operatorname"
+    "operatorname",
+    "emph",
+    "textit",
+    "textbf"
   ]);
+
+  // Font size commands that have no visual meaning in MathJax rendering.
+  const STRIP_COMMANDS = [
+    "protect",
+    "displaystyle",
+    "textstyle",
+    "scriptstyle",
+    "scriptscriptstyle",
+    "scriptsize",
+    "footnotesize",
+    "small",
+    "normalsize",
+    "large",
+    "Large",
+    "LARGE",
+    "huge",
+    "Huge"
+  ];
 
   function sanitizeOcrLatex(source) {
     let result = String(source || "");
@@ -24,6 +45,9 @@
       return "";
     }
 
+    result = stripUnsupportedCommands(result);
+    result = rewriteUnsupportedAliases(result);
+
     const protectedState = protectVerbatimSegments(result);
     result = protectedState.maskedText;
 
@@ -34,6 +58,25 @@
 
     result = restoreVerbatimSegments(result, protectedState.segments);
     return result.trim();
+  }
+
+  // Strips commands that have no meaning in MathJax (e.g. \protect, \scriptsize).
+  function stripUnsupportedCommands(text) {
+    let result = text;
+    for (const cmd of STRIP_COMMANDS) {
+      result = result.replace(new RegExp("\\\\"+cmd+"(?![A-Za-z])", "g"), "");
+    }
+    result = result.replace(/ {2,}/g, " ");
+    return result;
+  }
+
+  // Rewrites OCR command aliases to MathJax-supported equivalents.
+  function rewriteUnsupportedAliases(text) {
+    let result = text;
+    result = result.replace(/\\emph(?![A-Za-z])/g, "\\textit");
+    result = result.replace(/\\textbf(?![A-Za-z])/g, "\\mathbf");
+    result = result.replace(/\\textit(?![A-Za-z])/g, "\\mathrm");
+    return result;
   }
 
   function preNormalizeWhitespace(text) {

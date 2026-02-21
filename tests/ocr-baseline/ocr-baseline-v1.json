@@ -2,7 +2,7 @@
   "meta": {
     "name": "OCR baseline known pairs",
     "version": 1,
-    "generatedAt": "2026-02-15T13:22:24.749Z",
+    "generatedAt": "2026-02-21T16:02:37.341Z",
     "sourceFixture": "tests/render-regression/render-visual-mathjax-v1.json",
     "mathjaxVersion": "4.1.0"
   },
@@ -289,6 +289,222 @@
       ],
       "imagePath": "../render-regression/baseline-images/cases_with_text_mod.png",
       "latex": "\\begin{cases} \\text{odd}, & n\\equiv1\\pmod 2 \\\\ \\text{even}, & n\\equiv0\\pmod 2 \\end{cases}"
+    },
+    {
+      "id": "font_calligraphic",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/font_calligraphic.png",
+      "latex": "{\\cal A}{\\cal B}{\\cal C}{\\cal D}{\\cal E}{\\cal F}{\\cal G}{\\cal H}{\\cal I}{\\cal J}{\\cal K}{\\cal L}{\\cal M}{\\cal N}{\\cal O}{\\cal P}{\\cal Q}{\\cal R}{\\cal S}{\\cal T}{\\cal U}{\\cal V}{\\cal W}{\\cal X}{\\cal Y}{\\cal Z}"
+    },
+    {
+      "id": "font_blackboard_bold",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/font_blackboard_bold.png",
+      "latex": "\\mathbb{A}\\mathbb{B}\\mathbb{C}\\mathbb{N}\\mathbb{Q}\\mathbb{R}\\mathbb{Z} \\in \\mathbb{R}^n"
+    },
+    {
+      "id": "font_fraktur",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/font_fraktur.png",
+      "latex": "\\mathfrak{A}\\mathfrak{B}\\mathfrak{g}\\mathfrak{h}\\mathfrak{p}\\mathfrak{q}"
+    },
+    {
+      "id": "font_bold_italic_roman",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/font_bold_italic_roman.png",
+      "latex": "\\mathbf{F} = m\\mathbf{a}, \\quad \\mathrm{d}x, \\quad \\mathit{v}_{\\max}"
+    },
+    {
+      "id": "font_script_scr",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/font_script_scr.png",
+      "latex": "\\mathscr{L}(\\mathscr{F}) = \\int \\mathscr{H} \\, \\mathrm{d}\\mu"
+    },
+    {
+      "id": "font_typewriter",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/font_typewriter.png",
+      "latex": "\\mathtt{Hello\\_World} + \\mathsf{sans} + \\mathrm{roman}"
+    },
+    {
+      "id": "color_red",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/color_red.png",
+      "latex": "\\color{red}{E=mc^2}"
+    },
+    {
+      "id": "color_blue_display",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/color_blue_display.png",
+      "latex": "\\color{blue}{\\sum_{i=1}^{n} x_i}"
+    },
+    {
+      "id": "color_mixed_inline",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/color_mixed_inline.png",
+      "latex": "\\color{red}{a} + \\color{green}{b} + \\color{blue}{c} = \\color{purple}{d}"
+    },
+    {
+      "id": "color_hex_custom",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/color_hex_custom.png",
+      "latex": "\\frac{\\alpha}{\\beta} + \\gamma"
+    },
+    {
+      "id": "cancel_basic",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/cancel_basic.png",
+      "latex": "\\cancel{x} + \\bcancel{y} + \\xcancel{z}"
+    },
+    {
+      "id": "cancel_in_fraction",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/cancel_in_fraction.png",
+      "latex": "\\frac{\\cancel{a}\\cdot b}{\\cancel{a}\\cdot c} = \\frac{b}{c}"
+    },
+    {
+      "id": "cancelto_value",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/cancelto_value.png",
+      "latex": "\\cancelto{0}{\\frac{x^2-1}{x-1}}"
+    },
+    {
+      "id": "enclose_circle",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/enclose_circle.png",
+      "latex": "\\enclose{circle}{x+y}"
+    },
+    {
+      "id": "enclose_box_and_strike",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/enclose_box_and_strike.png",
+      "latex": "\\enclose{box}{a^2} + \\enclose{horizontalstrike}{b}"
+    },
+    {
+      "id": "bbox_with_border",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/bbox_with_border.png",
+      "latex": "\\bbox[yellow, 5px, border:2px solid red]{E=mc^2}"
+    },
+    {
+      "id": "bbox_padding_only",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/bbox_padding_only.png",
+      "latex": "\\bbox[5px]{\\sum_{i=1}^{n} i}"
+    },
+    {
+      "id": "dpi150_large_font",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/dpi150_large_font.png",
+      "latex": "\\int_0^\\infty e^{-x} \\, dx = 1"
+    },
+    {
+      "id": "dpi96_screen",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/dpi96_screen.png",
+      "latex": "a^2 + b^2 = c^2"
+    },
+    {
+      "id": "dpi600_complex_formula",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/dpi600_complex_formula.png",
+      "latex": "\\oint_{\\partial \\Sigma} \\mathbf{B} \\cdot \\mathrm{d}\\boldsymbol{\\ell} = \\mu_0 \\iint_{\\Sigma} \\mathbf{J} \\cdot \\mathrm{d}\\mathbf{S} + \\mu_0 \\varepsilon_0 \\frac{\\partial}{\\partial t} \\iint_{\\Sigma} \\mathbf{E} \\cdot \\mathrm{d}\\mathbf{S}"
+    },
+    {
+      "id": "greek_full_alphabet",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/greek_full_alphabet.png",
+      "latex": "\\alpha\\beta\\gamma\\delta\\epsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\xi\\pi\\rho\\sigma\\tau\\upsilon\\phi\\chi\\psi\\omega \\; \\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi\\Omega"
+    },
+    {
+      "id": "operators_and_arrows",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/operators_and_arrows.png",
+      "latex": "\\forall x \\exists y : x \\leq y \\implies x \\neq y+1 \\iff \\neg(x > y) \\Rightarrow \\Leftarrow \\Leftrightarrow \\hookrightarrow \\mapsto"
+    },
+    {
+      "id": "accents_and_decorations",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/accents_and_decorations.png",
+      "latex": "\\hat{a} \\bar{b} \\vec{c} \\dot{d} \\ddot{e} \\tilde{f} \\widehat{xyz} \\widetilde{abc} \\overrightarrow{AB}"
+    },
+    {
+      "id": "opaque_color_dpi",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/opaque_color_dpi.png",
+      "latex": "\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}"
+    },
+    {
+      "id": "mixed_font_formula",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/mixed_font_formula.png",
+      "latex": "\\mathbb{E}[X] = \\int_{-\\infty}^{\\infty} x \\, f_{\\mathcal{X}}(x) \\, \\mathrm{d}x, \\quad \\mathfrak{g} \\cong \\mathfrak{sl}(2, \\mathbb{C})"
+    },
+    {
+      "id": "small_font_high_dpi",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/small_font_high_dpi.png",
+      "latex": "\\prod_{p \\text{ prime}} \\frac{1}{1-p^{-s}} = \\sum_{n=1}^{\\infty} \\frac{1}{n^s}"
+    },
+    {
+      "id": "large_font_low_dpi",
+      "suite": [
+        "full"
+      ],
+      "imagePath": "../render-regression/baseline-images/large_font_low_dpi.png",
+      "latex": "e^{i\\pi} + 1 = 0"
     }
   ]
 }

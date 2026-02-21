@@ -16,7 +16,8 @@
     "test:render-known-good:full": "node ./tests/render-known-good.mjs --mode verify --suite full",
     "test:render-known-good:update": "node ./tests/render-known-good.mjs --mode update-baseline --suite all",
     "test:main-flow": "node ./tests/test-main-flow.mjs",
-    "test:tier2:webview2": "node tests/test-webview2-flow.mjs"
+    "test:tier2:webview2": "node tests/test-webview2-flow.mjs",
+    "test:ocr-visual": "node tests/verify-ocr-visual.mjs"
   },
   "devDependencies": {
     "pixelmatch": "7.1.0",

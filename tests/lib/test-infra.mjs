@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import http from 'node:http';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 
 export function resolvePath(input, baseDir) {
   if (!input) {
@@ -12,7 +14,10 @@ export function resolvePath(input, baseDir) {
 }
 
 export function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const raw = fs.readFileSync(filePath, 'utf8');
+  // Strip UTF-8 BOM that Windows PowerShell may emit.
+  const text = raw.charCodeAt(0) === 0xFEFF ? raw.slice(1) : raw;
+  return JSON.parse(text);
 }
 
 export function writeJson(filePath, data) {
@@ -111,4 +116,54 @@ export function startStaticServer(rootDir) {
       });
     });
   });
+}
+
+export function loadPng(filePath) {
+  return PNG.sync.read(fs.readFileSync(filePath));
+}
+
+// Compares PNG outputs and writes diff image only when thresholds are exceeded.
+export function compareImages(expectedPath, actualPath, diffPath, threshold) {
+  const expected = loadPng(expectedPath);
+  const actual = loadPng(actualPath);
+
+  if (expected.width !== actual.width || expected.height !== actual.height) {
+    return {
+      ok: false,
+      reason: `Image size mismatch: expected=${expected.width}x${expected.height}, actual=${actual.width}x${actual.height}`,
+      diffPixels: Number.NaN,
+      diffRatio: Number.NaN
+    };
+  }
+
+  const diff = new PNG({ width: expected.width, height: expected.height });
+  const diffPixels = pixelmatch(
+    expected.data,
+    actual.data,
+    diff.data,
+    expected.width,
+    expected.height,
+    {
+      threshold: 0.1,
+      includeAA: false
+    }
+  );
+  const totalPixels = expected.width * expected.height;
+  const diffRatio = totalPixels > 0 ? diffPixels / totalPixels : 0;
+  const ok = diffPixels <= threshold.maxDiffPixels && diffRatio <= threshold.maxDiffRatio;
+
+  if (!ok) {
+    fs.writeFileSync(diffPath, PNG.sync.write(diff));
+  } else if (fs.existsSync(diffPath)) {
+    fs.rmSync(diffPath, { force: true });
+  }
+
+  return {
+    ok,
+    reason: ok
+      ? ''
+      : `Image diff exceeded threshold: diffPixels=${diffPixels}, diffRatio=${diffRatio.toFixed(6)}`,
+    diffPixels,
+    diffRatio
+  };
 }
