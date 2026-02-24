@@ -246,6 +246,9 @@
     <Compile Include="Hosting\TaskPaneHostControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Hosting\WebViewBridge.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Metadata\ContentHashCalculator.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -32,13 +32,12 @@ namespace SlideTeX.VstoAddin
         private readonly FormulaOcrService _formulaOcrService = new FormulaOcrService();
 
         private TaskPaneHostControl _taskPaneControl;
+        private WebViewBridge _bridge;
         private Microsoft.Office.Tools.CustomTaskPane _taskPane;
         private RenderSuccessPayload _lastRender;
         private string _webUiPagePath;
-        private bool _webViewInitialized;
         private Timer _selectionTimer;
         private string _lastAutoEditShapeKey;
-        private bool _isBusyRendering;
 
         public SlideTeXAddinController(ThisAddIn addIn)
         {
@@ -115,9 +114,11 @@ namespace SlideTeX.VstoAddin
         {
             DiagLog.Info("Controller.Initialize begin.");
             _taskPaneControl = new TaskPaneHostControl();
-            _taskPaneControl.RenderNotificationReceived += OnRenderNotificationReceived;
-            _taskPaneControl.CommandRequested += OnCommandRequested;
-            _taskPaneControl.FormulaOcrRequested += OnFormulaOcrRequested;
+            _bridge = new WebViewBridge(_taskPaneControl);
+            _bridge.RenderNotificationReceived += OnRenderNotificationReceived;
+            _bridge.CommandRequested += OnCommandRequested;
+            _bridge.FormulaOcrRequested += OnFormulaOcrRequested;
+            _bridge.StateChanged += OnBridgeStateChanged;
 
             _taskPane = _addIn.CustomTaskPanes.Add(_taskPaneControl, LocalizationManager.Get("app.taskpane_title"));
             _taskPane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
@@ -156,8 +157,6 @@ namespace SlideTeX.VstoAddin
             EnsureWebViewInitialized();
             _taskPane.Visible = true;
             DiagLog.Debug("Controller.OpenPane completed. taskPane.Visible=true.");
-
-            TryAutoEditSelected();
         }
 
         /// <summary>
@@ -352,11 +351,14 @@ namespace SlideTeX.VstoAddin
                 _selectionTimer = null;
             }
 
-            if (_taskPaneControl != null)
+            if (_bridge != null)
             {
-                _taskPaneControl.RenderNotificationReceived -= OnRenderNotificationReceived;
-                _taskPaneControl.CommandRequested -= OnCommandRequested;
-                _taskPaneControl.FormulaOcrRequested -= OnFormulaOcrRequested;
+                _bridge.RenderNotificationReceived -= OnRenderNotificationReceived;
+                _bridge.CommandRequested -= OnCommandRequested;
+                _bridge.FormulaOcrRequested -= OnFormulaOcrRequested;
+                _bridge.StateChanged -= OnBridgeStateChanged;
+                _bridge.Dispose();
+                _bridge = null;
             }
 
             _formulaOcrService.Dispose();
@@ -376,7 +378,7 @@ namespace SlideTeX.VstoAddin
             if (_taskPane != null && _taskPane.Visible)
             {
                 _lastAutoEditShapeKey = null;
-                TryAutoEditSelected();
+                _taskPaneControl.BeginInvoke(new Action(() => TryAutoEditSelected()));
                 if (_selectionTimer != null)
                 {
                     _selectionTimer.Start();
@@ -393,9 +395,18 @@ namespace SlideTeX.VstoAddin
             }
         }
 
+        private void OnBridgeStateChanged(object sender, EventArgs e)
+        {
+            if (_bridge != null && _bridge.IsReady)
+            {
+                _lastAutoEditShapeKey = null;
+                _taskPaneControl.BeginInvoke(new Action(() => TryAutoEditSelected()));
+            }
+        }
+
         private void OnSelectionTimerTick(object sender, EventArgs e)
         {
-            if (_taskPane == null || !_taskPane.Visible || !_webViewInitialized || _isBusyRendering)
+            if (_taskPane == null || !_taskPane.Visible || _bridge == null || !_bridge.IsReady || _bridge.IsBusy)
             {
                 return;
             }
@@ -408,7 +419,7 @@ namespace SlideTeX.VstoAddin
         /// </summary>
         private void TryAutoEditSelected()
         {
-            if (_isBusyRendering || _taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady || _bridge.IsBusy)
             {
                 return;
             }
@@ -496,7 +507,7 @@ namespace SlideTeX.VstoAddin
         /// </summary>
         private void OcrSelectedImage(dynamic shape)
         {
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
                 return;
             }
@@ -519,10 +530,7 @@ namespace SlideTeX.VstoAddin
                 var payload = _serializer.Serialize(new { imageBase64 = base64 });
                 var script = "window.slideTex && window.slideTex.onHostImageOcr(" + payload + ");";
 
-                _taskPaneControl.BeginInvoke(new Action(() =>
-                {
-                    _taskPaneControl.ExecuteScript(script);
-                }));
+                _bridge.PostScript(script);
 
                 DiagLog.Debug("OcrSelectedImage pushed image to WebUI. bytes=" + bytes.Length);
             }
@@ -541,7 +549,7 @@ namespace SlideTeX.VstoAddin
 
         private void OnRenderNotificationReceived(object sender, RenderNotificationEventArgs args)
         {
-            DiagLog.Debug("OnRenderNotificationReceived isSuccess=" + (args != null && args.IsSuccess) + " isBusy=" + _isBusyRendering);
+            DiagLog.Debug("OnRenderNotificationReceived isSuccess=" + (args != null && args.IsSuccess) + " isBusy=" + (_bridge != null && _bridge.IsBusy));
             if (args == null || !args.IsSuccess || string.IsNullOrWhiteSpace(args.Payload))
             {
                 return;
@@ -663,7 +671,7 @@ namespace SlideTeX.VstoAddin
 
         private void NotifyFormulaOcrSuccess(FormulaOcrResult result)
         {
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
                 return;
             }
@@ -675,16 +683,13 @@ namespace SlideTeX.VstoAddin
                 engine = result != null ? result.Engine : "onnxruntime-cpu"
             });
 
-            _taskPaneControl.BeginInvoke(new Action(() =>
-            {
-                var script = "window.slideTex && window.slideTex.onFormulaOcrSuccess(" + payload + ");";
-                _taskPaneControl.ExecuteScript(script);
-            }));
+            var script = "window.slideTex && window.slideTex.onFormulaOcrSuccess(" + payload + ");";
+            _bridge.PostScript(script);
         }
 
         private void NotifyFormulaOcrError(string code, string message)
         {
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
                 return;
             }
@@ -695,11 +700,8 @@ namespace SlideTeX.VstoAddin
                 message = string.IsNullOrWhiteSpace(message) ? "Formula OCR failed." : message
             });
 
-            _taskPaneControl.BeginInvoke(new Action(() =>
-            {
-                var script = "window.slideTex && window.slideTex.onFormulaOcrError(" + payload + ");";
-                _taskPaneControl.ExecuteScript(script);
-            }));
+            var script = "window.slideTex && window.slideTex.onFormulaOcrError(" + payload + ");";
+            _bridge.PostScript(script);
         }
 
         private static string ToHostOcrCode(OcrErrorCode code)
@@ -983,30 +985,28 @@ namespace SlideTeX.VstoAddin
         /// </summary>
         private void RenderInPane(string latex, RenderOptionsDto options)
         {
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
                 return;
             }
 
-            // Keep request shape stable so WebUI can reuse one entry point
-            // for both host-initiated and user-initiated rendering.
             var payload = _serializer.Serialize(new
             {
                 latex = latex,
                 options = options
             });
             var script = "window.slideTex && window.slideTex.renderFromHost(" + payload + ");";
-            _taskPaneControl.ExecuteScript(script);
+            _bridge.PostScript(script);
         }
 
         private void NotifySelectionCleared()
         {
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
                 return;
             }
 
-            _taskPaneControl.ExecuteScript("window.slideTex && window.slideTex.onSelectionCleared && window.slideTex.onSelectionCleared();");
+            _bridge.PostScript("window.slideTex && window.slideTex.onSelectionCleared && window.slideTex.onSelectionCleared();");
         }
 
         private string ResolveWebUiPath()
@@ -1049,9 +1049,15 @@ namespace SlideTeX.VstoAddin
             var stopwatch = Stopwatch.StartNew();
             DiagLog.Info("EnsureWebViewInitialized begin.");
 
-            if (_webViewInitialized || _taskPaneControl == null)
+            if (_bridge == null || _taskPaneControl == null)
             {
-                DiagLog.Debug("EnsureWebViewInitialized skipped. initialized=" + _webViewInitialized + ", controlNull=" + (_taskPaneControl == null));
+                DiagLog.Debug("EnsureWebViewInitialized skipped. bridgeNull=" + (_bridge == null) + ", controlNull=" + (_taskPaneControl == null));
+                return;
+            }
+
+            if (_bridge.State != WebViewPageState.Uninitialized && _bridge.State != WebViewPageState.Failed)
+            {
+                DiagLog.Debug("EnsureWebViewInitialized skipped. state=" + _bridge.State);
                 return;
             }
 
@@ -1064,26 +1070,26 @@ namespace SlideTeX.VstoAddin
 
             try
             {
-                DiagLog.Debug("EnsureWebViewInitialized calling TaskPaneHostControl.Initialize.");
-                _taskPaneControl.Initialize(_webUiPagePath, LocalizationManager.UICultureName);
-                if (_taskPaneControl.IsWebViewReady)
-                {
-                    _webViewInitialized = true;
-                    stopwatch.Stop();
-                    DiagLog.Info("EnsureWebViewInitialized success. elapsedMs=" + stopwatch.ElapsedMilliseconds);
-                    return;
-                }
+                DiagLog.Debug("EnsureWebViewInitialized calling bridge.Initialize.");
+                _bridge.Initialize(_webUiPagePath, LocalizationManager.UICultureName);
+                stopwatch.Stop();
 
-                if (!string.IsNullOrWhiteSpace(_taskPaneControl.LastInitializationError))
+                if (_bridge.State == WebViewPageState.Failed)
                 {
-                    stopwatch.Stop();
-                    DiagLog.Warn("EnsureWebViewInitialized finished with LastInitializationError=" + _taskPaneControl.LastInitializationError + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
-                    ShowWarning(LocalizationManager.Format("warning.taskpane_init_failed", _taskPaneControl.LastInitializationError));
+                    var errMsg = _taskPaneControl.LastInitializationError;
+                    if (!string.IsNullOrWhiteSpace(errMsg))
+                    {
+                        DiagLog.Warn("EnsureWebViewInitialized failed. error=" + errMsg + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
+                        ShowWarning(LocalizationManager.Format("warning.taskpane_init_failed", errMsg));
+                    }
+                    else
+                    {
+                        DiagLog.Warn("EnsureWebViewInitialized failed without explicit error. elapsedMs=" + stopwatch.ElapsedMilliseconds);
+                    }
                 }
                 else
                 {
-                    stopwatch.Stop();
-                    DiagLog.Warn("EnsureWebViewInitialized finished not-ready without explicit error. elapsedMs=" + stopwatch.ElapsedMilliseconds);
+                    DiagLog.Info("EnsureWebViewInitialized success. state=" + _bridge.State + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
                 }
             }
             catch (Exception ex)
@@ -1174,13 +1180,12 @@ namespace SlideTeX.VstoAddin
             int timeoutMs = 10000)
         {
             DiagLog.Debug("RenderAndWait begin. timeoutMs=" + timeoutMs + ", hasRenderLatex=" + !string.IsNullOrWhiteSpace(renderLatex));
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
-                DiagLog.Warn("RenderAndWait skipped: task pane host is not ready.");
+                DiagLog.Warn("RenderAndWait skipped: bridge is not ready.");
                 return null;
             }
 
-            _isBusyRendering = true;
             if (_selectionTimer != null)
             {
                 _selectionTimer.Stop();
@@ -1188,106 +1193,16 @@ namespace SlideTeX.VstoAddin
             }
             try
             {
-                return RenderAndWaitCore(latex, options, renderLatex, timeoutMs);
+                return _bridge.RenderAndWait(latex, options, renderLatex, timeoutMs, _serializer);
             }
             finally
             {
-                _isBusyRendering = false;
                 if (_selectionTimer != null && _taskPane != null && _taskPane.Visible)
                 {
                     _selectionTimer.Start();
                 }
-                DiagLog.Debug("RenderAndWait end. isBusy reset to false.");
+                DiagLog.Debug("RenderAndWait end.");
             }
-        }
-
-        /// <summary>
-        /// Performs host-to-WebUI render request and waits for callback while pumping UI messages.
-        /// </summary>
-        private RenderSuccessPayload RenderAndWaitCore(
-            string latex,
-            RenderOptionsDto options,
-            string renderLatex,
-            int timeoutMs)
-        {
-            var tcs = new System.Threading.ManualResetEvent(false);
-            RenderSuccessPayload result = null;
-            Exception renderError = null;
-
-            EventHandler<RenderNotificationEventArgs> handler = null;
-            handler = (s, e) =>
-            {
-                DiagLog.Debug("RenderAndWaitCore handler fired. isSuccess=" + e.IsSuccess);
-                _taskPaneControl.RenderNotificationReceived -= handler;
-                if (e.IsSuccess && !string.IsNullOrWhiteSpace(e.Payload))
-                {
-                    try
-                    {
-                        var payload = _serializer.Deserialize<RenderSuccessPayload>(e.Payload);
-                        if (payload != null && payload.IsSuccess)
-                        {
-                            if (payload.Options == null)
-                            {
-                                payload.Options = new RenderOptionsDto();
-                            }
-                            result = payload;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        renderError = ex;
-                    }
-                }
-                else
-                {
-                    renderError = new Exception(e.ErrorMessage ?? LocalizationManager.Get("error.render_failed_default"));
-                }
-                tcs.Set();
-            };
-
-            _taskPaneControl.RenderNotificationReceived += handler;
-            DiagLog.Debug("RenderAndWaitCore handler subscribed. Calling ExecuteScript.");
-
-            var renderPayload = _serializer.Serialize(new
-            {
-                latex = latex,
-                options = options,
-                renderLatex = !string.IsNullOrWhiteSpace(renderLatex) ? renderLatex : null
-            });
-            var script = "window.slideTex && window.slideTex.renderFromHost(" + renderPayload + ");";
-            _taskPaneControl.ExecuteScript(script);
-            DiagLog.Debug("RenderAndWaitCore ExecuteScript returned. Entering wait loop.");
-
-            var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
-            int loopCount = 0;
-            // Keep pumping UI messages while waiting for WebView callback to avoid COM/UI deadlock.
-            while (!tcs.WaitOne(0) && DateTime.UtcNow < deadline)
-            {
-                Application.DoEvents();
-                System.Threading.Thread.Sleep(10);
-                loopCount++;
-                if (loopCount % 100 == 0)
-                {
-                    DiagLog.Debug("RenderAndWaitCore still waiting. loopCount=" + loopCount);
-                }
-            }
-
-            DiagLog.Debug("RenderAndWaitCore loop exited. loopCount=" + loopCount + " signaled=" + tcs.WaitOne(0));
-
-            if (!tcs.WaitOne(0))
-            {
-                _taskPaneControl.RenderNotificationReceived -= handler;
-                DiagLog.Warn("RenderAndWaitCore timeout.");
-                throw new TimeoutException(LocalizationManager.Get("error.render_timeout"));
-            }
-
-            if (renderError != null)
-            {
-                DiagLog.Warn("RenderAndWaitCore failed: " + renderError.Message);
-                throw renderError;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -1296,10 +1211,10 @@ namespace SlideTeX.VstoAddin
         public void RenumberAllEquations()
         {
             DiagLog.Info("RenumberAllEquations begin.");
-            if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+            if (_bridge == null || !_bridge.IsReady)
             {
                 EnsureWebViewInitialized();
-                if (_taskPaneControl == null || !_taskPaneControl.IsWebViewReady)
+                if (_bridge == null || !_bridge.IsReady)
                 {
                     ShowWarning(LocalizationManager.Get("warning.open_panel_first"));
                     return;

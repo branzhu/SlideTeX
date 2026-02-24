@@ -68,6 +68,8 @@ namespace SlideTeX.VstoAddin.Hosting
 
         public event EventHandler<FormulaOcrRequestedEventArgs> FormulaOcrRequested;
 
+        public event EventHandler PageReady;
+
         public string LastInitializationError { get; private set; }
 
         public bool IsWebViewReady
@@ -222,6 +224,15 @@ namespace SlideTeX.VstoAddin.Hosting
                 _webView.CoreWebView2.WebResourceRequested += OnWebResourceRequested;
 
                 await InjectHostContextAsync(uiCultureName).ConfigureAwait(true);
+                _webView.CoreWebView2.NavigationCompleted += (s, e) =>
+                {
+                    var handler = PageReady;
+                    if (handler != null)
+                    {
+                        handler(this, EventArgs.Empty);
+                    }
+                };
+
                 _webView.Source = BuildWebUiSourceUri(pagePath);
                 stopwatch.Stop();
                 DiagLog.Info("TaskPaneHostControl.InitializeAsync end success. source=" + _webView.Source + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
