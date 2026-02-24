@@ -91,7 +91,7 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
         };
       }
 
-      var cmdMatch = /\\[a-zA-Z]*$/.exec(before);
+      var cmdMatch = /\\[a-zA-Z]+$/.exec(before);
       if (!cmdMatch) {
         return null;
       }
@@ -101,7 +101,7 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
       var lowerPrefix = prefix.toLowerCase();
       var filteredCmd = commandOptions.filter(function (opt) {
         return opt.label.toLowerCase().indexOf(lowerPrefix) === 0;
-      }).slice(0, 30);
+      });
 
       if (filteredCmd.length === 0) {
         return null;
@@ -110,7 +110,7 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
       return {
         from: from,
         options: filteredCmd,
-        validFor: /^\\[a-zA-Z]*$/
+        validFor: /^\\[a-zA-Z]+$/
       };
     };
   }
