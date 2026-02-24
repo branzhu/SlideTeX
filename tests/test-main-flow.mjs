@@ -520,7 +520,414 @@ async function testRenderWithColorAndDpi(browser, baseUrl) {
   }
 }
 
-// Test 9: OCR error callback
+// Test 9: Different font sizes should produce different PNG dimensions
+async function testFontSizeAffectsPngDimensions(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const latex = '\\frac{a}{b} + \\sqrt{c}';
+    const baseOptions = { dpi: 300, colorHex: '#000000', isTransparent: true, displayMode: 'display' };
+
+    // Render at 12pt
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, fontPt: 12 }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const small = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Render at 48pt
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, fontPt: 48 }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const large = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    assert(small.width > 0 && small.height > 0, `12pt should produce valid dimensions, got ${small.width}x${small.height}`);
+    assert(large.width > 0 && large.height > 0, `48pt should produce valid dimensions, got ${large.width}x${large.height}`);
+    assert(large.width > small.width,
+      `48pt width (${large.width}) should be greater than 12pt width (${small.width})`);
+    assert(large.height > small.height,
+      `48pt height (${large.height}) should be greater than 12pt height (${small.height})`);
+
+    // The 48pt image should be roughly 4x the 12pt image (48/12 = 4)
+    const widthRatio = large.width / small.width;
+    assert(widthRatio > 2.0 && widthRatio < 6.0,
+      `Width ratio should be roughly 4x (48/12), got ${widthRatio.toFixed(2)}`);
+
+    return { pass: true, name: 'font-size-affects-png-dimensions' };
+  } catch (error) {
+    return { pass: false, name: 'font-size-affects-png-dimensions', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 10: Three font sizes should produce monotonically increasing dimensions
+async function testFontSizeMonotonicDimensions(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const latex = 'E = mc^2';
+    const baseOptions = { dpi: 300, colorHex: '#000000', isTransparent: true, displayMode: 'inline' };
+    const sizes = [10, 24, 72];
+    const results = [];
+
+    for (const fontPt of sizes) {
+      await page.evaluate(async (tex, opts, pt) => {
+        window.slidetexHost._calls.renderSuccess = [];
+        await window.slideTex.renderFromHost({
+          latex: tex,
+          options: { ...opts, fontPt: pt }
+        });
+      }, latex, baseOptions, fontPt);
+
+      await page.waitForFunction(
+        () => window.slidetexHost._calls.renderSuccess.length > 0,
+        { timeout: 15000 }
+      );
+
+      const dim = await page.evaluate(() => {
+        const p = window.slidetexHost._calls.renderSuccess[0];
+        return { width: p.pixelWidth, height: p.pixelHeight };
+      });
+      results.push({ fontPt, ...dim });
+    }
+
+    for (let i = 1; i < results.length; i++) {
+      const prev = results[i - 1];
+      const curr = results[i];
+      assert(curr.width > prev.width,
+        `${curr.fontPt}pt width (${curr.width}) should be > ${prev.fontPt}pt width (${prev.width})`);
+      assert(curr.height > prev.height,
+        `${curr.fontPt}pt height (${curr.height}) should be > ${prev.fontPt}pt height (${prev.height})`);
+    }
+
+    return { pass: true, name: 'font-size-monotonic-dimensions' };
+  } catch (error) {
+    return { pass: false, name: 'font-size-monotonic-dimensions', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 11: Transparent vs opaque background should produce different PNG data
+async function testTransparentVsOpaque(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const latex = 'x^2 + y^2 = z^2';
+    const baseOptions = { fontPt: 24, dpi: 300, colorHex: '#000000', displayMode: 'inline' };
+
+    // Render transparent
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, isTransparent: true }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const transparent = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { base64: p.pngBase64, width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Render opaque
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, isTransparent: false }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const opaque = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { base64: p.pngBase64, width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Same formula + same font/dpi → same dimensions
+    assert(transparent.width === opaque.width,
+      `Transparent width (${transparent.width}) should equal opaque width (${opaque.width})`);
+    assert(transparent.height === opaque.height,
+      `Transparent height (${transparent.height}) should equal opaque height (${opaque.height})`);
+    // But different pixel data (white background vs transparent)
+    assert(transparent.base64 !== opaque.base64,
+      'Transparent and opaque PNGs should have different pixel data');
+
+    return { pass: true, name: 'transparent-vs-opaque' };
+  } catch (error) {
+    return { pass: false, name: 'transparent-vs-opaque', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 12: Display vs inline mode should produce different dimensions
+async function testDisplayVsInlineMode(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    // Use a formula where display mode visibly changes layout (limits placement)
+    const latex = '\\sum_{i=1}^{n} i^2 = \\frac{n(n+1)(2n+1)}{6}';
+    const baseOptions = { fontPt: 24, dpi: 300, colorHex: '#000000', isTransparent: true };
+
+    // Render inline
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, displayMode: 'inline' }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const inline = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Render display
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, displayMode: 'display' }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const display = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    assert(inline.width > 0 && inline.height > 0,
+      `Inline should produce valid dimensions, got ${inline.width}x${inline.height}`);
+    assert(display.width > 0 && display.height > 0,
+      `Display should produce valid dimensions, got ${display.width}x${display.height}`);
+    // Display mode places limits above/below → taller output
+    assert(display.height > inline.height,
+      `Display height (${display.height}) should be > inline height (${inline.height})`);
+
+    return { pass: true, name: 'display-vs-inline-mode' };
+  } catch (error) {
+    return { pass: false, name: 'display-vs-inline-mode', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 13: Different colors should produce different PNG data
+async function testColorAffectsPngData(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const latex = 'E = mc^2';
+    const baseOptions = { fontPt: 24, dpi: 300, isTransparent: true, displayMode: 'inline' };
+
+    // Render black
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, colorHex: '#000000' }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const black = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { base64: p.pngBase64, width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Render red
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, colorHex: '#ff0000' }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const red = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { base64: p.pngBase64, width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Same formula + same font/dpi/mode → same dimensions
+    assert(black.width === red.width,
+      `Black width (${black.width}) should equal red width (${red.width})`);
+    assert(black.height === red.height,
+      `Black height (${black.height}) should equal red height (${red.height})`);
+    // But different pixel data (different ink color)
+    assert(black.base64 !== red.base64,
+      'Black and red PNGs should have different pixel data');
+
+    return { pass: true, name: 'color-affects-png-data' };
+  } catch (error) {
+    return { pass: false, name: 'color-affects-png-data', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 14: DPI should scale PNG pixel dimensions proportionally
+async function testDpiScalesDimensions(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const latex = '\\alpha + \\beta = \\gamma';
+    const baseOptions = { fontPt: 24, colorHex: '#000000', isTransparent: true, displayMode: 'inline' };
+
+    // Render at 150 DPI
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, dpi: 150 }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const dpi150 = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    // Render at 600 DPI
+    await page.evaluate(async (tex, opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: tex,
+        options: { ...opts, dpi: 600 }
+      });
+    }, latex, baseOptions);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const dpi600 = await page.evaluate(() => {
+      const p = window.slidetexHost._calls.renderSuccess[0];
+      return { width: p.pixelWidth, height: p.pixelHeight };
+    });
+
+    assert(dpi150.width > 0 && dpi150.height > 0,
+      `150 DPI should produce valid dimensions, got ${dpi150.width}x${dpi150.height}`);
+    assert(dpi600.width > 0 && dpi600.height > 0,
+      `600 DPI should produce valid dimensions, got ${dpi600.width}x${dpi600.height}`);
+    assert(dpi600.width > dpi150.width,
+      `600 DPI width (${dpi600.width}) should be > 150 DPI width (${dpi150.width})`);
+    assert(dpi600.height > dpi150.height,
+      `600 DPI height (${dpi600.height}) should be > 150 DPI height (${dpi150.height})`);
+
+    // 600/150 = 4x scale ratio; allow some rounding tolerance
+    const widthRatio = dpi600.width / dpi150.width;
+    assert(widthRatio > 3.0 && widthRatio < 5.0,
+      `Width ratio should be ~4x (600/150), got ${widthRatio.toFixed(2)}`);
+
+    return { pass: true, name: 'dpi-scales-dimensions' };
+  } catch (error) {
+    return { pass: false, name: 'dpi-scales-dimensions', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 15: Options should round-trip through renderSuccess payload
+async function testOptionsRoundTrip(browser, baseUrl) {
+  const page = await setupPage(browser, baseUrl);
+  try {
+    const options = { fontPt: 36, dpi: 600, colorHex: '#1a237e', isTransparent: false, displayMode: 'display' };
+
+    await page.evaluate(async (opts) => {
+      window.slidetexHost._calls.renderSuccess = [];
+      await window.slideTex.renderFromHost({
+        latex: '\\int_0^1 x \\, dx',
+        options: opts
+      });
+    }, options);
+
+    await page.waitForFunction(
+      () => window.slidetexHost._calls.renderSuccess.length > 0,
+      { timeout: 15000 }
+    );
+
+    const result = await page.evaluate(() => {
+      return window.slidetexHost._calls.renderSuccess[0].options;
+    });
+
+    assert(result.fontPt === options.fontPt,
+      `fontPt should be ${options.fontPt}, got ${result.fontPt}`);
+    assert(result.dpi === options.dpi,
+      `dpi should be ${options.dpi}, got ${result.dpi}`);
+    assert(result.colorHex === options.colorHex,
+      `colorHex should be ${options.colorHex}, got ${result.colorHex}`);
+    assert(result.isTransparent === options.isTransparent,
+      `isTransparent should be ${options.isTransparent}, got ${result.isTransparent}`);
+    assert(result.displayMode === options.displayMode,
+      `displayMode should be ${options.displayMode}, got ${result.displayMode}`);
+
+    return { pass: true, name: 'options-round-trip' };
+  } catch (error) {
+    return { pass: false, name: 'options-round-trip', error: error.message };
+  } finally {
+    await page.close();
+  }
+}
+
+// Test 16: OCR error callback
 async function testOcrErrorCallback(browser, baseUrl) {
   const page = await setupPage(browser, baseUrl);
   try {
@@ -583,6 +990,13 @@ async function run() {
     results.push(await testSelectionCleared(browser, serverContext.baseUrl));
     results.push(await testRenderFromHostClearsOcr(browser, serverContext.baseUrl));
     results.push(await testRenderWithColorAndDpi(browser, serverContext.baseUrl));
+    results.push(await testFontSizeAffectsPngDimensions(browser, serverContext.baseUrl));
+    results.push(await testFontSizeMonotonicDimensions(browser, serverContext.baseUrl));
+    results.push(await testTransparentVsOpaque(browser, serverContext.baseUrl));
+    results.push(await testDisplayVsInlineMode(browser, serverContext.baseUrl));
+    results.push(await testColorAffectsPngData(browser, serverContext.baseUrl));
+    results.push(await testDpiScalesDimensions(browser, serverContext.baseUrl));
+    results.push(await testOptionsRoundTrip(browser, serverContext.baseUrl));
     results.push(await testOcrErrorCallback(browser, serverContext.baseUrl));
   } finally {
     await browser.close();

@@ -596,6 +596,7 @@
       top: 0;
       display: inline-block;
       padding: 2px;
+      font-size: ${options.fontPt}pt;
       color: ${options.colorHex};
       background: transparent;
       line-height: 1;
