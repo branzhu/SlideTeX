@@ -417,6 +417,24 @@ import { stex } from "@codemirror/legacy-modes/mode/stex";
               return false;
             }
           },
+          {
+            key: "Shift-Alt-f",
+            run: function (view) {
+              var formatter = typeof window !== "undefined" && window.SlideTeXFormatter;
+              if (!formatter || typeof formatter.formatLatex !== "function") {
+                return false;
+              }
+              var source = view.state.doc.toString();
+              var formatted = formatter.formatLatex(source);
+              if (formatted !== source) {
+                view.dispatch({
+                  changes: { from: 0, to: view.state.doc.length, insert: formatted },
+                  selection: { anchor: formatted.length }
+                });
+              }
+              return true;
+            }
+          },
           indentWithTab,
           ...completionKeymap,
           ...historyKeymap,

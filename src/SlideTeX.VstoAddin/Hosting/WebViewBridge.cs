@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Windows.Forms;
+using System.Threading.Tasks;
 using SlideTeX.VstoAddin.Contracts;
 using SlideTeX.VstoAddin.Diagnostics;
 using SlideTeX.VstoAddin.Localization;
@@ -27,7 +25,7 @@ namespace SlideTeX.VstoAddin.Hosting
         private readonly Queue<string> _scriptQueue = new Queue<string>();
         private WebViewPageState _state = WebViewPageState.Uninitialized;
         private bool _isDraining;
-        private bool _isInSyncWait;
+        private bool _isRenderInFlight;
         private bool _disposed;
 
         public WebViewBridge(TaskPaneHostControl hostControl)
@@ -51,7 +49,7 @@ namespace SlideTeX.VstoAddin.Hosting
 
         public bool IsBusy
         {
-            get { return _isInSyncWait; }
+            get { return _isRenderInFlight; }
         }
 
         public event EventHandler StateChanged;
@@ -61,53 +59,35 @@ namespace SlideTeX.VstoAddin.Hosting
 
         // ── Lifecycle ──────────────────────────────────────────────────
 
-        public void Initialize(string pagePath, string uiCultureName)
+        public async Task InitializeAsync(string pagePath, string uiCultureName)
         {
             if (_state != WebViewPageState.Uninitialized && _state != WebViewPageState.Failed)
             {
-                DiagLog.Debug("WebViewBridge.Initialize skipped. state=" + _state);
+                DiagLog.Debug("WebViewBridge.InitializeAsync skipped. state=" + _state);
                 return;
             }
 
             SetState(WebViewPageState.Initializing);
-            DiagLog.Info("WebViewBridge.Initialize begin.");
+            DiagLog.Info("WebViewBridge.InitializeAsync begin.");
 
             try
             {
-                var task = _hostControl.InitializeAsync(pagePath, uiCultureName);
-                var timeoutMs = ResolveInitializeTimeoutMs();
-                var sw = Stopwatch.StartNew();
-
-                while (!task.IsCompleted && sw.ElapsedMilliseconds < timeoutMs)
-                {
-                    Application.DoEvents();
-                    Thread.Sleep(10);
-                }
-
-                if (!task.IsCompleted)
-                {
-                    SetState(WebViewPageState.Failed);
-                    DiagLog.Warn("WebViewBridge.Initialize timeout.");
-                    return;
-                }
-
-                task.GetAwaiter().GetResult();
+                await _hostControl.InitializeAsync(pagePath, uiCultureName).ConfigureAwait(true);
 
                 if (!_hostControl.IsWebViewReady)
                 {
                     SetState(WebViewPageState.Failed);
-                    DiagLog.Warn("WebViewBridge.Initialize host not ready after init.");
+                    DiagLog.Warn("WebViewBridge.InitializeAsync host not ready after init.");
                     return;
                 }
 
-                // WebView2 control created, Source set → page is navigating
                 SetState(WebViewPageState.Navigating);
-                DiagLog.Info("WebViewBridge.Initialize → Navigating.");
+                DiagLog.Info("WebViewBridge.InitializeAsync → Navigating.");
             }
             catch (Exception ex)
             {
                 SetState(WebViewPageState.Failed);
-                DiagLog.Error("WebViewBridge.Initialize exception.", ex);
+                DiagLog.Error("WebViewBridge.InitializeAsync exception.", ex);
                 throw;
             }
         }
@@ -121,7 +101,7 @@ namespace SlideTeX.VstoAddin.Hosting
                 return;
             }
 
-            if (_state == WebViewPageState.Ready && !_isInSyncWait)
+            if (_state == WebViewPageState.Ready && !_isRenderInFlight)
             {
                 _scriptQueue.Enqueue(script);
                 ScheduleDrain();
@@ -137,9 +117,9 @@ namespace SlideTeX.VstoAddin.Hosting
             }
         }
 
-        // ── Synchronous render (only DoEvents path) ───────────────────
+        // ── Async render with callback ─────────────────────────────────
 
-        public RenderSuccessPayload RenderAndWait(
+        public async Task<RenderSuccessPayload> RenderAndWaitAsync(
             string latex,
             RenderOptionsDto options,
             string renderLatex,
@@ -148,24 +128,81 @@ namespace SlideTeX.VstoAddin.Hosting
         {
             if (_state != WebViewPageState.Ready)
             {
-                DiagLog.Warn("WebViewBridge.RenderAndWait skipped. state=" + _state);
+                DiagLog.Warn("WebViewBridge.RenderAndWaitAsync skipped. state=" + _state);
                 return null;
             }
 
-            if (_isInSyncWait)
+            if (_isRenderInFlight)
             {
-                DiagLog.Warn("WebViewBridge.RenderAndWait reentrant call blocked.");
+                DiagLog.Warn("WebViewBridge.RenderAndWaitAsync reentrant call blocked.");
                 return null;
             }
 
-            _isInSyncWait = true;
+            _isRenderInFlight = true;
             try
             {
-                return RenderAndWaitCore(latex, options, renderLatex, timeoutMs, serializer);
+                var tcs = new TaskCompletionSource<RenderSuccessPayload>();
+
+                EventHandler<RenderNotificationEventArgs> handler = null;
+                handler = (s, e) =>
+                {
+                    DiagLog.Debug("WebViewBridge.RenderAndWaitAsync handler fired. isSuccess=" + e.IsSuccess);
+                    _hostControl.RenderNotificationReceived -= handler;
+                    if (e.IsSuccess && !string.IsNullOrWhiteSpace(e.Payload))
+                    {
+                        try
+                        {
+                            var payload = serializer.Deserialize<RenderSuccessPayload>(e.Payload);
+                            if (payload != null && payload.IsSuccess)
+                            {
+                                if (payload.Options == null)
+                                {
+                                    payload.Options = new RenderOptionsDto();
+                                }
+                                tcs.TrySetResult(payload);
+                            }
+                            else
+                            {
+                                tcs.TrySetResult(null);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            tcs.TrySetException(ex);
+                        }
+                    }
+                    else
+                    {
+                        tcs.TrySetException(new Exception(
+                            e.ErrorMessage ?? LocalizationManager.Get("error.render_failed_default")));
+                    }
+                };
+
+                _hostControl.RenderNotificationReceived += handler;
+
+                var renderPayload = serializer.Serialize(new
+                {
+                    latex = latex,
+                    options = options,
+                    renderLatex = !string.IsNullOrWhiteSpace(renderLatex) ? renderLatex : null
+                });
+                var script = "window.slideTex && window.slideTex.renderFromHost(" + renderPayload + ");";
+                await _hostControl.ExecuteScriptAsync(script).ConfigureAwait(true);
+                DiagLog.Debug("WebViewBridge.RenderAndWaitAsync script sent. Awaiting callback.");
+
+                var timeout = Task.Delay(timeoutMs);
+                if (await Task.WhenAny(tcs.Task, timeout).ConfigureAwait(true) == timeout)
+                {
+                    _hostControl.RenderNotificationReceived -= handler;
+                    DiagLog.Warn("WebViewBridge.RenderAndWaitAsync timeout.");
+                    throw new TimeoutException(LocalizationManager.Get("error.render_timeout"));
+                }
+
+                return await tcs.Task.ConfigureAwait(true);
             }
             finally
             {
-                _isInSyncWait = false;
+                _isRenderInFlight = false;
                 ScheduleDrain();
             }
         }
@@ -188,91 +225,6 @@ namespace SlideTeX.VstoAddin.Hosting
             DiagLog.Debug("WebViewBridge.Dispose done.");
         }
 
-        // ── Private: RenderAndWaitCore ────────────────────────────────
-
-        private RenderSuccessPayload RenderAndWaitCore(
-            string latex,
-            RenderOptionsDto options,
-            string renderLatex,
-            int timeoutMs,
-            System.Web.Script.Serialization.JavaScriptSerializer serializer)
-        {
-            var tcs = new ManualResetEvent(false);
-            RenderSuccessPayload result = null;
-            Exception renderError = null;
-
-            EventHandler<RenderNotificationEventArgs> handler = null;
-            handler = (s, e) =>
-            {
-                DiagLog.Debug("WebViewBridge.RenderAndWaitCore handler fired. isSuccess=" + e.IsSuccess);
-                _hostControl.RenderNotificationReceived -= handler;
-                if (e.IsSuccess && !string.IsNullOrWhiteSpace(e.Payload))
-                {
-                    try
-                    {
-                        var payload = serializer.Deserialize<RenderSuccessPayload>(e.Payload);
-                        if (payload != null && payload.IsSuccess)
-                        {
-                            if (payload.Options == null)
-                            {
-                                payload.Options = new RenderOptionsDto();
-                            }
-                            result = payload;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        renderError = ex;
-                    }
-                }
-                else
-                {
-                    renderError = new Exception(e.ErrorMessage ?? LocalizationManager.Get("error.render_failed_default"));
-                }
-                tcs.Set();
-            };
-
-            _hostControl.RenderNotificationReceived += handler;
-
-            var renderPayload = serializer.Serialize(new
-            {
-                latex = latex,
-                options = options,
-                renderLatex = !string.IsNullOrWhiteSpace(renderLatex) ? renderLatex : null
-            });
-            var script = "window.slideTex && window.slideTex.renderFromHost(" + renderPayload + ");";
-            _hostControl.ExecuteScript(script);
-            DiagLog.Debug("WebViewBridge.RenderAndWaitCore script sent. Entering wait loop.");
-
-            var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
-            int loopCount = 0;
-            while (!tcs.WaitOne(0) && DateTime.UtcNow < deadline)
-            {
-                Application.DoEvents();
-                Thread.Sleep(10);
-                loopCount++;
-                if (loopCount % 100 == 0)
-                {
-                    DiagLog.Debug("WebViewBridge.RenderAndWaitCore still waiting. loopCount=" + loopCount);
-                }
-            }
-
-            if (!tcs.WaitOne(0))
-            {
-                _hostControl.RenderNotificationReceived -= handler;
-                DiagLog.Warn("WebViewBridge.RenderAndWaitCore timeout.");
-                throw new TimeoutException(LocalizationManager.Get("error.render_timeout"));
-            }
-
-            if (renderError != null)
-            {
-                DiagLog.Warn("WebViewBridge.RenderAndWaitCore failed: " + renderError.Message);
-                throw renderError;
-            }
-
-            return result;
-        }
-
         // ── Private: Queue drain ──────────────────────────────────────
 
         private void ScheduleDrain()
@@ -285,7 +237,7 @@ namespace SlideTeX.VstoAddin.Hosting
             _hostControl.BeginInvoke(new Action(async () => await DrainQueueAsync()));
         }
 
-        private async System.Threading.Tasks.Task DrainQueueAsync()
+        private async Task DrainQueueAsync()
         {
             if (_isDraining)
             {
@@ -295,7 +247,7 @@ namespace SlideTeX.VstoAddin.Hosting
             _isDraining = true;
             try
             {
-                while (_scriptQueue.Count > 0 && _state == WebViewPageState.Ready && !_isInSyncWait)
+                while (_scriptQueue.Count > 0 && _state == WebViewPageState.Ready && !_isRenderInFlight)
                 {
                     var script = _scriptQueue.Dequeue();
                     try
@@ -373,16 +325,5 @@ namespace SlideTeX.VstoAddin.Hosting
             }
         }
 
-        private static int ResolveInitializeTimeoutMs()
-        {
-            var raw = Environment.GetEnvironmentVariable("SLIDETEX_WEBVIEW2_INIT_TIMEOUT_MS");
-            int parsed;
-            if (!string.IsNullOrWhiteSpace(raw) && int.TryParse(raw, out parsed) && parsed >= 1000 && parsed <= 120000)
-            {
-                return parsed;
-            }
-
-            return 15000;
-        }
     }
 }

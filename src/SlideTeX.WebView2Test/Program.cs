@@ -122,7 +122,6 @@ namespace SlideTeX.WebView2Test
             while (!initialRenderReceived && DateTime.UtcNow < deadline)
             {
                 await Task.Delay(200);
-                Application.DoEvents();
             }
 
             if (initialRenderReceived && lastRenderPayload != null
@@ -154,7 +153,6 @@ namespace SlideTeX.WebView2Test
                 while (!hostRenderReceived && DateTime.UtcNow < deadline)
                 {
                     await Task.Delay(200);
-                    Application.DoEvents();
                 }
 
                 bool pass = hostRenderReceived && lastRenderPayload != null
@@ -185,7 +183,6 @@ namespace SlideTeX.WebView2Test
                 while (!complexRenderReceived && DateTime.UtcNow < deadline)
                 {
                     await Task.Delay(200);
-                    Application.DoEvents();
                 }
 
                 bool pass = complexRenderReceived && lastRenderPayload != null
@@ -237,7 +234,6 @@ namespace SlideTeX.WebView2Test
                 while (!insertCommandReceived && DateTime.UtcNow < deadline)
                 {
                     await Task.Delay(200);
-                    Application.DoEvents();
                 }
 
                 results.Add(new TestResult {

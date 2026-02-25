@@ -5,7 +5,7 @@
   "description": "SlideTeX local test tooling",
   "scripts": {
     "test": "npm run test:tier0 && npm run test:tier1:smoke",
-    "test:tier0": "node --test tests/test-app-logic.mjs && node --test tests/test-i18n.mjs && node tests/test-ocr-latex-postprocess.mjs",
+    "test:tier0": "node --test tests/test-app-logic.mjs && node --test tests/test-i18n.mjs && node tests/test-ocr-latex-postprocess.mjs && node tests/test-latex-formatter.mjs",
     "test:tier1": "node tests/test-main-flow.mjs && node tests/render-known-good.mjs --mode verify --suite all",
     "test:tier1:smoke": "node tests/test-main-flow.mjs && node tests/render-known-good.mjs --mode verify --suite smoke",
     "test:all": "npm run test:tier0 && npm run test:tier1",

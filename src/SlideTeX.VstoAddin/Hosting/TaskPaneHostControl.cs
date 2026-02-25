@@ -18,7 +18,6 @@ namespace SlideTeX.VstoAddin.Hosting
     /// </summary>
     public sealed class TaskPaneHostControl : UserControl
     {
-        private const int DefaultInitializeTimeoutMs = 15000;
         private readonly Label _fallbackLabel;
         private readonly SlideTeXHostObject _hostObject;
         private WebView2 _webView;
@@ -75,86 +74,6 @@ namespace SlideTeX.VstoAddin.Hosting
         public bool IsWebViewReady
         {
             get { return _webView != null; }
-        }
-
-        /// <summary>
-        /// Initializes WebView with default host culture behavior.
-        /// </summary>
-        public void Initialize(string pagePath)
-        {
-            Initialize(pagePath, null);
-        }
-
-        /// <summary>
-        /// Initializes WebView synchronously while pumping UI messages to avoid deadlock.
-        /// </summary>
-        public void Initialize(string pagePath, string uiCultureName)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            DiagLog.Info("TaskPaneHostControl.Initialize(sync) begin. pagePath=" + pagePath);
-            try
-            {
-                var timeoutMs = ResolveInitializeTimeoutMs();
-                DiagLog.Debug("TaskPaneHostControl.Initialize(sync) timeoutMs=" + timeoutMs);
-
-                var task = InitializeAsync(pagePath, uiCultureName);
-
-                // Use message-pumping loop instead of blocking Wait() to avoid deadlock.
-                // WebView2's EnsureCoreWebView2Async needs the UI thread message pump to complete.
-                var pumpSw = Stopwatch.StartNew();
-                while (!task.IsCompleted && pumpSw.ElapsedMilliseconds < timeoutMs)
-                {
-                    Application.DoEvents();
-                    System.Threading.Thread.Sleep(10);
-                }
-
-                if (!task.IsCompleted)
-                {
-                    stopwatch.Stop();
-                    LastInitializationError = "WebView2 initialization timeout";
-                    SetFallbackMessage(LocalizationManager.Get("taskpane.init_timeout"));
-                    DiagLog.Warn("TaskPaneHostControl.Initialize(sync) timeout. elapsedMs=" + stopwatch.ElapsedMilliseconds);
-
-                    task.ContinueWith(
-                        t =>
-                        {
-                            if (t.IsFaulted)
-                            {
-                                var ex = t.Exception != null ? t.Exception.GetBaseException() : null;
-                                if (ex != null)
-                                {
-                                    DiagLog.Error("TaskPaneHostControl.Initialize(sync) timed-out task later faulted.", ex);
-                                }
-                                else
-                                {
-                                    DiagLog.Warn("TaskPaneHostControl.Initialize(sync) timed-out task later faulted without exception details.");
-                                }
-                            }
-                            else if (t.IsCanceled)
-                            {
-                                DiagLog.Warn("TaskPaneHostControl.Initialize(sync) timed-out task later canceled.");
-                            }
-                            else
-                            {
-                                DiagLog.Debug("TaskPaneHostControl.Initialize(sync) timed-out task later completed successfully.");
-                            }
-                        },
-                        TaskScheduler.Default);
-
-                    return;
-                }
-
-                // Re-throw task exception to keep previous error handling behavior.
-                task.GetAwaiter().GetResult();
-                stopwatch.Stop();
-                DiagLog.Info("TaskPaneHostControl.Initialize(sync) end. ready=" + IsWebViewReady + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
-            }
-            catch (Exception ex)
-            {
-                stopwatch.Stop();
-                DiagLog.Error("TaskPaneHostControl.Initialize(sync) exception. elapsedMs=" + stopwatch.ElapsedMilliseconds, ex);
-                throw;
-            }
         }
 
         /// <summary>
@@ -271,28 +190,6 @@ namespace SlideTeX.VstoAddin.Hosting
         }
 
         /// <summary>
-        /// Executes JavaScript synchronously via async bridge while keeping message pump alive.
-        /// </summary>
-        public void ExecuteScript(string script)
-        {
-            var task = ExecuteScriptAsync(script);
-
-            // Use message-pumping loop instead of blocking GetAwaiter().GetResult()
-            // to avoid deadlock. WebView2 needs the UI thread message pump to complete.
-            while (!task.IsCompleted)
-            {
-                Application.DoEvents();
-                System.Threading.Thread.Sleep(5);
-            }
-
-            // Propagate exceptions if any.
-            if (task.IsFaulted && task.Exception != null)
-            {
-                DiagLog.Error("ExecuteScript faulted.", task.Exception.GetBaseException());
-            }
-        }
-
-        /// <summary>
         /// Executes JavaScript against the active WebView instance when it is ready.
         /// </summary>
         public async Task ExecuteScriptAsync(string script)
@@ -383,17 +280,6 @@ namespace SlideTeX.VstoAddin.Hosting
                 .Replace("'", "\\'");
         }
 
-        private static int ResolveInitializeTimeoutMs()
-        {
-            var raw = Environment.GetEnvironmentVariable("SLIDETEX_WEBVIEW2_INIT_TIMEOUT_MS");
-            int parsed;
-            if (!string.IsNullOrWhiteSpace(raw) && int.TryParse(raw, out parsed) && parsed >= 1000 && parsed <= 120000)
-            {
-                return parsed;
-            }
-
-            return DefaultInitializeTimeoutMs;
-        }
     }
 }
 

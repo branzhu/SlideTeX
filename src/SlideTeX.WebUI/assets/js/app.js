@@ -322,7 +322,8 @@
     }
 
     const cleanedLatex = sanitizeOcrLatex(latex);
-    const outputLatex = cleanedLatex.length > 0 ? cleanedLatex : latex;
+    const formattedLatex = formatOcrLatex(cleanedLatex.length > 0 ? cleanedLatex : latex);
+    const outputLatex = formattedLatex.length > 0 ? formattedLatex : (cleanedLatex.length > 0 ? cleanedLatex : latex);
 
     setEditorValue(outputLatex);
 
@@ -401,6 +402,14 @@
     result = result.replace(/[ \t]+\n/g, "\n");
     result = result.replace(/\n{3,}/g, "\n\n");
     return result.trim();
+  }
+
+  function formatOcrLatex(source) {
+    const formatter = window.SlideTeXFormatter;
+    if (formatter && typeof formatter.formatLatex === "function") {
+      return formatter.formatLatex(source);
+    }
+    return String(source || "");
   }
 
   // Tracks whether the Transparent field wrapped to a dedicated second line.

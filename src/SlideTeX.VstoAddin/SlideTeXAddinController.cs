@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Office = Microsoft.Office.Core;
@@ -145,7 +146,7 @@ namespace SlideTeX.VstoAddin
         /// <summary>
         /// Ensures the task pane is initialized and visible, then attempts auto-edit sync.
         /// </summary>
-        public void OpenPane()
+        public async void OpenPane()
         {
             DiagLog.Info("Controller.OpenPane requested.");
             if (_taskPane == null)
@@ -154,15 +155,24 @@ namespace SlideTeX.VstoAddin
                 return;
             }
 
-            EnsureWebViewInitialized();
             _taskPane.Visible = true;
-            DiagLog.Debug("Controller.OpenPane completed. taskPane.Visible=true.");
+
+            try
+            {
+                await EnsureWebViewInitializedAsync().ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                DiagLog.Error("Controller.OpenPane initialization failed.", ex);
+            }
+
+            DiagLog.Debug("Controller.OpenPane completed.");
         }
 
         /// <summary>
         /// Inserts the current render result as a new shape on the active slide.
         /// </summary>
-        public void InsertCurrentFormula()
+        public async void InsertCurrentFormula()
         {
             DiagLog.Info("InsertCurrentFormula begin.");
             if (!EnsureLastRender())
@@ -200,7 +210,8 @@ namespace SlideTeX.VstoAddin
                     int consumedCount;
                     string numberedLatex = EquationNumberingService.BuildNumberedLatex(originalLatex, nextNumber, out consumedCount);
                     DiagLog.Debug("InsertCurrentFormula nextNumber=" + nextNumber + " consumedCount=" + consumedCount);
-                    var numberedRender = RenderAndWait(originalLatex, _lastRender.Options, numberedLatex);
+                    var numberedRender = await RenderAndWaitAsync(originalLatex, _lastRender.Options, numberedLatex)
+                        .ConfigureAwait(true);
                     DiagLog.Debug("InsertCurrentFormula numbered render returned. isNull=" + (numberedRender == null));
                     if (numberedRender != null)
                     {
@@ -1044,34 +1055,35 @@ namespace SlideTeX.VstoAddin
         /// <summary>
         /// Lazily initializes WebView and reports localized user-facing diagnostics on failure.
         /// </summary>
-        private void EnsureWebViewInitialized()
+        private async Task EnsureWebViewInitializedAsync()
         {
             var stopwatch = Stopwatch.StartNew();
-            DiagLog.Info("EnsureWebViewInitialized begin.");
+            DiagLog.Info("EnsureWebViewInitializedAsync begin.");
 
             if (_bridge == null || _taskPaneControl == null)
             {
-                DiagLog.Debug("EnsureWebViewInitialized skipped. bridgeNull=" + (_bridge == null) + ", controlNull=" + (_taskPaneControl == null));
+                DiagLog.Debug("EnsureWebViewInitializedAsync skipped. bridgeNull=" + (_bridge == null) + ", controlNull=" + (_taskPaneControl == null));
                 return;
             }
 
             if (_bridge.State != WebViewPageState.Uninitialized && _bridge.State != WebViewPageState.Failed)
             {
-                DiagLog.Debug("EnsureWebViewInitialized skipped. state=" + _bridge.State);
+                DiagLog.Debug("EnsureWebViewInitializedAsync skipped. state=" + _bridge.State);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(_webUiPagePath))
             {
-                DiagLog.Warn("EnsureWebViewInitialized no web ui page path.");
+                DiagLog.Warn("EnsureWebViewInitializedAsync no web ui page path.");
                 ShowWarning(LocalizationManager.Get("warning.webui_not_found_init"));
                 return;
             }
 
             try
             {
-                DiagLog.Debug("EnsureWebViewInitialized calling bridge.Initialize.");
-                _bridge.Initialize(_webUiPagePath, LocalizationManager.UICultureName);
+                DiagLog.Debug("EnsureWebViewInitializedAsync calling bridge.InitializeAsync.");
+                await _bridge.InitializeAsync(_webUiPagePath, LocalizationManager.UICultureName)
+                    .ConfigureAwait(true);
                 stopwatch.Stop();
 
                 if (_bridge.State == WebViewPageState.Failed)
@@ -1079,23 +1091,23 @@ namespace SlideTeX.VstoAddin
                     var errMsg = _taskPaneControl.LastInitializationError;
                     if (!string.IsNullOrWhiteSpace(errMsg))
                     {
-                        DiagLog.Warn("EnsureWebViewInitialized failed. error=" + errMsg + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
+                        DiagLog.Warn("EnsureWebViewInitializedAsync failed. error=" + errMsg + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
                         ShowWarning(LocalizationManager.Format("warning.taskpane_init_failed", errMsg));
                     }
                     else
                     {
-                        DiagLog.Warn("EnsureWebViewInitialized failed without explicit error. elapsedMs=" + stopwatch.ElapsedMilliseconds);
+                        DiagLog.Warn("EnsureWebViewInitializedAsync failed without explicit error. elapsedMs=" + stopwatch.ElapsedMilliseconds);
                     }
                 }
                 else
                 {
-                    DiagLog.Info("EnsureWebViewInitialized success. state=" + _bridge.State + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
+                    DiagLog.Info("EnsureWebViewInitializedAsync success. state=" + _bridge.State + ", elapsedMs=" + stopwatch.ElapsedMilliseconds);
                 }
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                DiagLog.Error("EnsureWebViewInitialized exception. elapsedMs=" + stopwatch.ElapsedMilliseconds, ex);
+                DiagLog.Error("EnsureWebViewInitializedAsync exception. elapsedMs=" + stopwatch.ElapsedMilliseconds, ex);
                 ShowWarning(LocalizationManager.Format("warning.taskpane_init_exception", ex.Message));
             }
         }
@@ -1173,27 +1185,28 @@ namespace SlideTeX.VstoAddin
         /// <summary>
         /// Wraps synchronous render waiting with busy-state and timer suspension safeguards.
         /// </summary>
-        private RenderSuccessPayload RenderAndWait(
+        private async Task<RenderSuccessPayload> RenderAndWaitAsync(
             string latex,
             RenderOptionsDto options,
             string renderLatex = null,
             int timeoutMs = 10000)
         {
-            DiagLog.Debug("RenderAndWait begin. timeoutMs=" + timeoutMs + ", hasRenderLatex=" + !string.IsNullOrWhiteSpace(renderLatex));
+            DiagLog.Debug("RenderAndWaitAsync begin. timeoutMs=" + timeoutMs + ", hasRenderLatex=" + !string.IsNullOrWhiteSpace(renderLatex));
             if (_bridge == null || !_bridge.IsReady)
             {
-                DiagLog.Warn("RenderAndWait skipped: bridge is not ready.");
+                DiagLog.Warn("RenderAndWaitAsync skipped: bridge is not ready.");
                 return null;
             }
 
             if (_selectionTimer != null)
             {
                 _selectionTimer.Stop();
-                DiagLog.Debug("RenderAndWait selection timer stopped.");
+                DiagLog.Debug("RenderAndWaitAsync selection timer stopped.");
             }
             try
             {
-                return _bridge.RenderAndWait(latex, options, renderLatex, timeoutMs, _serializer);
+                return await _bridge.RenderAndWaitAsync(latex, options, renderLatex, timeoutMs, _serializer)
+                    .ConfigureAwait(true);
             }
             finally
             {
@@ -1201,19 +1214,19 @@ namespace SlideTeX.VstoAddin
                 {
                     _selectionTimer.Start();
                 }
-                DiagLog.Debug("RenderAndWait end.");
+                DiagLog.Debug("RenderAndWaitAsync end.");
             }
         }
 
         /// <summary>
         /// Reassigns equation numbers across the whole presentation using metadata order rules.
         /// </summary>
-        public void RenumberAllEquations()
+        public async void RenumberAllEquations()
         {
             DiagLog.Info("RenumberAllEquations begin.");
             if (_bridge == null || !_bridge.IsReady)
             {
-                EnsureWebViewInitialized();
+                await EnsureWebViewInitializedAsync().ConfigureAwait(true);
                 if (_bridge == null || !_bridge.IsReady)
                 {
                     ShowWarning(LocalizationManager.Get("warning.open_panel_first"));
@@ -1242,7 +1255,8 @@ namespace SlideTeX.VstoAddin
                         continue;
                     }
 
-                    var rendered = RenderAndWait(info.Meta.LatexSource, info.Meta.RenderOptions, numberedLatex);
+                    var rendered = await RenderAndWaitAsync(info.Meta.LatexSource, info.Meta.RenderOptions, numberedLatex)
+                        .ConfigureAwait(true);
                     if (rendered == null)
                     {
                         continue;
